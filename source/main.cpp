@@ -6,6 +6,8 @@
 #include <box2d.h>
 #include <vector>
 
+#include "rlgl.h"
+
 struct PhysicsBox
 {
 	b2Body* body;
@@ -53,6 +55,7 @@ int main(void)
 	std::vector<PhysicsBox> boxes;
 	std::vector<PhysicsCircle> circles;
 
+	float nextBoxRotation = 0.0f;
 
 	while (!WindowShouldClose())
 	{
@@ -65,16 +68,17 @@ int main(void)
 		// Suelo visual
 		DrawRectangle(0, screenHeight - 60, screenWidth, 40, sueloColor);
 
+		// Crear nueva caja
 		if (IsKeyPressed(KEY_SPACE)) {
-			TraceLog(LOG_INFO, "Creando nueva caja dinámica...");
 			b2BodyDef boxDef;
 			boxDef.type = b2_dynamicBody;
-			boxDef.position.Set(GetScreenWidth() / 2.0f, 80.0f);
+			boxDef.position.Set(GetScreenWidth() / 2.0f, 150.0f);
+			boxDef.angle = nextBoxRotation * DEG2RAD;
 
 			b2Body* boxBody = world.CreateBody(&boxDef);
 
 			b2PolygonShape boxShape;
-			boxShape.SetAsBox(25.0f, 25.0f);
+			boxShape.SetAsBox(50.0f, 25.0f);
 
 			b2FixtureDef boxFixture;
 			boxFixture.shape = &boxShape;
@@ -86,6 +90,13 @@ int main(void)
 
 			boxes.push_back({ boxBody, 100.0f, 50.0f, Fade(SKYBLUE, 0.95f) });
 		}
+		// Definir rotación de la próxima caja
+		else if (IsKeyDown(KEY_LEFT) && nextBoxRotation > -180.0f) {
+			nextBoxRotation -= 1.0f;
+		}
+		else if (IsKeyDown(KEY_RIGHT) && nextBoxRotation < 180.0f) {
+			nextBoxRotation += 1.0f;
+		}
 
 		// Dibujar cajas
 		for (const auto& box : boxes)
@@ -93,25 +104,24 @@ int main(void)
 			b2Vec2 pos = box.body->GetPosition();
 			float angle = box.body->GetAngle() * RAD2DEG;
 
-			Rectangle rect = {
-				pos.x - box.width / 2.0f,
-				pos.y - box.height / 2.0f,
-				box.width,
-				box.height
-			};
+			Rectangle rec = { -box.width / 2.0f, -box.height / 2.0f, box.width, box.height };
 
-			Vector2 origin = { 0, 0 };
-			DrawRectanglePro(rect, origin, angle, box.color);
-			DrawRectangleLinesEx(rect, 2, DARKBLUE);
+			rlPushMatrix();
+				rlTranslatef(pos.x, pos.y, 0);
+				rlRotatef(angle, 0, 0, 1);
+				DrawRectangleRec(rec, box.color);
+				DrawRectangleLinesEx(rec, 2, DARKBLUE);
+			rlPopMatrix();
 		}
 
 		// Panel superior
-		DrawRectangle(90, 70, 820, 90, Fade(BLACK, 0.18f));
-		DrawText("Bienvenidos a Modelos y Algoritmos para Videojuegos II", 120, 90, 28, textoPrincipal);
-		DrawText("Raylib dibuja. Box2D simula.", 320, 125, 22, textoSecundario);
+		DrawRectangle(90, 10, 820, 110, Fade(BLACK, 0.18f));
+		DrawText("Bienvenidos a Modelos y Algoritmos para Videojuegos II", 120, 20, 28, textoPrincipal);
+		DrawText("Raylib dibuja. Box2D simula.", 320, 65, 22, textoSecundario);
+		DrawText(TextFormat("<- %.2f grados ->", nextBoxRotation), GetScreenWidth() / 2 - MeasureText(TextFormat("<- %.2f grados ->", nextBoxRotation), 18) / 2, 95, 18, textoPrincipal);
 
 		// Pie
-		DrawText("Primer contacto con simulacion fisica en 2D", 300, 540, 20, RAYWHITE);
+		DrawText("Primer contacto con simulacion fisica en 2D", 310, 540, 20, RAYWHITE);
 
 		EndDrawing();
 	}
