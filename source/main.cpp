@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "rlgl.h"
+#include "main.h"
 
 struct PhysicsBox
 {
@@ -107,25 +108,30 @@ int main(void)
 			Rectangle rec = { -box.width / 2.0f, -box.height / 2.0f, box.width, box.height };
 
 			rlPushMatrix();
-				rlTranslatef(pos.x, pos.y, 0);
-				rlRotatef(angle, 0, 0, 1);
-				DrawRectangleRec(rec, box.color);
-				DrawRectangleLinesEx(rec, 2, DARKBLUE);
+			rlTranslatef(pos.x, pos.y, 0);
+			rlRotatef(angle, 0, 0, 1);
+			DrawRectangleRec(rec, box.color);
+			DrawRectangleLinesEx(rec, 2, DARKBLUE);
 			rlPopMatrix();
 		}
 
 		// Panel superior
 		DrawRectangle(90, 10, 820, 110, Fade(BLACK, 0.18f));
-		DrawText("Bienvenidos a Modelos y Algoritmos para Videojuegos II", 120, 20, 28, textoPrincipal);
-		DrawText("Raylib dibuja. Box2D simula.", 320, 65, 22, textoSecundario);
-		DrawText(TextFormat("<- %.2f grados ->", nextBoxRotation), GetScreenWidth() / 2 - MeasureText(TextFormat("<- %.2f grados ->", nextBoxRotation), 18) / 2, 95, 18, textoPrincipal);
 
+		DrawCenteredText("Bienvenidos a Modelos y Algoritmos para Videojuegos II", 28, 20, textoPrincipal);
+		DrawCenteredText("Raylib dibuja. Box2D simula.", 22, 65, textoSecundario);
+		DrawCenteredText(TextFormat("<- %.2f grados ->", nextBoxRotation), 18, 95, textoPrincipal);
+		
 		// Pie
-		DrawText("Primer contacto con simulacion fisica en 2D", 310, 540, 20, RAYWHITE);
+		DrawCenteredText("Espacio: crear nuevas cajas", 20, 550, RAYWHITE);
 
 		EndDrawing();
 	}
 
 	CloseWindow();
 	return 0;
+}
+
+void DrawCenteredText(const char* text, int fontSize, int posY, Color color) {
+	DrawText(text, GetScreenWidth() / 2 - MeasureText(text, fontSize) / 2, posY, fontSize, color);
 }
