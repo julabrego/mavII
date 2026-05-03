@@ -8,6 +8,7 @@
 #include "main.h"
 
 #include "core/PhysicsWorld.h"
+#include "core/Renderer.h"
 
 struct PhysicsBox
 {
@@ -42,9 +43,13 @@ int main(void)
 	Color textoSecundario = DARKPURPLE;
 	Color sueloColor = Fade(DARKGREEN, 0.7f);
 
-	//// Mundo físico
+	// Mundo físico
 	PhysicsWorld physicsWorld(GRAVITY);
 	b2World& world = *physicsWorld.GetWorld();
+
+	// Renderer
+	Renderer renderer(fondo);
+
 
 	// -----------------------------
 	// Suelo estático
@@ -130,8 +135,7 @@ int main(void)
 		float deltaTime = GetFrameTime();
 		physicsWorld.Update(deltaTime);
 
-		BeginDrawing();
-		ClearBackground(fondo);
+		renderer.Begin();
 
 		// Suelo visual
 		DrawRectangle(0, screenHeight - 60, screenWidth, 40, sueloColor);
@@ -157,7 +161,8 @@ int main(void)
 
 		// Pie
 		DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
-		EndDrawing();
+		
+		renderer.End();
 	}
 
 	CloseWindow();

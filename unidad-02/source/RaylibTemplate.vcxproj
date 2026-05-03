@@ -155,10 +155,12 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
   <ItemGroup>
     <ClCompile Include="core\PhysicsWorld.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="core\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\PhysicsWorld.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="core\Renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
