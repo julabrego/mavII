@@ -30,6 +30,8 @@ float impulseStrength = 50000.0f;
 
 const float GRAVITY = 9.8f;
 
+Circle circleVisual;
+
 int main(void)
 {
 	const int screenWidth = 1000;
@@ -114,6 +116,7 @@ int main(void)
 
 	circleBody->CreateFixture(&circleFixture);
 
+
 	while (!WindowShouldClose())
 	{
 		float angleInRadians = impulseAngle * DEG2RAD;
@@ -140,8 +143,12 @@ int main(void)
 		// Suelo visual
 		DrawRectangle(0, screenHeight - 60, screenWidth, 40, sueloColor);
 
-		DrawCircle(circleBody->GetPosition().x, circleBody->GetPosition().y, circleShape.m_radius, BLUE);
-		DrawCircleLines(circleBody->GetPosition().x, circleBody->GetPosition().y, circleShape.m_radius, BLACK);
+		circleVisual.position = { circleBody->GetPosition().x, circleBody->GetPosition().y };
+		circleVisual.radius = circleShape.m_radius;
+		circleVisual.color = BLUE;
+		circleVisual.borderThickness = 2.0f;
+		circleVisual.borderColor = BLACK;
+		renderer.DrawCircle(circleVisual);
 
 		Vector2 lineStartPosition = {
 			circleBody->GetPosition().x,
