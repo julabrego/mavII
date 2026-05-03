@@ -7,6 +7,8 @@
 #include <vector>
 #include "main.h"
 
+#include "core/PhysicsWorld.h"
+
 struct PhysicsBox
 {
 	b2Body* body;
@@ -25,6 +27,8 @@ struct PhysicsCircle
 float impulseAngle = 0.0f;
 float impulseStrength = 50000.0f;
 
+const float GRAVITY = 9.8f;
+
 int main(void)
 {
 	const int screenWidth = 1000;
@@ -38,9 +42,9 @@ int main(void)
 	Color textoSecundario = DARKPURPLE;
 	Color sueloColor = Fade(DARKGREEN, 0.7f);
 
-	// Mundo físico
-	b2Vec2 gravity(0.0f, 9.8f);
-	b2World world(gravity);
+	//// Mundo físico
+	PhysicsWorld physicsWorld(GRAVITY);
+	b2World& world = *physicsWorld.GetWorld();
 
 	// -----------------------------
 	// Suelo estático
@@ -123,7 +127,8 @@ int main(void)
 		}
 
 		// Avanzar simulación
-		world.Step(1.0f / 60.0f, 8, 3);
+		float deltaTime = GetFrameTime();
+		physicsWorld.Update(deltaTime);
 
 		BeginDrawing();
 		ClearBackground(fondo);
