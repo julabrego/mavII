@@ -9,6 +9,7 @@
 
 #include "core/PhysicsWorld.h"
 #include "core/Renderer.h"
+#include "domain/Circle.h"
 
 struct PhysicsBox
 {
@@ -30,8 +31,6 @@ float impulseStrength = 50000.0f;
 
 const float GRAVITY = 9.8f;
 
-Circle circleVisual;
-
 int main(void)
 {
 	const int screenWidth = 1000;
@@ -45,16 +44,15 @@ int main(void)
 	Color textoSecundario = DARKPURPLE;
 	Color sueloColor = Fade(DARKGREEN, 0.7f);
 
-	// Mundo físico
+	// Mundo fï¿½sico
 	PhysicsWorld physicsWorld(GRAVITY);
 	b2World& world = *physicsWorld.GetWorld();
 
 	// Renderer
 	Renderer renderer(fondo);
 
-
 	// -----------------------------
-	// Suelo estático
+	// Suelo estï¿½tico
 	// -----------------------------
 	b2BodyDef topWallDef;
 	topWallDef.type = b2_staticBody;
@@ -97,7 +95,7 @@ int main(void)
 	std::vector<PhysicsCircle> circles;
 
 	// -----------------------------
-	// Crear un círculo
+	// Crear un cï¿½rculo
 	// -----------------------------
 	b2BodyDef circleDef;
 	circleDef.type = b2_dynamicBody;
@@ -116,17 +114,18 @@ int main(void)
 
 	circleBody->CreateFixture(&circleFixture);
 
+	Circle circle(circleBody->GetPosition().x, circleBody->GetPosition().y, circleShape.m_radius, DARKBLUE, 2.0f, BLACK);
 
 	while (!WindowShouldClose())
 	{
 		float angleInRadians = impulseAngle * DEG2RAD;
 
-		// Definir rotación de la próxima caja
+		// Definir rotaciï¿½n de la prï¿½xima caja
 		if (IsKeyPressed(KEY_SPACE)) {
 			b2Vec2 impulse(impulseStrength * cosf(angleInRadians), -impulseStrength * sinf(angleInRadians));
 			circleBody->ApplyLinearImpulseToCenter(impulse, true);
 		}
-		
+
 		if (IsKeyDown(KEY_LEFT)) {
 			impulseAngle += 1.0f;
 		}
@@ -134,7 +133,7 @@ int main(void)
 			impulseAngle -= 1.0f;
 		}
 
-		// Avanzar simulación
+		// Avanzar simulaciï¿½n
 		float deltaTime = GetFrameTime();
 		physicsWorld.Update(deltaTime);
 
@@ -143,12 +142,8 @@ int main(void)
 		// Suelo visual
 		DrawRectangle(0, screenHeight - 60, screenWidth, 40, sueloColor);
 
-		circleVisual.position = { circleBody->GetPosition().x, circleBody->GetPosition().y };
-		circleVisual.radius = circleShape.m_radius;
-		circleVisual.color = BLUE;
-		circleVisual.borderThickness = 2.0f;
-		circleVisual.borderColor = BLACK;
-		renderer.DrawCircle(circleVisual);
+		circle.SetPosition(circleBody->GetPosition().x, circleBody->GetPosition().y);
+		circle.Update(deltaTime, renderer);
 
 		Vector2 lineStartPosition = {
 			circleBody->GetPosition().x,
@@ -168,7 +163,7 @@ int main(void)
 
 		// Pie
 		DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
-		
+
 		renderer.End();
 	}
 

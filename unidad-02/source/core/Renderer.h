@@ -1,16 +1,14 @@
+#pragma once
+
 #ifndef RENDERER_H
 #define RENDERER_H
 
 #include "raylib.h"
 #include <memory>
 
-struct Circle {
-	Vector2 position;
-	float radius;
-	Color color;
-	float borderThickness;
-	Color borderColor;
-};
+class Circle;
+// class Rectangle;
+// class Line;
 
 class Renderer
 {
@@ -21,7 +19,9 @@ public:
 	void Begin();
 	void End();
 
-	void DrawCircle(Circle circle);
+	void Draw(const Circle& circle);
+	//void Draw(const Rectangle& rectangle);
+	//void Draw(const Line& line);
 
 private:
 	std::unique_ptr<Color> clearColor;

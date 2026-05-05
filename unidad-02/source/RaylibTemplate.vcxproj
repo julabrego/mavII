@@ -154,11 +154,14 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\PhysicsWorld.cpp" />
+    <ClCompile Include="domain\Circle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\PhysicsWorld.h" />
+    <ClInclude Include="domain\Circle.h" />
+    <ClInclude Include="domain\Entity.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
   </ItemGroup>
