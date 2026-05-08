@@ -24,7 +24,10 @@
     <ClCompile Include="core\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="domain\Circle.cpp">
+    <ClCompile Include="domain\CircleEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="domain\RectangleEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +44,10 @@
     <ClInclude Include="domain\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="domain\Circle.h">
+    <ClInclude Include="domain\CircleEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="domain\RectangleEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

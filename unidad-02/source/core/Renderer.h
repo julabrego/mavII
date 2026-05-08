@@ -6,8 +6,8 @@
 #include "raylib.h"
 #include <memory>
 
-class Circle;
-// class Rectangle;
+class CircleEntity;
+ class RectangleEntity;
 // class Line;
 
 class Renderer
@@ -19,8 +19,8 @@ public:
 	void Begin();
 	void End();
 
-	void Draw(const Circle& circle);
-	//void Draw(const Rectangle& rectangle);
+	void Draw(const CircleEntity& circle);
+	void Draw(const RectangleEntity& rectangle);
 	//void Draw(const Line& line);
 
 private:

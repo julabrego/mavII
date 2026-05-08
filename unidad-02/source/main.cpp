@@ -9,22 +9,8 @@
 
 #include "core/PhysicsWorld.h"
 #include "core/Renderer.h"
-#include "domain/Circle.h"
-
-struct PhysicsBox
-{
-	b2Body* body;
-	float width;
-	float height;
-	Color color;
-};
-
-struct PhysicsCircle
-{
-	b2Body* body;
-	float radius;
-	Color color;
-};
+#include "domain/CircleEntity.h"
+#include "domain/RectangleEntity.h"
 
 float impulseAngle = 0.0f;
 float impulseStrength = 50000.0f;
@@ -91,9 +77,6 @@ int main(void)
 	rightWallBody->CreateFixture(&rightWallShape, 0.0f);
 
 
-	std::vector<PhysicsBox> boxes;
-	std::vector<PhysicsCircle> circles;
-
 	// -----------------------------
 	// Crear un c�rculo
 	// -----------------------------
@@ -114,7 +97,8 @@ int main(void)
 
 	circleBody->CreateFixture(&circleFixture);
 
-	Circle circle(circleBody->GetPosition().x, circleBody->GetPosition().y, circleShape.m_radius, DARKBLUE, 2.0f, BLACK);
+	CircleEntity circle(circleBody->GetPosition().x, circleBody->GetPosition().y, circleShape.m_radius, DARKBLUE, 2.0f, BLACK);
+	RectangleEntity ground(groundBody->GetPosition().x, groundBody->GetPosition().y, screenWidth, 40.0f, sueloColor);
 
 	while (!WindowShouldClose())
 	{
@@ -139,11 +123,11 @@ int main(void)
 
 		renderer.Begin();
 
-		// Suelo visual
-		DrawRectangle(0, screenHeight - 60, screenWidth, 40, sueloColor);
+		// Suelo
+		ground.Update(groundBody, deltaTime, renderer);
 
-		circle.SetPosition(circleBody->GetPosition().x, circleBody->GetPosition().y);
-		circle.Update(deltaTime, renderer);
+		// C�rculo
+		circle.Update(circleBody, deltaTime, renderer);
 
 		Vector2 lineStartPosition = {
 			circleBody->GetPosition().x,
