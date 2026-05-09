@@ -21,6 +21,8 @@ public:
 	void Draw(const CircleEntity& circle);
 	void Draw(const RectangleEntity& rectangle);
 
+	void DrawCenteredText(const char* text, int fontSize, int posY, Color color);
+
 private:
 	std::unique_ptr<Color> clearColor;
 };

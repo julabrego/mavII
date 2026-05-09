@@ -37,3 +37,7 @@ void Renderer::Draw(const RectangleEntity& rectangle)
 		DrawRectangleLinesEx({ rectangle.position.x, rectangle.position.y, rectangle.width, rectangle.height }, rectangle.borderThickness, rectangle.borderColor);
 	}
 }
+
+void Renderer::DrawCenteredText(const char* text, int fontSize, int posY, Color color) {
+	DrawText(text, GetScreenWidth() / 2 - MeasureText(text, fontSize) / 2, posY, fontSize, color);
+}

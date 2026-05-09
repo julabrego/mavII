@@ -33,6 +33,9 @@
     <ClCompile Include="domain\Scenario.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="domain\Scenario.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
