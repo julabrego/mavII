@@ -11,6 +11,7 @@
 #include "core/Renderer.h"
 #include "domain/CircleEntity.h"
 #include "domain/RectangleEntity.h"
+#include "domain/Scenario.h"
 
 float impulseAngle = 0.0f;
 float impulseStrength = 50000.0f;
@@ -30,52 +31,19 @@ int main(void)
 	Color textoSecundario = DARKPURPLE;
 	Color sueloColor = Fade(DARKGREEN, 0.7f);
 
+	// Renderer
+	Renderer renderer(fondo);
+
 	// Mundo f�sico
 	PhysicsWorld physicsWorld(GRAVITY);
 	b2World& world = *physicsWorld.GetWorld();
 
-	// Renderer
-	Renderer renderer(fondo);
+	Scenario scenario(world, screenWidth, screenHeight);
+	b2Body* groundBody = scenario.GetGroundBody();
+	b2Vec2 groundPosition = groundBody->GetPosition();
 
-	// -----------------------------
-	// Suelo est�tico
-	// -----------------------------
-	b2BodyDef topWallDef;
-	topWallDef.type = b2_staticBody;
-	topWallDef.position.Set(0, -20.0f);
-	b2Body* topWallBody = world.CreateBody(&topWallDef);
-
-	b2PolygonShape topWallShape;
-	topWallShape.SetAsBox(screenWidth, 20.0f);
-	topWallBody->CreateFixture(&topWallShape, 0.0f);
-
-	b2BodyDef groundDef;
-	groundDef.type = b2_staticBody;
-	groundDef.position.Set(screenWidth / 2.0f, screenHeight - 40.0f);
-	b2Body* groundBody = world.CreateBody(&groundDef);
-
-	b2PolygonShape groundShape;
-	groundShape.SetAsBox(screenWidth / 2.0f, 20.0f);
-	groundBody->CreateFixture(&groundShape, 0.0f);
-
-	b2BodyDef leftWallDef;
-	leftWallDef.type = b2_staticBody;
-	leftWallDef.position.Set(-20.0f, 0);
-	b2Body* leftWallBody = world.CreateBody(&leftWallDef);
-
-	b2PolygonShape leftWallShape;
-	leftWallShape.SetAsBox(20.0f, screenHeight);
-	leftWallBody->CreateFixture(&leftWallShape, 0.0f);
-
-	b2BodyDef rightWallDef;
-	rightWallDef.type = b2_staticBody;
-	rightWallDef.position.Set(screenWidth + 20.0f, 0);
-	b2Body* rightWallBody = world.CreateBody(&rightWallDef);
-
-	b2PolygonShape rightWallShape;
-	rightWallShape.SetAsBox(20.0f, screenHeight);
-	rightWallBody->CreateFixture(&rightWallShape, 0.0f);
-
+	std::unique_ptr<RectangleEntity> groundEntity;
+	groundEntity = std::make_unique<RectangleEntity>(groundPosition.x, groundPosition.y, static_cast<float>(screenWidth), 40.0f, sueloColor);
 
 	// -----------------------------
 	// Crear un c�rculo
@@ -124,7 +92,7 @@ int main(void)
 		renderer.Begin();
 
 		// Suelo
-		ground.Update(groundBody, deltaTime, renderer);
+		groundEntity->Update(groundBody, deltaTime, renderer);
 
 		// C�rculo
 		circle.Update(circleBody, deltaTime, renderer);

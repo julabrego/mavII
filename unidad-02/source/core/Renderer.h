@@ -7,8 +7,7 @@
 #include <memory>
 
 class CircleEntity;
- class RectangleEntity;
-// class Line;
+class RectangleEntity;
 
 class Renderer
 {
@@ -21,7 +20,6 @@ public:
 
 	void Draw(const CircleEntity& circle);
 	void Draw(const RectangleEntity& rectangle);
-	//void Draw(const Line& line);
 
 private:
 	std::unique_ptr<Color> clearColor;

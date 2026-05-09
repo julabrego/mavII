@@ -158,6 +158,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="domain\RectangleEntity.cpp" />
+    <ClCompile Include="domain\Scenario.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\PhysicsWorld.h" />
@@ -166,6 +167,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />
+    <ClInclude Include="domain\Scenario.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
