@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "box2d.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -19,9 +18,6 @@ private:
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Renderer> renderer;
 	
-	b2Body* circleBody;
-	b2Body* groundBody;
-
 	RectangleEntity* groundEntity;
 	CircleEntity* circleEntity;
 

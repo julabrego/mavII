@@ -2,20 +2,36 @@
 #include "../core/Renderer.h"
 #include "box2d.h"
 
-CircleEntity::CircleEntity(float x, float y, float radius, Color color, float borderThickness, Color borderColor)
+CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor)
 	: position({ x, y }),
 	radius(radius),
 	color(color),
 	borderThickness(borderThickness),
 	borderColor(borderColor)
 {
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_dynamicBody;
+	bodyDef.position.Set(x, y);
+
+	body = world.CreateBody(&bodyDef);
+
+	b2CircleShape shape;
+	shape.m_radius = radius;
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &shape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+	fixtureDef.restitution = restitution;
+
+	body->CreateFixture(&fixtureDef);
 }
 
-void CircleEntity::Update(b2Body* phisicBody, float deltaTime, Renderer& renderer)
+void CircleEntity::Update(float deltaTime, Renderer& renderer)
 {
 	this->position = {
-		phisicBody->GetPosition().x,
-		phisicBody->GetPosition().y
+		body->GetPosition().x,
+		body->GetPosition().y
 	};
 }
 
