@@ -18,14 +18,14 @@ Color COLOR_GROUND = Fade(DARKGREEN, 0.7f);
 Game::Game(int screenWidth, int screenHeight)
 	: physicsWorld(std::make_unique<PhysicsWorld>(GRAVITY))
 	, renderer(std::make_unique<Renderer>(COLOR_BACKGROUND))
-	, impulseAngle(0.0f)
+	, impulseAngle(90.0f)
 {
 	b2World& world = *physicsWorld->GetWorld();
 
 	Scenario scenario(world, screenWidth, screenHeight);
 
 	groundEntity = new RectangleEntity(world, 0.0f, screenHeight - 60.0f, screenWidth, 40.0f, COLOR_GROUND);
-	circleEntity = new CircleEntity(world, screenWidth / 2.0f, 50.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
+	circleEntity = new CircleEntity(world, screenWidth / 2.0f, screenHeight - 80.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
 }
 
 Game::~Game()
