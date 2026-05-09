@@ -19,5 +19,9 @@ void RectangleEntity::Update(b2Body* phisicBody, float deltaTime, Renderer& rend
 		center.x - width / 2,
 		center.y - height / 2
 	};
+}
+
+void RectangleEntity::Render(Renderer& renderer)
+{
 	renderer.Draw(*this);
 }

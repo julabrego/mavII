@@ -10,6 +10,7 @@ class CircleEntity : public Entity
 public:
 	CircleEntity(float x, float y, float radius, Color color, float borderThickness = 0.0f, Color borderColor = BLACK);
 	void Update(b2Body* phisicBody, float deltaTime, Renderer& renderer) override;
+	void Render(Renderer& renderer) override;
 
 	Vector2 position;
 	float radius;

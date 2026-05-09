@@ -17,6 +17,10 @@ void CircleEntity::Update(b2Body* phisicBody, float deltaTime, Renderer& rendere
 		phisicBody->GetPosition().x,
 		phisicBody->GetPosition().y
 	};
+}
+
+void CircleEntity::Render(Renderer& renderer)
+{
 	renderer.Draw(*this);
 }
 

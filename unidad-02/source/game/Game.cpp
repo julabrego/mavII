@@ -23,8 +23,6 @@ Game::Game(int screenWidth, int screenHeight)
 {
 	b2World& world = *physicsWorld->GetWorld();
 
-	Renderer renderer(COLOR_BACKGROUND);
-
 	Scenario scenario(world, screenWidth, screenHeight);
 
 	groundBody = scenario.GetGroundBody();
@@ -60,36 +58,8 @@ void Game::Run()
 	while (!WindowShouldClose())
 	{
 		HandleInput();
-
-		// Avanzar simulaci�n
-		float deltaTime = GetFrameTime();
-		physicsWorld->Update(deltaTime);
-
-		renderer->Begin();
-
-		groundEntity->Update(groundBody, deltaTime, *renderer);
-		circleEntity->Update(circleBody, deltaTime, *renderer);
-
-		Vector2 lineStartPosition = {
-			circleBody->GetPosition().x,
-			circleBody->GetPosition().y
-		};
-
-		Vector2 lineEndPosition = {
-			circleBody->GetPosition().x + 50.0f * cosf(impulseAngle * DEG2RAD),
-			circleBody->GetPosition().y - 50.0f * sinf(impulseAngle * DEG2RAD)
-		};
-
-		DrawLineEx(lineStartPosition, lineEndPosition, 2.0f, GREEN);
-
-		// Panel superior
-		DrawRectangle(90, 40, 820, 70, Fade(BLACK, 0.18f));
-		renderer->DrawCenteredText("Aplicacion de fuerzas en Box2D", 28, 60, COLOR_PRIMARY);
-
-		// Pie
-		renderer->DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
-
-		renderer->End();
+		Update(GetFrameTime());
+		Draw();
 	}
 }
 
@@ -107,4 +77,38 @@ void Game::HandleInput()
 	else if (IsKeyDown(KEY_RIGHT)) {
 		impulseAngle -= 1.0f;
 	}
+}
+
+void Game::Update(float deltaTime)
+{
+	physicsWorld->Update(deltaTime);
+	groundEntity->Update(groundBody, deltaTime, *renderer);
+	circleEntity->Update(circleBody, deltaTime, *renderer);
+}
+
+void Game::Draw()
+{
+	renderer->Begin();
+
+	groundEntity->Render(*renderer);
+	circleEntity->Render(*renderer);
+
+	Vector2 lineStartPosition = {
+		circleBody->GetPosition().x,
+		circleBody->GetPosition().y
+	};
+
+	Vector2 lineEndPosition = {
+		circleBody->GetPosition().x + 50.0f * cosf(impulseAngle * DEG2RAD),
+		circleBody->GetPosition().y - 50.0f * sinf(impulseAngle * DEG2RAD)
+	};
+
+	DrawLineEx(lineStartPosition, lineEndPosition, 2.0f, GREEN);
+
+	DrawRectangle(90, 40, 820, 70, Fade(BLACK, 0.18f));
+	renderer->DrawCenteredText("Aplicacion de fuerzas en Box2D", 28, 60, COLOR_PRIMARY);
+
+	renderer->DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
+
+	renderer->End();
 }

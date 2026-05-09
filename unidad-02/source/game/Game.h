@@ -28,5 +28,7 @@ private:
 	float impulseAngle;
 
 	void HandleInput();
+	void Update(float deltaTime);
+	void Draw();
 };
 
