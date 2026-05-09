@@ -15,16 +15,18 @@
 #include "game/Game.h"
 
 const float GRAVITY = 9.8f;
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 600;
+
+const char* WINDOW_TITLE = "MAVI II - Unidad 02";
 
 int main(void)
 {
-	const int screenWidth = 1000;
-	const int screenHeight = 600;
 
-	InitWindow(screenWidth, screenHeight, "MAVI II - Unidad 02");
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
 	SetTargetFPS(60);
 
-	Game game(screenWidth, screenHeight);
+	Game game(SCREEN_WIDTH, SCREEN_HEIGHT);
 	game.Run();
 
 	CloseWindow();

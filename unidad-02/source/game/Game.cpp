@@ -13,7 +13,6 @@ const float IMPULSE_STRENGTH = 50000.0f;
 
 Color COLOR_BACKGROUND = { 110, 100, 215, 255 };
 Color COLOR_PRIMARY = RAYWHITE;
-Color COLOR_SECONDARY = DARKPURPLE;
 Color COLOR_GROUND = Fade(DARKGREEN, 0.7f);
 
 Game::Game(int screenWidth, int screenHeight)
@@ -64,8 +63,8 @@ void Game::HandleInput()
 
 void Game::Update(float deltaTime)
 {
-	groundEntity->Update(deltaTime, *renderer);
-	circleEntity->Update(deltaTime, *renderer);
+	groundEntity->Update(deltaTime);
+	circleEntity->Update(deltaTime);
 }
 
 void Game::Draw()
@@ -75,9 +74,15 @@ void Game::Draw()
 	groundEntity->Render(*renderer);
 	circleEntity->Render(*renderer);
 
+	DrawUI();
+
+	renderer->End();
+}
+
+void Game::DrawUI() {
 	Vector2 lineStartPosition = {
-		circleEntity->GetBody()->GetPosition().x,
-		circleEntity->GetBody()->GetPosition().y
+	circleEntity->GetBody()->GetPosition().x,
+	circleEntity->GetBody()->GetPosition().y
 	};
 
 	Vector2 lineEndPosition = {
@@ -86,11 +91,8 @@ void Game::Draw()
 	};
 
 	DrawLineEx(lineStartPosition, lineEndPosition, 2.0f, GREEN);
-
 	DrawRectangle(90, 40, 820, 70, Fade(BLACK, 0.18f));
+
 	renderer->DrawCenteredText("Aplicacion de fuerzas en Box2D", 28, 60, COLOR_PRIMARY);
-
 	renderer->DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
-
-	renderer->End();
 }

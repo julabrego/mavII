@@ -27,7 +27,7 @@ CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color
 	body->CreateFixture(&fixtureDef);
 }
 
-void CircleEntity::Update(float deltaTime, Renderer& renderer)
+void CircleEntity::Update(float deltaTime)
 {
 	this->position = {
 		body->GetPosition().x,

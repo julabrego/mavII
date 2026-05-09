@@ -10,7 +10,7 @@ class CircleEntity : public Entity
 {
 public:
 	CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness = 0.0f, Color borderColor = BLACK);
-	void Update(float deltaTime, Renderer& renderer) override;
+	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
 
 	b2Body* GetBody() const { return body; }

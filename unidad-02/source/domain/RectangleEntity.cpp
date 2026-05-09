@@ -22,7 +22,7 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 	body->CreateFixture(&shape, 0.0f);
 }
 
-void RectangleEntity::Update(float deltaTime, Renderer& renderer)
+void RectangleEntity::Update(float deltaTime)
 {
 	b2Vec2 center = body->GetPosition();
 	this->position = {
