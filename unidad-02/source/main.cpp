@@ -21,7 +21,7 @@ int main(void)
 	const int screenWidth = 1000;
 	const int screenHeight = 600;
 
-	InitWindow(screenWidth, screenHeight, "MAVI II - Bienvenida");
+	InitWindow(screenWidth, screenHeight, "MAVI II - Unidad 02");
 	SetTargetFPS(60);
 
 	Game game(screenWidth, screenHeight);

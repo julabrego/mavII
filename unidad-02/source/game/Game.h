@@ -24,5 +24,9 @@ private:
 
 	RectangleEntity* groundEntity;
 	CircleEntity* circleEntity;
+
+	float impulseAngle;
+
+	void HandleInput();
 };
 
