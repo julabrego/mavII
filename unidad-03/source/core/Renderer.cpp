@@ -2,6 +2,7 @@
 #include "../domain/CircleEntity.h"
 #include "../domain/RectangleEntity.h"
 #include "raylib.h"
+#include "rlgl.h"
 
 Renderer::Renderer(Color clearColor)
 	: clearColor(std::make_unique<Color>(clearColor))
@@ -32,10 +33,14 @@ void Renderer::Draw(const CircleEntity& circle)
 
 void Renderer::Draw(const RectangleEntity& rectangle)
 {
-	DrawRectangleV(rectangle.position, { rectangle.width, rectangle.height }, rectangle.color);
-	if (rectangle.borderThickness > 0.0f) {
-		DrawRectangleLinesEx({ rectangle.position.x, rectangle.position.y, rectangle.width, rectangle.height }, rectangle.borderThickness, rectangle.borderColor);
-	}
+	rlPushMatrix();
+		rlTranslatef(rectangle.position.x + rectangle.width / 2, rectangle.position.y + rectangle.height / 2, 0);
+		rlRotatef(rectangle.angle, 0, 0, 1);
+		DrawRectangleRec({ -rectangle.width / 2, -rectangle.height / 2, rectangle.width, rectangle.height }, rectangle.color);
+		if (rectangle.borderThickness > 0.0f) {
+			DrawRectangleLinesEx({ -rectangle.width / 2, -rectangle.height / 2, rectangle.width, rectangle.height }, rectangle.borderThickness, rectangle.borderColor);
+		}
+	rlPopMatrix();
 }
 
 void Renderer::DrawCenteredText(const char* text, int fontSize, int posY, Color color) {

@@ -6,6 +6,7 @@ class PhysicsWorld;
 class Renderer;
 class CircleEntity;
 class RectangleEntity;
+class Scenario;
 
 class Game
 {
@@ -18,8 +19,9 @@ private:
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Renderer> renderer;
 	
-	RectangleEntity* groundEntity;
 	CircleEntity* circleEntity;
+
+	Scenario* scenario;
 
 	float impulseAngle;
 

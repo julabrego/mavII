@@ -22,9 +22,7 @@ Game::Game(int screenWidth, int screenHeight)
 {
 	b2World& world = *physicsWorld->GetWorld();
 
-	Scenario scenario(world, screenWidth, screenHeight);
-
-	groundEntity = new RectangleEntity(world, 0.0f, screenHeight - 60.0f, screenWidth, 40.0f, COLOR_GROUND);
+	scenario = new Scenario(world, screenWidth, screenHeight);
 	circleEntity = new CircleEntity(world, screenWidth / 2.0f, screenHeight - 80.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
 }
 
@@ -55,7 +53,7 @@ void Game::HandleInput()
 
 void Game::Update(float deltaTime)
 {
-	groundEntity->Update(deltaTime);
+	//groundEntity->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 }
 
@@ -63,10 +61,9 @@ void Game::Draw()
 {
 	renderer->Begin();
 
-	groundEntity->Render(*renderer);
-	circleEntity->Render(*renderer);
+	scenario->Render(*renderer);
 
-	// TODO: skip UI
+	// TODO: skipping UI
 	//DrawUI();
 
 	renderer->End();

@@ -2,10 +2,11 @@
 #include "../core/Renderer.h"
 #include "box2d.h"
 
-RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, float height, Color color, float borderThickness, Color borderColor)
+RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
 	: position({ x, y }),
 	width(width),
 	height(height),
+	angle(angle),
 	color(color),
 	borderThickness(borderThickness),
 	borderColor(borderColor)
@@ -13,6 +14,7 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_staticBody;
 	bodyDef.position.Set(x + width / 2, y + height / 2);
+	bodyDef.angle = angle * DEG2RAD;
 
 	body = world.CreateBody(&bodyDef);
 

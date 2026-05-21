@@ -4,9 +4,6 @@
 #include <box2d.h>
 #include <memory>
 
-//b2Vec2 gravity(0.0f, -9.8f);
-//b2World world(gravity);
-
 class PhysicsWorld
 {
 public:
