@@ -43,7 +43,7 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	positionPlatform1JointDef.stiffness = 0.5f;
 	positionPlatform1JointDef.damping = 0.5f;
 	b2DistanceJoint* positionPlatform1Joint = (b2DistanceJoint*)world.CreateJoint(&positionPlatform1JointDef);
-	// Dijubar lìneas entre plataformas
+	// Dijubar lï¿½neas entre plataformas
 
     weldObstacle1 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.5f, 0.0f);
     weldObstacle2 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, BROWN, 1.0f, 0.5f, 0.0f);
@@ -58,8 +58,27 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	b2WeldJoint* weldObstaclesJoint = (b2WeldJoint*)world.CreateJoint(&weldObstaclesJointDef);
     // Dibujar joint
 
-	pulleyPlatform1 = RectangleEntity::CreateStatic(world, 620.0f, 330.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
-	pulleyWall1 = RectangleEntity::CreateStatic(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, DARKGREEN);
+	pulleyPlatform1 = RectangleEntity::CreateDynamic(world, 620.0f, 330.0f, 150.0f, 30.0f, 0.0f, YELLOW, 1.0f, 10.5f, 0.0f);
+	pulleyWall1 = RectangleEntity::CreateDynamic(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, YELLOW, 0.5f, 0.5f, 0.0f);
+
+	b2Vec2 pulleyWheel = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
+	b2PulleyJointDef pulleyPlatformWallJointDef;
+	pulleyPlatformWallJointDef.Initialize(pulleyPlatform1->GetBody(), pulleyWall1->GetBody(),
+		pulleyWheel, pulleyWheel,
+		b2Vec2(pulleyPlatform1->GetCenter().x, pulleyPlatform1->GetCenter().y),
+		b2Vec2(pulleyWall1->GetCenter().x, pulleyWall1->GetCenter().y),
+		1.0f);
+	b2PulleyJoint* pulleyPlatformWallJoint = (b2PulleyJoint*)world.CreateJoint(&pulleyPlatformWallJointDef);
+
+	b2PrismaticJointDef pulleyPlatformPrismaticDef;
+	pulleyPlatformPrismaticDef.Initialize(staticPlatform2->GetBody(), pulleyPlatform1->GetBody(),
+		{ pulleyPlatform1->GetCenter().x, pulleyPlatform1->GetCenter().y }, b2Vec2(0.0f, 1.0f));
+	world.CreateJoint(&pulleyPlatformPrismaticDef);
+
+	b2PrismaticJointDef pulleyWallPrismaticDef;
+	pulleyWallPrismaticDef.Initialize(staticPlatform2->GetBody(), pulleyWall1->GetBody(),
+		{ pulleyWall1->GetCenter().x, pulleyWall1->GetCenter().y }, b2Vec2(0.0f, 1.0f));
+	world.CreateJoint(&pulleyWallPrismaticDef);
 }
 
 void Scenario::InteractWithPlatform()
@@ -94,6 +113,9 @@ void Scenario::Update(float deltaTime)
 
 	weldObstacle1->Update(deltaTime);
 	weldObstacle2->Update(deltaTime);
+
+	pulleyPlatform1->Update(deltaTime);
+	pulleyWall1->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
@@ -115,4 +137,7 @@ void Scenario::Render(Renderer& renderer)
 
 	pulleyPlatform1->Render(renderer);
 	pulleyWall1->Render(renderer);
+
+	b2Vec2 pw = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
+	DrawCircleV(Vector2({ pw.x, pw.y }), 6.0f, RED);
 }

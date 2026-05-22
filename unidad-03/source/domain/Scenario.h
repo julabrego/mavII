@@ -28,6 +28,8 @@ private:
 
     RectangleEntity* weldObstacle1;
     RectangleEntity* weldObstacle2;
+
     RectangleEntity* pulleyPlatform1;
     RectangleEntity* pulleyWall1;
+	bool pulleyActivated = false;
 };
