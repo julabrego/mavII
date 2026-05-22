@@ -23,7 +23,7 @@ Game::Game(int screenWidth, int screenHeight)
 	b2World& world = *physicsWorld->GetWorld();
 
 	scenario = new Scenario(world, screenWidth, screenHeight);
-	circleEntity = new CircleEntity(world, screenWidth / 2.0f, screenHeight - 80.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
+	circleEntity = new CircleEntity(world, 420.0f,10.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
 }
 
 Game::~Game()
@@ -62,6 +62,7 @@ void Game::Draw()
 	renderer->Begin();
 
 	scenario->Render(*renderer);
+	circleEntity->Render(*renderer);
 
 	// TODO: skipping UI
 	//DrawUI();

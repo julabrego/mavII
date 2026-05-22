@@ -1,5 +1,6 @@
 #include "Scenario.h"
 #include "RectangleEntity.h"
+#include "raylib.h"
 
 Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 {
@@ -13,6 +14,10 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
     staticPlatform3 = new RectangleEntity(world, 813.0f, 545.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
     
     revolutePlatform1 = new RectangleEntity(world, 179.0f, 128.0f, 300.0f, 30.0f, 0.0f, GREEN);
+    b2RevoluteJointDef revolutePlatform1JointDef;
+    revolutePlatform1JointPosition = b2Vec2(revolutePlatform1->GetCenter().x - revolutePlatform1->GetSize().x / 2, revolutePlatform1->GetCenter().y);
+    revolutePlatform1JointDef.Initialize(staticPlatform1->GetBody(), revolutePlatform1->GetBody(), revolutePlatform1JointPosition);
+	b2RevoluteJoint* revolutePlatform1Joint = (b2RevoluteJoint*)world.CreateJoint(&revolutePlatform1JointDef);
 
     weltObstacle1 = new RectangleEntity(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, RED);
     weltObstacle2 = new RectangleEntity(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, RED);
@@ -43,6 +48,10 @@ void Scenario::Render(Renderer& renderer)
     staticPlatform3->Render(renderer);
 
     revolutePlatform1->Render(renderer);
+
+	// Draw joint anchor for revolute platform
+    DrawCircleV(Vector2{revolutePlatform1JointPosition.x, revolutePlatform1JointPosition.y}, 6.0f, RED);
+
     weltObstacle1->Render(renderer);
     weltObstacle2->Render(renderer);
 	pulleyPlatform1->Render(renderer);
