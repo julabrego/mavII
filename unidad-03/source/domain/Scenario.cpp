@@ -43,18 +43,33 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	positionPlatform1JointDef.stiffness = 0.5f;
 	positionPlatform1JointDef.damping = 0.5f;
 	b2DistanceJoint* positionPlatform1Joint = (b2DistanceJoint*)world.CreateJoint(&positionPlatform1JointDef);
+	// Dijubar lìneas entre plataformas
 
-    weltObstacle1 = RectangleEntity::CreateStatic(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, RED);
-    weltObstacle2 = RectangleEntity::CreateStatic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, RED);
+    weldObstacle1 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.5f, 0.0f);
+    weldObstacle2 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, BROWN, 1.0f, 0.5f, 0.0f);
+	
+	b2RevoluteJointDef weldObstacle1RevoluteDef;
+	weldObstacle1RevoluteDef.Initialize(staticPlatform2->GetBody(), weldObstacle1->GetBody(), b2Vec2({ weldObstacle1->GetCenter().x, weldObstacle1->GetCenter().y }));
+	b2RevoluteJoint* weldObstacle1RevoluteJoint = (b2RevoluteJoint*)world.CreateJoint(&weldObstacle1RevoluteDef);
 
-	pulleyPlatform1 = RectangleEntity::CreateStatic(world, 600.0f, 330.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
+	weldObstacle1->GetBody()->SetAngularDamping(5.0f); // Slows down rotation over time
+	b2WeldJointDef weldObstaclesJointDef;
+	weldObstaclesJointDef.Initialize(weldObstacle1->GetBody(), weldObstacle2->GetBody(), b2Vec2({ weldObstacle1->GetCenter().x, weldObstacle1->GetCenter().y }));
+	b2WeldJoint* weldObstaclesJoint = (b2WeldJoint*)world.CreateJoint(&weldObstaclesJointDef);
+    // Dibujar joint
+
+	pulleyPlatform1 = RectangleEntity::CreateStatic(world, 620.0f, 330.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
 	pulleyWall1 = RectangleEntity::CreateStatic(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, DARKGREEN);
 }
 
 void Scenario::InteractWithPlatform()
 {
+	// Apply impulse on positionPlatform1 to move it to the right
     b2Vec2 impulse = b2Vec2(50000.0f, 0.0f); 
     positionPlatform1->GetBody()->ApplyLinearImpulseToCenter(impulse, true);
+
+	// Apply impulse on weld joint to rotate weltObstacle1 and weltObstacle2
+	weldObstacle1->GetBody()->ApplyAngularImpulse(5000000.0f, true);
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -76,6 +91,9 @@ void Scenario::Update(float deltaTime)
     revolutePlatform1->Update(deltaTime);
     positionPlatform1->Update(deltaTime);
     positionPlatform2->Update(deltaTime);
+
+	weldObstacle1->Update(deltaTime);
+	weldObstacle2->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
@@ -92,8 +110,9 @@ void Scenario::Render(Renderer& renderer)
     positionPlatform1->Render(renderer);
     positionPlatform2->Render(renderer);
 
-    weltObstacle1->Render(renderer);
-    weltObstacle2->Render(renderer);
+    weldObstacle1->Render(renderer);
+    weldObstacle2->Render(renderer);
+
 	pulleyPlatform1->Render(renderer);
 	pulleyWall1->Render(renderer);
 }
