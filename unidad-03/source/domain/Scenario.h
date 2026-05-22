@@ -4,12 +4,14 @@
 
 class Renderer;
 class RectangleEntity;
-class b2Vec2;
 
 class Scenario {
 public:
     Scenario(b2World& world, float screenWidth, float screenHeight);
+    void Update(float deltaTime);
     void Render(Renderer& renderer);
+
+    void InteractWithPlatform();
 
 private:
     static void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
@@ -17,9 +19,13 @@ private:
     RectangleEntity* staticWall1;
     RectangleEntity* staticPlatform2;
     RectangleEntity* staticPlatform3;
-    
+
+	b2Vec2 revolutePlatform1InitialPos;
     RectangleEntity* revolutePlatform1;
-	b2Vec2 revolutePlatform1JointPosition;
+
+    RectangleEntity* positionPlatform1;
+    RectangleEntity* positionPlatform2;
+
     RectangleEntity* weltObstacle1;
     RectangleEntity* weltObstacle2;
     RectangleEntity* pulleyPlatform1;

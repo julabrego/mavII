@@ -2,7 +2,17 @@
 #include "../core/Renderer.h"
 #include "box2d.h"
 
-RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
+RectangleEntity* RectangleEntity::CreateStatic(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
+{
+    return new RectangleEntity(world, x, y, width, height, angle, color, b2_staticBody, 0.0f, 0.0f, 0.0f, borderThickness, borderColor);
+}
+
+RectangleEntity* RectangleEntity::CreateDynamic(b2World& world, float x, float y, float width, float height, float angle, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor)
+{
+    return new RectangleEntity(world, x, y, width, height, angle, color, b2_dynamicBody, density, friction, restitution, borderThickness, borderColor);
+}
+
+RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, b2BodyType type, float density, float friction, float restitution, float borderThickness, Color borderColor)
 	: position({ x, y }),
 	width(width),
 	height(height),
@@ -12,7 +22,7 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 	borderColor(borderColor)
 {
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_staticBody;
+	bodyDef.type = type;
 	bodyDef.position.Set(x + width / 2, y + height / 2);
 	bodyDef.angle = angle * DEG2RAD;
 
@@ -21,7 +31,13 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 	b2PolygonShape shape;
 	shape.SetAsBox(width / 2, height / 2);
 
-	body->CreateFixture(&shape, 0.0f);
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &shape;
+	fixtureDef.density = density;
+	fixtureDef.friction = friction;
+	fixtureDef.restitution = restitution;
+
+	body->CreateFixture(&fixtureDef);
 }
 
 void RectangleEntity::Update(float deltaTime)
@@ -31,6 +47,7 @@ void RectangleEntity::Update(float deltaTime)
 		center.x - width / 2,
 		center.y - height / 2
 	};
+	this->angle = body->GetAngle() * RAD2DEG;
 }
 
 void RectangleEntity::Render(Renderer& renderer)

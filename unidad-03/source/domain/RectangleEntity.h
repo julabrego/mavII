@@ -9,12 +9,13 @@ class b2World;
 class RectangleEntity : public Entity
 {
 public:
-	RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness = 0.0f, Color borderColor = BLACK);
+	static RectangleEntity* CreateStatic(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness = 0.0f, Color borderColor = BLACK);
+	static RectangleEntity* CreateDynamic(b2World& world, float x, float y, float width, float height, float angle, Color color, float density, float friction, float restitution, float borderThickness = 0.0f, Color borderColor = BLACK);
+
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
 	b2Body* GetBody() const { return body; }
 	Vector2 GetCenter() const { return { position.x + width / 2, position.y + height / 2 }; }
-	Vector2 GetSize() const { return { width, height }; }
 
 	Vector2 position;
 	float width;
@@ -25,7 +26,6 @@ public:
 	Color borderColor;
 
 private:
+	RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, b2BodyType type, float density, float friction, float restitution, float borderThickness, Color borderColor);
 	b2Body* body;
 };
-
-

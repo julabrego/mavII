@@ -23,7 +23,7 @@ Game::Game(int screenWidth, int screenHeight)
 	b2World& world = *physicsWorld->GetWorld();
 
 	scenario = new Scenario(world, screenWidth, screenHeight);
-	circleEntity = new CircleEntity(world, 420.0f,10.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
+	circleEntity = new CircleEntity(world, 120.0f, 100.0f, 30.0f, DARKBLUE, 0.5f, 0.5f, 0.5f, 2.0f, BLACK);
 }
 
 Game::~Game()
@@ -47,13 +47,13 @@ void Game::HandleInput()
 {
 	float angleInRadians = impulseAngle * DEG2RAD;
 	if (IsKeyPressed(KEY_SPACE)) {
-		printf(":)\n");
+		scenario->InteractWithPlatform();
 	}
 }
 
 void Game::Update(float deltaTime)
 {
-	//groundEntity->Update(deltaTime);
+	scenario->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 }
 

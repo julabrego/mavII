@@ -8,22 +8,53 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
     CreateWall(world, -20.0f, 0.0f, 20.0f, screenHeight);
     CreateWall(world, screenWidth + 20.0f, 0.0f, 20.0f, screenHeight);
 
-    staticPlatform1 = new RectangleEntity(world, 0.0f, 128.0f, 185.0f, 30.0f, 0.0f, DARKGREEN);
-    staticWall1 = new RectangleEntity(world, 480.0f, 0.0f, 30.0f, 125.0f, 0.0f, DARKGREEN);
-    staticPlatform2 = new RectangleEntity(world, 0.0f, 330.0f, 390.0f, 30.0f, 0.0f, DARKGREEN);
-    staticPlatform3 = new RectangleEntity(world, 813.0f, 545.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
+    staticPlatform1 = RectangleEntity::CreateStatic(world, 0.0f, 128.0f, 185.0f, 30.0f, 0.0f, DARKGREEN);
+    staticWall1 = RectangleEntity::CreateStatic(world, 480.0f, 0.0f, 30.0f, 125.0f, 0.0f, DARKGREEN);
+    staticPlatform2 = RectangleEntity::CreateStatic(world, 0.0f, 330.0f, 390.0f, 30.0f, 0.0f, DARKGREEN);
+    staticPlatform3 = RectangleEntity::CreateStatic(world, 813.0f, 545.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
     
-    revolutePlatform1 = new RectangleEntity(world, 179.0f, 128.0f, 300.0f, 30.0f, 0.0f, GREEN);
+    revolutePlatform1 = RectangleEntity::CreateDynamic(world, 179.0f, 128.0f, 300.0f, 30.0f, 0.0f, GREEN, 1.0f, 0.5f, 0.0f);
     b2RevoluteJointDef revolutePlatform1JointDef;
-    revolutePlatform1JointPosition = b2Vec2(revolutePlatform1->GetCenter().x - revolutePlatform1->GetSize().x / 2, revolutePlatform1->GetCenter().y);
-    revolutePlatform1JointDef.Initialize(staticPlatform1->GetBody(), revolutePlatform1->GetBody(), revolutePlatform1JointPosition);
+    revolutePlatform1InitialPos = b2Vec2(revolutePlatform1->GetCenter().x - revolutePlatform1->width / 2, revolutePlatform1->GetCenter().y);
+    revolutePlatform1JointDef.Initialize(staticPlatform1->GetBody(), revolutePlatform1->GetBody(), revolutePlatform1InitialPos);
 	b2RevoluteJoint* revolutePlatform1Joint = (b2RevoluteJoint*)world.CreateJoint(&revolutePlatform1JointDef);
 
-    weltObstacle1 = new RectangleEntity(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, RED);
-    weltObstacle2 = new RectangleEntity(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, RED);
+    positionPlatform1 = RectangleEntity::CreateDynamic(world, 0.0f, 90.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.0f, 0.0f);
+	positionPlatform1->GetBody()->SetLinearDamping(2.5f); // Slows down platform movement over time
 
-	pulleyPlatform1 = new RectangleEntity(world, 600.0f, 330.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
-	pulleyWall1 = new RectangleEntity(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, DARKGREEN);
+	b2PrismaticJointDef positionPlatform1PrismaticDef;
+	positionPlatform1PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform1->GetBody(), b2Vec2({ positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y }), b2Vec2(1.0f, 0.0f));
+	positionPlatform1PrismaticDef.enableLimit = true;
+	positionPlatform1PrismaticDef.lowerTranslation = 0.0f;
+	positionPlatform1PrismaticDef.upperTranslation = 500.0f;
+	b2PrismaticJoint* positionPlatform1PrismaticJoint = (b2PrismaticJoint*)world.CreateJoint(&positionPlatform1PrismaticDef);
+
+    positionPlatform2 = RectangleEntity::CreateDynamic(world, 400.0f, 158.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.5f, 0.0f);
+
+	b2PrismaticJointDef positionPlatform2PrismaticDef;
+	positionPlatform2PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform2->GetBody(), b2Vec2({ positionPlatform2->GetCenter().x, positionPlatform2->GetCenter().y }), b2Vec2(1.0f, 0.0f));
+	b2PrismaticJoint* positionPlatform2PrismaticJoint = (b2PrismaticJoint*)world.CreateJoint(&positionPlatform2PrismaticDef);
+	
+    b2DistanceJointDef positionPlatform1JointDef;
+	b2Vec2 positionPlatform1Anchor = b2Vec2(positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y);
+	b2Vec2 positionPlatform2Anchor = b2Vec2(positionPlatform2->GetCenter().x, positionPlatform2->GetCenter().y);
+	positionPlatform1JointDef.Initialize(positionPlatform1->GetBody(), positionPlatform2->GetBody(), positionPlatform1Anchor, positionPlatform2Anchor);
+	positionPlatform1JointDef.length = 1.0f;
+	positionPlatform1JointDef.stiffness = 0.5f;
+	positionPlatform1JointDef.damping = 0.5f;
+	b2DistanceJoint* positionPlatform1Joint = (b2DistanceJoint*)world.CreateJoint(&positionPlatform1JointDef);
+
+    weltObstacle1 = RectangleEntity::CreateStatic(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, RED);
+    weltObstacle2 = RectangleEntity::CreateStatic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, RED);
+
+	pulleyPlatform1 = RectangleEntity::CreateStatic(world, 600.0f, 330.0f, 150.0f, 30.0f, 0.0f, DARKGREEN);
+	pulleyWall1 = RectangleEntity::CreateStatic(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, DARKGREEN);
+}
+
+void Scenario::InteractWithPlatform()
+{
+    b2Vec2 impulse = b2Vec2(50000.0f, 0.0f); 
+    positionPlatform1->GetBody()->ApplyLinearImpulseToCenter(impulse, true);
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -40,6 +71,13 @@ void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float h
     body->CreateFixture(&shape, 0.0f);
 }
 
+void Scenario::Update(float deltaTime)
+{
+    revolutePlatform1->Update(deltaTime);
+    positionPlatform1->Update(deltaTime);
+    positionPlatform2->Update(deltaTime);
+}
+
 void Scenario::Render(Renderer& renderer)
 {
     staticPlatform1->Render(renderer);
@@ -48,9 +86,11 @@ void Scenario::Render(Renderer& renderer)
     staticPlatform3->Render(renderer);
 
     revolutePlatform1->Render(renderer);
+    // Draw joint position
+    DrawCircleV(Vector2({ revolutePlatform1InitialPos.x, revolutePlatform1InitialPos.y }), 6.0f, RED);
 
-	// Draw joint anchor for revolute platform
-    DrawCircleV(Vector2{revolutePlatform1JointPosition.x, revolutePlatform1JointPosition.y}, 6.0f, RED);
+    positionPlatform1->Render(renderer);
+    positionPlatform2->Render(renderer);
 
     weltObstacle1->Render(renderer);
     weltObstacle2->Render(renderer);
