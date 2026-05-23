@@ -15,7 +15,14 @@ public:
     void InteractWithPlatform();
 
 private:
-    static void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
+    void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
+    void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
+    void CreateStaticPlatforms(b2World& world);
+	void CreateRevolutePlatform(b2World& world);
+	void CreatePositionPlatforms(b2World& world);
+	void CreateWeldObstacles(b2World& world);
+	void CreatePulleySystem(b2World& world);
+
     std::unique_ptr<RectangleEntity> staticPlatform1;
     std::unique_ptr<RectangleEntity> staticWall1;
     std::unique_ptr<RectangleEntity> staticPlatform2;
@@ -33,5 +40,4 @@ private:
 
     std::unique_ptr<RectangleEntity> pulleyPlatform1;
     std::unique_ptr<RectangleEntity> pulleyWall1;
-	bool pulleyActivated = false;
 };

@@ -65,14 +65,13 @@ void Game::Draw()
 	circleEntity->Render(*renderer);
 
 	// TODO: skipping UI
-	//DrawUI();
+	DrawUI();
 
 	renderer->End();
 }
 
 void Game::DrawUI() {
-	DrawRectangle(90, 40, 820, 70, Fade(BLACK, 0.18f));
+	DrawRectangle(90, 525, 820, 70, Fade(BLACK, 0.18f));
 
-	renderer->DrawCenteredText("Aplicacion de fuerzas en Box2D", 28, 60, COLOR_PRIMARY);
-	renderer->DrawCenteredText("Flechas para cambiar direccion. Espacio para aplicar impulso", 20, 550, RAYWHITE);
+	renderer->DrawCenteredText("Espacio para interactuar con el escenario", 20, 550, RAYWHITE);
 }
