@@ -56,25 +56,25 @@ void Scenario::CreateRevolutePlatform(b2World& world) {
 	revolutePlatform1 = RectangleEntity::CreateDynamic(world, 179.0f, 128.0f, 300.0f, 30.0f, 0.0f, GREEN, 1.0f, 0.5f, 0.0f);
 	b2RevoluteJointDef revolutePlatform1JointDef;
 	revolutePlatform1InitialPos = b2Vec2(revolutePlatform1->GetCenter().x - revolutePlatform1->width / 2, revolutePlatform1->GetCenter().y);
-	revolutePlatform1JointDef.Initialize(staticPlatform1->GetBody(), revolutePlatform1->GetBody(), 
+	revolutePlatform1JointDef.Initialize(staticPlatform1->GetBody(), revolutePlatform1->GetBody(),
 		revolutePlatform1InitialPos);
 	b2RevoluteJoint* revolutePlatform1Joint = (b2RevoluteJoint*)world.CreateJoint(&revolutePlatform1JointDef);
 };
 
 void Scenario::CreatePositionPlatforms(b2World& world) {
-	positionPlatform1 = RectangleEntity::CreateDynamic(world, 0.0f, 90.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.0f, 0.0f);
+	positionPlatform1 = RectangleEntity::CreateDynamic(world, 0.0f, 90.0f, 50.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.0f, 0.0f);
 	positionPlatform1->GetBody()->SetLinearDamping(2.5f);
 
 	b2PrismaticJointDef positionPlatform1PrismaticDef;
-	positionPlatform1PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform1->GetBody(), 
-		b2Vec2({ positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y }), 
+	positionPlatform1PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform1->GetBody(),
+		b2Vec2({ positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y }),
 		b2Vec2(1.0f, 0.0f));
 	positionPlatform1PrismaticDef.enableLimit = true;
 	positionPlatform1PrismaticDef.lowerTranslation = 0.0f;
 	positionPlatform1PrismaticDef.upperTranslation = 500.0f;
 	b2PrismaticJoint* positionPlatform1PrismaticJoint = (b2PrismaticJoint*)world.CreateJoint(&positionPlatform1PrismaticDef);
 
-	positionPlatform2 = RectangleEntity::CreateDynamic(world, 400.0f, 158.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.5f, 0.0f);
+	positionPlatform2 = RectangleEntity::CreateDynamic(world, 400.0f, 158.0f, 50.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.5f, 0.0f);
 
 	b2PrismaticJointDef positionPlatform2PrismaticDef;
 	positionPlatform2PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform2->GetBody(), b2Vec2({ positionPlatform2->GetCenter().x, positionPlatform2->GetCenter().y }), b2Vec2(1.0f, 0.0f));
@@ -90,11 +90,11 @@ void Scenario::CreatePositionPlatforms(b2World& world) {
 	b2DistanceJoint* positionPlatform1Joint = (b2DistanceJoint*)world.CreateJoint(&positionPlatform1JointDef);
 	// Dijubar l�neas entre plataformas
 
-	positionPlatform3 = RectangleEntity::CreateDynamic(world, 0.0f, 500.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.0f, 0.0f);
+	positionPlatform3 = RectangleEntity::CreateDynamic(world, 0.0f, 500.0f, 50.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.0f, 0.0f);
 	positionPlatform3->GetBody()->SetLinearDamping(2.5f);
 	b2PrismaticJointDef positionPlatform3PrismaticDef;
-	positionPlatform3PrismaticDef.Initialize(staticPlatform3->GetBody(), positionPlatform3->GetBody(), 
-		b2Vec2({ positionPlatform3->GetCenter().x, positionPlatform3->GetCenter().y }), 
+	positionPlatform3PrismaticDef.Initialize(staticPlatform3->GetBody(), positionPlatform3->GetBody(),
+		b2Vec2({ positionPlatform3->GetCenter().x, positionPlatform3->GetCenter().y }),
 		b2Vec2(1.0f, 0.0f));
 	b2PrismaticJoint* positionPlatform3PrismaticJoint = (b2PrismaticJoint*)world.CreateJoint(&positionPlatform3PrismaticDef);
 };
@@ -103,13 +103,13 @@ void Scenario::CreateWeldObstacles(b2World& world) {
 	weldObstacle2 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, BROWN, 1.0f, 0.5f, 0.0f);
 
 	b2RevoluteJointDef weldObstacle1RevoluteDef;
-	weldObstacle1RevoluteDef.Initialize(staticPlatform2->GetBody(), weldObstacle1->GetBody(), 
+	weldObstacle1RevoluteDef.Initialize(staticPlatform2->GetBody(), weldObstacle1->GetBody(),
 		b2Vec2({ weldObstacle1->GetCenter().x, weldObstacle1->GetCenter().y }));
 	b2RevoluteJoint* weldObstacle1RevoluteJoint = (b2RevoluteJoint*)world.CreateJoint(&weldObstacle1RevoluteDef);
 
 	weldObstacle1->GetBody()->SetAngularDamping(5.0f);
 	b2WeldJointDef weldObstaclesJointDef;
-	weldObstaclesJointDef.Initialize(weldObstacle1->GetBody(), weldObstacle2->GetBody(), 
+	weldObstaclesJointDef.Initialize(weldObstacle1->GetBody(), weldObstacle2->GetBody(),
 		b2Vec2({ weldObstacle1->GetCenter().x, weldObstacle1->GetCenter().y }));
 	b2WeldJoint* weldObstaclesJoint = (b2WeldJoint*)world.CreateJoint(&weldObstaclesJointDef);
 	// Dibujar joint
@@ -164,7 +164,6 @@ void Scenario::Render(Renderer& renderer)
 	staticPlatform3->Render(renderer);
 
 	revolutePlatform1->Render(renderer);
-	DrawCircleV(Vector2({ revolutePlatform1InitialPos.x, revolutePlatform1InitialPos.y }), 6.0f, RED);
 
 	positionPlatform1->Render(renderer);
 	positionPlatform2->Render(renderer);
@@ -172,12 +171,20 @@ void Scenario::Render(Renderer& renderer)
 
 	weldObstacle1->Render(renderer);
 	weldObstacle2->Render(renderer);
-	b2Vec2 weldJointPosition = b2Vec2((weldObstacle1->GetCenter().x + weldObstacle2->GetCenter().x) / 2.0f, (weldObstacle1->GetCenter().y + weldObstacle2->GetCenter().y) / 2.0f);
-	DrawCircleV(Vector2({ weldJointPosition.x, weldJointPosition.y }), 6.0f, RED);
 
 	pulleyPlatform1->Render(renderer);
 	pulleyWall1->Render(renderer);
 
-	b2Vec2 pulleyWallJointPosition = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
-	DrawCircleV(Vector2({ pulleyWallJointPosition.x, pulleyWallJointPosition.y }), 6.0f, RED);
+	if (drawJoints) {
+		// revolutePlatform1 joint
+		DrawCircleV(Vector2({ revolutePlatform1InitialPos.x, revolutePlatform1InitialPos.y }), 6.0f, YELLOW);
+
+		// weldObstacle1 and weldObstacle2 joint
+		b2Vec2 weldJointPosition = b2Vec2((weldObstacle1->GetCenter().x + weldObstacle2->GetCenter().x) / 2.0f, (weldObstacle1->GetCenter().y + weldObstacle2->GetCenter().y) / 2.0f);
+		DrawCircleV(Vector2({ weldJointPosition.x, weldJointPosition.y }), 6.0f, YELLOW);
+
+		// pulleyPlatform1 and pulleyWall1 joint
+		b2Vec2 pulleyWallJointPosition = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
+		DrawCircleV(Vector2({ pulleyWallJointPosition.x, pulleyWallJointPosition.y }), 6.0f, YELLOW);
+	}
 }

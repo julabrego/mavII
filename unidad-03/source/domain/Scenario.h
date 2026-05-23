@@ -13,6 +13,7 @@ public:
     void Render(Renderer& renderer);
 
     void InteractWithPlatform();
+    void ToggleDrawJoints() { drawJoints = !drawJoints; }
 
 private:
     void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
@@ -40,4 +41,6 @@ private:
 
     std::unique_ptr<RectangleEntity> pulleyPlatform1;
     std::unique_ptr<RectangleEntity> pulleyWall1;
+    
+    bool drawJoints = false;
 };

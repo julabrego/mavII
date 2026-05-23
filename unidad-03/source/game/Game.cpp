@@ -48,6 +48,8 @@ void Game::HandleInput()
 	float angleInRadians = impulseAngle * DEG2RAD;
 	if (IsKeyPressed(KEY_SPACE)) {
 		scenario->InteractWithPlatform();
+	}else if (IsKeyPressed(KEY_V)) {
+		scenario->ToggleDrawJoints();
 	}
 }
 
@@ -64,7 +66,6 @@ void Game::Draw()
 	scenario->Render(*renderer);
 	circleEntity->Render(*renderer);
 
-	// TODO: skipping UI
 	DrawUI();
 
 	renderer->End();
@@ -73,5 +74,6 @@ void Game::Draw()
 void Game::DrawUI() {
 	DrawRectangle(90, 525, 820, 70, Fade(BLACK, 0.18f));
 
-	renderer->DrawCenteredText("Espacio para interactuar con el escenario", 20, 550, RAYWHITE);
+	renderer->DrawCenteredText("'Espacio' para interactuar con el escenario", 20, 535, RAYWHITE);
+	renderer->DrawCenteredText("'V' para mostrar/ocultar joints", 20, 565, RAYWHITE);
 }
