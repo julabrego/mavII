@@ -2,14 +2,14 @@
 #include "../core/Renderer.h"
 #include "box2d.h"
 
-RectangleEntity* RectangleEntity::CreateStatic(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
+std::unique_ptr<RectangleEntity> RectangleEntity::CreateStatic(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
 {
-    return new RectangleEntity(world, x, y, width, height, angle, color, b2_staticBody, 0.0f, 0.0f, 0.0f, borderThickness, borderColor);
+	return std::unique_ptr<RectangleEntity>(new RectangleEntity(world, x, y, width, height, angle, color, b2_staticBody, 0.0f, 0.0f, 0.0f, borderThickness, borderColor));
 }
 
-RectangleEntity* RectangleEntity::CreateDynamic(b2World& world, float x, float y, float width, float height, float angle, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor)
+std::unique_ptr<RectangleEntity> RectangleEntity::CreateDynamic(b2World& world, float x, float y, float width, float height, float angle, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor)
 {
-    return new RectangleEntity(world, x, y, width, height, angle, color, b2_dynamicBody, density, friction, restitution, borderThickness, borderColor);
+    return std::unique_ptr<RectangleEntity>(new RectangleEntity(world, x, y, width, height, angle, color, b2_dynamicBody, density, friction, restitution, borderThickness, borderColor));
 }
 
 RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, float height, float angle, Color color, b2BodyType type, float density, float friction, float restitution, float borderThickness, Color borderColor)

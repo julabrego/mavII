@@ -1,6 +1,7 @@
 #pragma once
 
 #include <box2d.h>
+#include <memory>
 
 class Renderer;
 class RectangleEntity;
@@ -15,22 +16,22 @@ public:
 
 private:
     static void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
-    RectangleEntity* staticPlatform1;
-    RectangleEntity* staticWall1;
-    RectangleEntity* staticPlatform2;
-    RectangleEntity* staticPlatform3;
+    std::unique_ptr<RectangleEntity> staticPlatform1;
+    std::unique_ptr<RectangleEntity> staticWall1;
+    std::unique_ptr<RectangleEntity> staticPlatform2;
+    std::unique_ptr<RectangleEntity> staticPlatform3;
 
-	b2Vec2 revolutePlatform1InitialPos;
-    RectangleEntity* revolutePlatform1;
+    b2Vec2 revolutePlatform1InitialPos;
+    std::unique_ptr<RectangleEntity> revolutePlatform1;
 
-    RectangleEntity* positionPlatform1;
-    RectangleEntity* positionPlatform2;
-    RectangleEntity* positionPlatform3;
+    std::unique_ptr<RectangleEntity> positionPlatform1;
+    std::unique_ptr<RectangleEntity> positionPlatform2;
+    std::unique_ptr<RectangleEntity> positionPlatform3;
 
-    RectangleEntity* weldObstacle1;
-    RectangleEntity* weldObstacle2;
+    std::unique_ptr<RectangleEntity> weldObstacle1;
+    std::unique_ptr<RectangleEntity> weldObstacle2;
 
-    RectangleEntity* pulleyPlatform1;
-    RectangleEntity* pulleyWall1;
+    std::unique_ptr<RectangleEntity> pulleyPlatform1;
+    std::unique_ptr<RectangleEntity> pulleyWall1;
 	bool pulleyActivated = false;
 };
