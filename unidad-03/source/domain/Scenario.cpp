@@ -179,12 +179,21 @@ void Scenario::Render(Renderer& renderer)
 		// revolutePlatform1 joint
 		DrawCircleV(Vector2({ revolutePlatform1InitialPos.x, revolutePlatform1InitialPos.y }), 6.0f, YELLOW);
 
+		// distance joint line between positionPlatform1 and positionPlatform2
+		DrawLineV(positionPlatform1->GetCenter(), positionPlatform2->GetCenter(), DARKGRAY);
+
 		// weldObstacle1 and weldObstacle2 joint
-		b2Vec2 weldJointPosition = b2Vec2((weldObstacle1->GetCenter().x + weldObstacle2->GetCenter().x) / 2.0f, (weldObstacle1->GetCenter().y + weldObstacle2->GetCenter().y) / 2.0f);
+		b2Vec2 weldJointPosition = b2Vec2(
+			(weldObstacle1->GetCenter().x + weldObstacle2->GetCenter().x) / 2.0f,
+			(weldObstacle1->GetCenter().y + weldObstacle2->GetCenter().y) / 2.0f);
 		DrawCircleV(Vector2({ weldJointPosition.x, weldJointPosition.y }), 6.0f, YELLOW);
 
-		// pulleyPlatform1 and pulleyWall1 joint
-		b2Vec2 pulleyWallJointPosition = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
-		DrawCircleV(Vector2({ pulleyWallJointPosition.x, pulleyWallJointPosition.y }), 6.0f, YELLOW);
+		// pulley rope and wheel
+		b2Vec2 pulleyWheel = b2Vec2(
+			(pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f,
+			100.0f);
+		DrawLineV(pulleyPlatform1->GetCenter(), Vector2({ pulleyWheel.x, pulleyWheel.y }), DARKGRAY);
+		DrawLineV(pulleyWall1->GetCenter(), Vector2({ pulleyWheel.x, pulleyWheel.y }), DARKGRAY);
+		DrawCircleV(Vector2({ pulleyWheel.x, pulleyWheel.y }), 6.0f, YELLOW);
 	}
 }
