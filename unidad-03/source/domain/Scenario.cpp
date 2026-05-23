@@ -20,7 +20,7 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	b2RevoluteJoint* revolutePlatform1Joint = (b2RevoluteJoint*)world.CreateJoint(&revolutePlatform1JointDef);
 
     positionPlatform1 = RectangleEntity::CreateDynamic(world, 0.0f, 90.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.0f, 0.0f);
-	positionPlatform1->GetBody()->SetLinearDamping(2.5f); // Slows down platform movement over time
+	positionPlatform1->GetBody()->SetLinearDamping(2.5f); 
 
 	b2PrismaticJointDef positionPlatform1PrismaticDef;
 	positionPlatform1PrismaticDef.Initialize(staticPlatform1->GetBody(), positionPlatform1->GetBody(), b2Vec2({ positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y }), b2Vec2(1.0f, 0.0f));
@@ -39,11 +39,17 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	b2Vec2 positionPlatform1Anchor = b2Vec2(positionPlatform1->GetCenter().x, positionPlatform1->GetCenter().y);
 	b2Vec2 positionPlatform2Anchor = b2Vec2(positionPlatform2->GetCenter().x, positionPlatform2->GetCenter().y);
 	positionPlatform1JointDef.Initialize(positionPlatform1->GetBody(), positionPlatform2->GetBody(), positionPlatform1Anchor, positionPlatform2Anchor);
-	positionPlatform1JointDef.length = 1.0f;
-	positionPlatform1JointDef.stiffness = 0.5f;
-	positionPlatform1JointDef.damping = 0.5f;
+	positionPlatform1JointDef.length = 0.0f;
+	positionPlatform1JointDef.stiffness = 0.0f;
+	positionPlatform1JointDef.damping = 1.0f;
 	b2DistanceJoint* positionPlatform1Joint = (b2DistanceJoint*)world.CreateJoint(&positionPlatform1JointDef);
 	// Dijubar l�neas entre plataformas
+
+	positionPlatform3 = RectangleEntity::CreateDynamic(world, 0.0f, 500.0f, 50.0f, 15.0f, 0.0f, RED, 1.0f, 0.0f, 0.0f);
+	positionPlatform3->GetBody()->SetLinearDamping(2.5f);
+	b2PrismaticJointDef positionPlatform3PrismaticDef;
+	positionPlatform3PrismaticDef.Initialize(staticPlatform3->GetBody(), positionPlatform3->GetBody(), b2Vec2({ positionPlatform3->GetCenter().x, positionPlatform3->GetCenter().y }), b2Vec2(1.0f, 0.0f));
+	b2PrismaticJoint* positionPlatform3PrismaticJoint = (b2PrismaticJoint*)world.CreateJoint(&positionPlatform3PrismaticDef);
 
     weldObstacle1 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 0.0f, ORANGE, 1.0f, 0.5f, 0.0f);
     weldObstacle2 = RectangleEntity::CreateDynamic(world, 400.0f, 330.0f, 200.0f, 15.0f, 90.0f, BROWN, 1.0f, 0.5f, 0.0f);
@@ -58,7 +64,7 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 	b2WeldJoint* weldObstaclesJoint = (b2WeldJoint*)world.CreateJoint(&weldObstaclesJointDef);
     // Dibujar joint
 
-	pulleyPlatform1 = RectangleEntity::CreateDynamic(world, 620.0f, 330.0f, 150.0f, 30.0f, 0.0f, YELLOW, 1.0f, 10.5f, 0.0f);
+	pulleyPlatform1 = RectangleEntity::CreateDynamic(world, 620.0f, 330.0f, 150.0f, 30.0f, 0.0f, YELLOW, 1.0f, 0.5f, 0.0f);
 	pulleyWall1 = RectangleEntity::CreateDynamic(world, 760.0f, 250.0f, 30.0f, 300.0f, 0.0f, YELLOW, 0.5f, 0.5f, 0.0f);
 
 	b2Vec2 pulleyWheel = b2Vec2((pulleyPlatform1->GetCenter().x + pulleyWall1->GetCenter().x) / 2.0f, 100.0f);
@@ -68,11 +74,14 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 		b2Vec2(pulleyPlatform1->GetCenter().x, pulleyPlatform1->GetCenter().y),
 		b2Vec2(pulleyWall1->GetCenter().x, pulleyWall1->GetCenter().y),
 		1.0f);
+	pulleyPlatformWallJointDef.collideConnected = false;
 	b2PulleyJoint* pulleyPlatformWallJoint = (b2PulleyJoint*)world.CreateJoint(&pulleyPlatformWallJointDef);
 
 	b2PrismaticJointDef pulleyPlatformPrismaticDef;
 	pulleyPlatformPrismaticDef.Initialize(staticPlatform2->GetBody(), pulleyPlatform1->GetBody(),
 		{ pulleyPlatform1->GetCenter().x, pulleyPlatform1->GetCenter().y }, b2Vec2(0.0f, 1.0f));
+	pulleyPlatformPrismaticDef.enableLimit = true;
+	pulleyPlatformPrismaticDef.upperTranslation = 210.0f;
 	world.CreateJoint(&pulleyPlatformPrismaticDef);
 
 	b2PrismaticJointDef pulleyWallPrismaticDef;
@@ -89,6 +98,9 @@ void Scenario::InteractWithPlatform()
 
 	// Apply impulse on weld joint to rotate weltObstacle1 and weltObstacle2
 	weldObstacle1->GetBody()->ApplyAngularImpulse(5000000.0f, true);
+
+	// Apply impulse on positionPlatform3 to move it up
+	positionPlatform3->GetBody()->ApplyLinearImpulseToCenter(impulse, true);
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -110,6 +122,7 @@ void Scenario::Update(float deltaTime)
     revolutePlatform1->Update(deltaTime);
     positionPlatform1->Update(deltaTime);
     positionPlatform2->Update(deltaTime);
+	positionPlatform3->Update(deltaTime);
 
 	weldObstacle1->Update(deltaTime);
 	weldObstacle2->Update(deltaTime);
@@ -131,6 +144,7 @@ void Scenario::Render(Renderer& renderer)
 
     positionPlatform1->Render(renderer);
     positionPlatform2->Render(renderer);
+	positionPlatform3->Render(renderer);
 
     weldObstacle1->Render(renderer);
     weldObstacle2->Render(renderer);

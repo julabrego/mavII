@@ -25,6 +25,7 @@ private:
 
     RectangleEntity* positionPlatform1;
     RectangleEntity* positionPlatform2;
+    RectangleEntity* positionPlatform3;
 
     RectangleEntity* weldObstacle1;
     RectangleEntity* weldObstacle2;
