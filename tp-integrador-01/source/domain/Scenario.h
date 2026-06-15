@@ -29,6 +29,8 @@ private:
     void CreateStaticWalls(b2World& world);
 	
     std::unique_ptr<RectangleEntity> dividerWall;
+    std::unique_ptr<RectangleEntity> leftThinWall;
+    std::unique_ptr<RectangleEntity> rightThinWall;
     std::unique_ptr<RectangleEntity> wallLeft;
     std::unique_ptr<RectangleEntity> wallRight;
     std::unique_ptr<RectangleEntity> diagonalTopLeft;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "raylib.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -24,8 +25,10 @@ private:
 	Scenario* scenario;
 
 	float impulseAngle;
+	Vector2 initialBallPosition = { 747.0f, 490.0f };
 
 	void HandleInput();
+	void RestartBallPosition();
 	void Update(float deltaTime);
 	void Draw();
 	void DrawUI();

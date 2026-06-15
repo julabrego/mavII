@@ -38,6 +38,9 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 
 void Scenario::CreateStaticWalls(b2World& world) {
 	dividerWall = RectangleEntity::CreateStatic(world, 672.0f, 158.0f, 45.0f, 471.0f, 0.0f, COLOR_WALL);
+	leftThinWall = RectangleEntity::CreateStatic(world, 330.0f, 158.0f, 5.0f, 300.0f, 0.0f, COLOR_WALL);
+	rightThinWall = RectangleEntity::CreateStatic(world, 630.0f, 158.0f, 5.0f, 300.0f, 0.0f, COLOR_WALL);
+
 	wallLeft = RectangleEntity::CreateStatic(world, 0.0f, 0.0f, 285.0f, GetScreenWidth(), 0.0f, COLOR_WALL);
 	wallRight = RectangleEntity::CreateStatic(world, 775.0f, 0.0f, 285.0f, GetScreenHeight(), 0.0f, COLOR_WALL);
 	diagonalTopLeft = RectangleEntity::CreateStatic(world, 235.0f, -40.0f, 200.0f, 120.0f, -30.0f, COLOR_WALL);
@@ -108,6 +111,8 @@ void Scenario::Update(float deltaTime)
 void Scenario::Render(Renderer& renderer)
 {
 	dividerWall->Render(renderer);
+	leftThinWall->Render(renderer);
+	rightThinWall->Render(renderer);
 	wallLeft->Render(renderer);
 	wallRight->Render(renderer);
 	diagonalTopLeft->Render(renderer);
