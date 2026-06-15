@@ -10,7 +10,7 @@ class CircleEntity;
 class StickEntity : public Entity
 {
 public:
-	StickEntity(b2World& world, float x, float y, Color color);
+	StickEntity(b2World& world, float x, float y, Color color, bool isLeftStick);
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
 	void TriggerAction();
@@ -18,6 +18,7 @@ public:
 
 	Vector2 position;
 	Color color;
+	bool isLeftStick;
 
 	std::unique_ptr<CircleEntity> axis;
 	std::unique_ptr<RectangleEntity> base;

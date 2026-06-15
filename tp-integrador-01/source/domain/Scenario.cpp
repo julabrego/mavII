@@ -45,25 +45,24 @@ void Scenario::CreateStaticWalls(b2World& world) {
 };
 
 void Scenario::CreatePlayableElements(b2World& world) {
-	stickLeft = std::make_unique<StickEntity>(world, 360.0f, 552.0f, COLOR_STICK);
-	//stickRight = std::make_unique<StickEntity>(world, 500.0f, 300.0f, COLOR_STICK);
+	stickLeft = std::make_unique<StickEntity>(world, 360.0f, 525.0f, COLOR_STICK, true);
+	stickRight = std::make_unique<StickEntity>(world, 610.0f, 525.0f, COLOR_STICK, false);
 }
 
 void Scenario::TriggerSticksAction() {
 	stickLeft->TriggerAction();
-	//stickRight->TriggerAction();
+	stickRight->TriggerAction();
 }
 
 void Scenario::ResetSticks() {
 	stickLeft->Reset();
-	//stickRight->Reset();
+	stickRight->Reset();
 }
 
 void Scenario::Update(float deltaTime)
 {
 	stickLeft->Update(deltaTime);
-	//wall1->Update(deltaTime);
-	//wallLeft->Update(deltaTime);
+	stickRight->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
@@ -76,6 +75,7 @@ void Scenario::Render(Renderer& renderer)
 	roof->Render(renderer);
 
 	stickLeft->Render(renderer);
+	stickRight->Render(renderer);
 
 	if (drawJoints) {
 		renderer.DrawCenteredText(("Mouse at (" + std::to_string(GetMouseX()) + ", " + std::to_string(GetMouseY()) + ")").c_str(), 20, 5, BLACK);

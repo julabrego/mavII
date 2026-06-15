@@ -33,7 +33,7 @@ private:
     std::unique_ptr<RectangleEntity> roof;
 
     std::unique_ptr<StickEntity> stickLeft;
-	//std::unique_ptr<StickEntity> stickRight;
+	std::unique_ptr<StickEntity> stickRight;
         
     bool drawJoints = false;
 };
