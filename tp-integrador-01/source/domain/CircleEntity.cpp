@@ -1,5 +1,6 @@
 #include "CircleEntity.h"
 #include "../core/Renderer.h"
+#include "../core/PhysicsConstants.h"
 #include "box2d.h"
 
 CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor, b2BodyType bodyType)
@@ -11,12 +12,12 @@ CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = bodyType;
-	bodyDef.position.Set(x, y);
+	bodyDef.position.Set(x * METERS_PER_PIXEL, y * METERS_PER_PIXEL);
 
 	body = world.CreateBody(&bodyDef);
 
 	b2CircleShape shape;
-	shape.m_radius = radius;
+	shape.m_radius = radius * METERS_PER_PIXEL;
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
@@ -30,8 +31,8 @@ CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color
 void CircleEntity::Update(float deltaTime)
 {
 	this->position = {
-		body->GetPosition().x,
-		body->GetPosition().y
+		body->GetPosition().x * PIXELS_PER_METER,
+		body->GetPosition().y * PIXELS_PER_METER
 	};
 }
 

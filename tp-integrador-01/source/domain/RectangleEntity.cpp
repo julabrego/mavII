@@ -1,5 +1,6 @@
 #include "RectangleEntity.h"
 #include "../core/Renderer.h"
+#include "../core/PhysicsConstants.h"
 #include "box2d.h"
 
 std::unique_ptr<RectangleEntity> RectangleEntity::CreateStatic(b2World& world, float x, float y, float width, float height, float angle, Color color, float borderThickness, Color borderColor)
@@ -23,13 +24,13 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = type;
-	bodyDef.position.Set(x + width / 2, y + height / 2);
+	bodyDef.position.Set((x + width / 2) * METERS_PER_PIXEL, (y + height / 2) * METERS_PER_PIXEL);
 	bodyDef.angle = angle * DEG2RAD;
 
 	body = world.CreateBody(&bodyDef);
 
 	b2PolygonShape shape;
-	shape.SetAsBox(width / 2, height / 2);
+	shape.SetAsBox((width / 2) * METERS_PER_PIXEL, (height / 2) * METERS_PER_PIXEL);
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &shape;
@@ -43,9 +44,11 @@ RectangleEntity::RectangleEntity(b2World& world, float x, float y, float width, 
 void RectangleEntity::Update(float deltaTime)
 {
 	b2Vec2 center = body->GetPosition();
+	float halfWidth = width / 2;
+	float halfHeight = height / 2;
 	this->position = {
-		center.x - width / 2,
-		center.y - height / 2
+		center.x * PIXELS_PER_METER - halfWidth,
+		center.y * PIXELS_PER_METER - halfHeight
 	};
 	this->angle = body->GetAngle() * RAD2DEG;
 }

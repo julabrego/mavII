@@ -5,6 +5,7 @@
 #include "raylib.h"
 #include "../core/Colors.h"
 #include "../core/Renderer.h"
+#include "../core/PhysicsConstants.h"
 #include <string>
 
 Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
@@ -19,12 +20,12 @@ void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float h
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_staticBody;
-	bodyDef.position.Set(x, y);
+	bodyDef.position.Set(x * METERS_PER_PIXEL, y * METERS_PER_PIXEL);
 
 	b2Body* body = world.CreateBody(&bodyDef);
 
 	b2PolygonShape shape;
-	shape.SetAsBox(halfW, halfH);
+	shape.SetAsBox(halfW * METERS_PER_PIXEL, halfH * METERS_PER_PIXEL);
 
 	body->CreateFixture(&shape, 0.0f);
 }
@@ -56,14 +57,14 @@ void Scenario::CreatePlayableElements(b2World& world) {
 
 	b2PrismaticJointDef plungerPrismaticJoint;
 	plungerPrismaticJoint.Initialize(plunger->GetBody(), plungerBase->GetBody(),
-		b2Vec2({ plunger->GetCenter().x, plunger->GetCenter().y }),
+		b2Vec2({ plunger->GetCenter().x * METERS_PER_PIXEL, plunger->GetCenter().y * METERS_PER_PIXEL }),
 		b2Vec2(0.0f, 1.0f));
 	plungerPrismaticJoint.enableLimit = true;
-	plungerPrismaticJoint.lowerTranslation = -60.0f;
+	plungerPrismaticJoint.lowerTranslation = -60.0f * METERS_PER_PIXEL;
 	plungerPrismaticJoint.upperTranslation = 0.0f;
 	plungerPrismaticJoint.enableMotor = true;
 	plungerPrismaticJoint.motorSpeed = 0.0f;
-	plungerPrismaticJoint.maxMotorForce = 500000.0f;
+	plungerPrismaticJoint.maxMotorForce = 500.0f;
 	plungerJoint = (b2PrismaticJoint*)world.CreateJoint(&plungerPrismaticJoint);
 }
 
@@ -95,10 +96,10 @@ void Scenario::Update(float deltaTime)
 	stickRight->Update(deltaTime);
 
 	if (isPlungerPulled) {
-		plungerJoint->SetMotorSpeed(-80.0f);
+		plungerJoint->SetMotorSpeed(-80.0f * METERS_PER_PIXEL);
 	}
 	else {
-		plungerJoint->SetMotorSpeed(1000.0f);
+		plungerJoint->SetMotorSpeed(1000.0f * METERS_PER_PIXEL);
 	}
 
 	plunger->Update(deltaTime);

@@ -1,4 +1,5 @@
 #include "../core/Renderer.h"
+#include "../core/PhysicsConstants.h"
 #include "box2d.h"
 #include "Stick.h"
 #include "CircleEntity.h"
@@ -16,26 +17,25 @@ StickEntity::StickEntity(b2World& world, float x, float y, Color color, bool isL
 
 	b2RevoluteJointDef revoluteJoint;
 	revoluteJoint.Initialize(axis->GetBody(), base->GetBody(),
-		b2Vec2({ axis->position.x, axis->position.y }));
+		b2Vec2({ axis->position.x * METERS_PER_PIXEL, axis->position.y * METERS_PER_PIXEL }));
 	revoluteJoint.enableLimit = true;
 	revoluteJoint.lowerAngle = -30.0f * DEG2RAD;
 	revoluteJoint.upperAngle = 30.0f * DEG2RAD;
 	revoluteJoint.enableMotor = true;
 	revoluteJoint.motorSpeed = isLeftStick ? 20.0f : -20.0f;
-	revoluteJoint.maxMotorTorque = 500000.0f;
+	revoluteJoint.maxMotorTorque = 500.0f;
 	joint = (b2RevoluteJoint*)world.CreateJoint(&revoluteJoint);
 }
 
 void StickEntity::TriggerAction()
 {
 	joint->SetMotorSpeed(0.0f);
-	base->GetBody()->SetAngularVelocity(isLeftStick ? -25.0f : 25.0f);
+	base->GetBody()->SetAngularVelocity(isLeftStick ? -100.0f : 100.0f);
 }
 
 void StickEntity::Reset()
 {
-	base->GetBody()->SetAngularVelocity(isLeftStick ? 50.0f : -50.0f);
-	joint->SetMotorSpeed(isLeftStick ? 20.0f : -20.0f);
+	joint->SetMotorSpeed(isLeftStick ? 100.0f : -100.0f);
 }
 
 void StickEntity::Update(float deltaTime)
