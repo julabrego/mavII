@@ -13,7 +13,7 @@ StickEntity::StickEntity(b2World& world, float x, float y, Color color, bool isL
 	axis = std::make_unique<CircleEntity>(world, x, y, 18.0f, color, 1.0f, 0.5f, 0.0f, 2.0f, BLACK, b2_staticBody);
 
 	float baseX = isLeftStick ? (x - 10.0f) : (x - 90.0f);
-	base = RectangleEntity::CreateDynamic(world, baseX, y - 15.0f, 100.0f, 30.0f, 0.0f, color, 0.1f, 0.0f, 0.0f);
+	base = RectangleEntity::CreateDynamic(world, baseX, y - 15.0f, 100.0f, 30.0f, 0.0f, color, 0.5f, 0.0f, 0.0f);
 
 	b2RevoluteJointDef revoluteJoint;
 	revoluteJoint.Initialize(axis->GetBody(), base->GetBody(),
