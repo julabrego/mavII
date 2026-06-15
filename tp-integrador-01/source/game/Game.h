@@ -20,9 +20,9 @@ private:
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Renderer> renderer;
 	
-	CircleEntity* circleEntity;
+	std::unique_ptr<CircleEntity> circleEntity;
 
-	Scenario* scenario;
+	std::unique_ptr<Scenario> scenario;
 
 	float impulseAngle;
 	Vector2 initialBallPosition = { 747.0f, 490.0f };

@@ -12,6 +12,7 @@ class CircleEntity;
 class Scenario {
 public:
     Scenario(b2World& world, float screenWidth, float screenHeight);
+    ~Scenario();
     void Update(float deltaTime);
     void Render(Renderer& renderer);
 

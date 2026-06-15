@@ -20,8 +20,8 @@ Game::Game(int screenWidth, int screenHeight)
 {
 	b2World& world = *physicsWorld->GetWorld();
 
-	scenario = new Scenario(world, screenWidth, screenHeight);
-	circleEntity = new CircleEntity(world, initialBallPosition.x, initialBallPosition.y, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
+	scenario = std::make_unique<Scenario>(world, screenWidth, screenHeight);
+	circleEntity = std::make_unique<CircleEntity>(world, initialBallPosition.x, initialBallPosition.y, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
 }
 
 Game::~Game()
@@ -43,7 +43,6 @@ void Game::Run()
 
 void Game::HandleInput()
 {
-	float angleInRadians = impulseAngle * DEG2RAD;
 	if (IsKeyPressed(KEY_SPACE)) {
 		scenario->TriggerSticksAction();
 	}

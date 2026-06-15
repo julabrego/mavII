@@ -8,6 +8,8 @@
 #include "../core/PhysicsConstants.h"
 #include <string>
 
+Scenario::~Scenario() = default;
+
 Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
