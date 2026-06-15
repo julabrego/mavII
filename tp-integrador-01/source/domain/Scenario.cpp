@@ -45,8 +45,18 @@ void Scenario::CreateStaticWalls(b2World& world) {
 };
 
 void Scenario::CreatePlayableElements(b2World& world) {
-	stickLeft = std::make_unique<StickEntity>(world, 400.0f, 300.0f, COLOR_STICK);
+	stickLeft = std::make_unique<StickEntity>(world, 360.0f, 552.0f, COLOR_STICK);
 	//stickRight = std::make_unique<StickEntity>(world, 500.0f, 300.0f, COLOR_STICK);
+}
+
+void Scenario::TriggerSticksAction() {
+	stickLeft->TriggerAction();
+	//stickRight->TriggerAction();
+}
+
+void Scenario::ResetSticks() {
+	stickLeft->Reset();
+	//stickRight->Reset();
 }
 
 void Scenario::Update(float deltaTime)

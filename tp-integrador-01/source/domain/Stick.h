@@ -13,11 +13,14 @@ public:
 	StickEntity(b2World& world, float x, float y, Color color);
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
+	void TriggerAction();
+	void Reset();
 
 	Vector2 position;
 	Color color;
 
 	std::unique_ptr<CircleEntity> axis;
 	std::unique_ptr<RectangleEntity> base;
+	b2RevoluteJoint* joint = nullptr;
 };
 

@@ -13,6 +13,8 @@ public:
     void Update(float deltaTime);
     void Render(Renderer& renderer);
 
+	void TriggerSticksAction();
+	void ResetSticks();
     void ToggleDrawJoints() { drawJoints = !drawJoints; }
 
 private:

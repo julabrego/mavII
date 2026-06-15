@@ -20,7 +20,8 @@ Game::Game(int screenWidth, int screenHeight)
 	b2World& world = *physicsWorld->GetWorld();
 
 	scenario = new Scenario(world, screenWidth, screenHeight);
-	circleEntity = new CircleEntity(world, 747.0f, 300.0f, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
+	circleEntity = new CircleEntity(world, 440.0f, 300.0f, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
+	//circleEntity = new CircleEntity(world, 747.0f, 300.0f, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
 }
 
 Game::~Game()
@@ -43,7 +44,13 @@ void Game::Run()
 void Game::HandleInput()
 {
 	float angleInRadians = impulseAngle * DEG2RAD;
-	if (IsKeyPressed(KEY_V)) {
+	if(IsKeyPressed(KEY_SPACE)) {
+		scenario->TriggerSticksAction();
+	}
+	else if (IsKeyReleased(KEY_SPACE)) {
+		scenario->ResetSticks();
+	}
+	else if (IsKeyPressed(KEY_V)) {
 		scenario->ToggleDrawJoints();
 	}
 }

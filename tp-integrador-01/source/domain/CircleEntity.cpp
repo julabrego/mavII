@@ -2,7 +2,7 @@
 #include "../core/Renderer.h"
 #include "box2d.h"
 
-CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor)
+CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness, Color borderColor, b2BodyType bodyType)
 	: position({ x, y }),
 	radius(radius),
 	color(color),
@@ -10,7 +10,7 @@ CircleEntity::CircleEntity(b2World& world, float x, float y, float radius, Color
 	borderColor(borderColor)
 {
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
+	bodyDef.type = bodyType;
 	bodyDef.position.Set(x, y);
 
 	body = world.CreateBody(&bodyDef);

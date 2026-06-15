@@ -9,7 +9,7 @@ class b2World;
 class CircleEntity : public Entity
 {
 public:
-	CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness = 0.0f, Color borderColor = BLACK);
+	CircleEntity(b2World& world, float x, float y, float radius, Color color, float density, float friction, float restitution, float borderThickness = 0.0f, Color borderColor = BLACK, b2BodyType bodyType = b2_dynamicBody);
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
 
