@@ -14,6 +14,9 @@ public:
     void Render(Renderer& renderer);
 
 	void TriggerSticksAction();
+	void PullPlunger();
+    void ReleasePlunger();
+
 	void ResetSticks();
     void ToggleDrawJoints() { drawJoints = !drawJoints; }
 
@@ -34,6 +37,13 @@ private:
 
     std::unique_ptr<StickEntity> stickLeft;
 	std::unique_ptr<StickEntity> stickRight;
+    
+    std::unique_ptr<RectangleEntity> plunger;
+    std::unique_ptr<RectangleEntity> plungerBase;
+    std::unique_ptr<RectangleEntity> plungerAxis;
+    b2PrismaticJoint* plungerJoint = nullptr;
         
     bool drawJoints = false;
+	bool isPlungerPulled = false;
+	float plungerIdleY = 0.0f;
 };

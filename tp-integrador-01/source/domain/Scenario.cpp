@@ -46,7 +46,25 @@ void Scenario::CreateStaticWalls(b2World& world) {
 
 void Scenario::CreatePlayableElements(b2World& world) {
 	stickLeft = std::make_unique<StickEntity>(world, 360.0f, 525.0f, COLOR_STICK, true);
-	stickRight = std::make_unique<StickEntity>(world, 610.0f, 525.0f, COLOR_STICK, false);
+	stickRight = std::make_unique<StickEntity>(world, 600.0f, 525.0f, COLOR_STICK, false);
+	
+	plunger = RectangleEntity::CreateDynamic(world, 722.0f, 525.0f, 48.0f, 10.0f, 0.0f, COLOR_SPRING, 1.0f, 1.0f, 0.0f);
+	plunger->GetBody()->SetGravityScale(0.0f);
+	plungerIdleY = plunger->GetCenter().y + 20.0f;
+
+	plungerBase = RectangleEntity::CreateStatic(world, 722.0f, GetScreenHeight() - 10.0f, 48.0f, 10.0f, 0.0f, COLOR_STICK);
+
+	b2PrismaticJointDef plungerPrismaticJoint;
+	plungerPrismaticJoint.Initialize(plunger->GetBody(), plungerBase->GetBody(),
+		b2Vec2({ plunger->GetCenter().x, plunger->GetCenter().y }),
+		b2Vec2(0.0f, 1.0f));
+	plungerPrismaticJoint.enableLimit = true;
+	plungerPrismaticJoint.lowerTranslation = -60.0f;
+	plungerPrismaticJoint.upperTranslation = 0.0f;
+	plungerPrismaticJoint.enableMotor = true;
+	plungerPrismaticJoint.motorSpeed = 0.0f;
+	plungerPrismaticJoint.maxMotorForce = 500000.0f;
+	plungerJoint = (b2PrismaticJoint*)world.CreateJoint(&plungerPrismaticJoint);
 }
 
 void Scenario::TriggerSticksAction() {
@@ -59,10 +77,31 @@ void Scenario::ResetSticks() {
 	stickRight->Reset();
 }
 
+void Scenario::PullPlunger() {
+	if (!isPlungerPulled) {
+		isPlungerPulled = true;
+	}
+}
+
+void Scenario::ReleasePlunger() {
+	if (isPlungerPulled) {
+		isPlungerPulled = false;
+	}
+}
+
 void Scenario::Update(float deltaTime)
 {
 	stickLeft->Update(deltaTime);
 	stickRight->Update(deltaTime);
+
+	if (isPlungerPulled) {
+		plungerJoint->SetMotorSpeed(-80.0f);
+	}
+	else {
+		plungerJoint->SetMotorSpeed(1000.0f);
+	}
+
+	plunger->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
@@ -76,6 +115,9 @@ void Scenario::Render(Renderer& renderer)
 
 	stickLeft->Render(renderer);
 	stickRight->Render(renderer);
+
+	plunger->Render(renderer);
+	plungerBase->Render(renderer);
 
 	if (drawJoints) {
 		renderer.DrawCenteredText(("Mouse at (" + std::to_string(GetMouseX()) + ", " + std::to_string(GetMouseY()) + ")").c_str(), 20, 5, BLACK);
