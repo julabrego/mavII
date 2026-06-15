@@ -44,7 +44,7 @@ void Game::Run()
 void Game::HandleInput()
 {
 	float angleInRadians = impulseAngle * DEG2RAD;
-	if(IsKeyPressed(KEY_SPACE)) {
+	if (IsKeyPressed(KEY_SPACE)) {
 		scenario->TriggerSticksAction();
 	}
 	else if (IsKeyReleased(KEY_SPACE)) {
@@ -57,9 +57,10 @@ void Game::HandleInput()
 		scenario->ToggleDrawJoints();
 	}
 
-	if(IsKeyDown(KEY_DOWN)) {
+	if (IsKeyDown(KEY_DOWN)) {
 		scenario->PullPlunger();
-	} else if (IsKeyReleased(KEY_DOWN)) {
+	}
+	else if (IsKeyReleased(KEY_DOWN)) {
 		scenario->ReleasePlunger();
 	}
 }
@@ -75,7 +76,7 @@ void Game::Update(float deltaTime)
 	scenario->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 
-	if(circleEntity->position.y > GetScreenHeight() + 100.0f) {
+	if (circleEntity->position.y > GetScreenHeight() + 100.0f) {
 		RestartBallPosition();
 	}
 }
@@ -93,8 +94,13 @@ void Game::Draw()
 }
 
 void Game::DrawUI() {
-	DrawRectangle(90, 525, 820, 70, Fade(BLACK, 0.18f));
+	DrawRectangle(10, 116, 265, 450, Fade(BLACK, 1.0f));
 
-	renderer->DrawCenteredText("'Espacio' para interactuar con el escenario", 20, 535, RAYWHITE);
-	renderer->DrawCenteredText("'V' para mostrar/ocultar joints", 20, 565, RAYWHITE);
+	DrawText(R"(Controles:
+- 'Abajo' para controlar
+	el plunger
+- 'Espacio' para activar
+	los sticks
+- 'R' para reiniciar el
+	juego)", 20, 125, 20, RAYWHITE);
 }
