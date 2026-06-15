@@ -43,9 +43,7 @@ void Game::Run()
 void Game::HandleInput()
 {
 	float angleInRadians = impulseAngle * DEG2RAD;
-	if (IsKeyPressed(KEY_SPACE)) {
-		//scenario->InteractWithPlatform();
-	}else if (IsKeyPressed(KEY_V)) {
+	if (IsKeyPressed(KEY_V)) {
 		scenario->ToggleDrawJoints();
 	}
 }

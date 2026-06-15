@@ -5,6 +5,7 @@
 
 class Renderer;
 class RectangleEntity;
+class StickEntity;
 
 class Scenario {
 public:
@@ -18,6 +19,8 @@ private:
     void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
 
+	void CreatePlayableElements(b2World& world);
+
     void CreateStaticWalls(b2World& world);
 	
     std::unique_ptr<RectangleEntity> dividerWall;
@@ -26,6 +29,9 @@ private:
     std::unique_ptr<RectangleEntity> diagonalTopLeft;
     std::unique_ptr<RectangleEntity> diagonalTopRight;
     std::unique_ptr<RectangleEntity> roof;
+
+    std::unique_ptr<StickEntity> stickLeft;
+	//std::unique_ptr<StickEntity> stickRight;
         
     bool drawJoints = false;
 };
