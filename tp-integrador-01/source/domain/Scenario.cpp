@@ -12,6 +12,8 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
 	CreateStaticWalls(world);
+	CreateBridge(world, 340.0f, 158.0f, 10, 33.0f);
+	CreateBridge(world, 610.0f, 158.0f, 10, 33.0f);
 
 	CreatePlayableElements(world);
 }
@@ -38,9 +40,6 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 
 void Scenario::CreateStaticWalls(b2World& world) {
 	dividerWall = RectangleEntity::CreateStatic(world, 672.0f, 158.0f, 45.0f, 471.0f, 0.0f, COLOR_WALL);
-	leftThinWall = RectangleEntity::CreateStatic(world, 330.0f, 158.0f, 5.0f, 300.0f, 0.0f, COLOR_WALL);
-	rightThinWall = RectangleEntity::CreateStatic(world, 630.0f, 158.0f, 5.0f, 300.0f, 0.0f, COLOR_WALL);
-
 	wallLeft = RectangleEntity::CreateStatic(world, 0.0f, 0.0f, 285.0f, GetScreenWidth(), 0.0f, COLOR_WALL);
 	wallRight = RectangleEntity::CreateStatic(world, 775.0f, 0.0f, 285.0f, GetScreenHeight(), 0.0f, COLOR_WALL);
 	diagonalTopLeft = RectangleEntity::CreateStatic(world, 235.0f, -40.0f, 200.0f, 120.0f, -30.0f, COLOR_WALL);
@@ -48,10 +47,30 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	roof = RectangleEntity::CreateStatic(world, 0.0f, 0.0f, GetScreenWidth(), 30.0f, 0.0f, COLOR_WALL);
 };
 
+void Scenario::CreateBridge(b2World& world, float startX, float startY, int nodeCount, float nodeSpacing) {
+	for (int i = 0; i < nodeCount; ++i) {
+		if (i == 0 || i == nodeCount - 1) {
+			bridgeNodes.push_back(std::make_unique<CircleEntity>(world, startX, startY + i * nodeSpacing, 5.0f, COLOR_WALL, 0.0f, 0.5f, 0.0f, 2.0f, BLACK, b2_staticBody));
+		}
+		else {
+			bridgeNodes.push_back(std::make_unique<CircleEntity>(world, startX, startY + i * nodeSpacing, 5.0f, COLOR_WALL, 1.0f, 0.5f, 0.0f, 2.0f));
+		}
+	}
+	b2DistanceJointDef bridgeJointDef;
+	bridgeJointDef.length = nodeSpacing;
+	bridgeJointDef.stiffness = 100.0f;
+	for (size_t i = 1; i < bridgeNodes.size(); ++i) {
+		bridgeJointDef.Initialize(bridgeNodes[i - 1]->GetBody(), bridgeNodes[i]->GetBody(),
+			bridgeNodes[i - 1]->GetBody()->GetWorldCenter(),
+			bridgeNodes[i]->GetBody()->GetWorldCenter());
+		world.CreateJoint(&bridgeJointDef);
+	}
+}
+
 void Scenario::CreatePlayableElements(b2World& world) {
 	stickLeft = std::make_unique<StickEntity>(world, 360.0f, 525.0f, COLOR_STICK, true);
 	stickRight = std::make_unique<StickEntity>(world, 600.0f, 525.0f, COLOR_STICK, false);
-	
+
 	plunger = RectangleEntity::CreateDynamic(world, 722.0f, 525.0f, 48.0f, 10.0f, 0.0f, COLOR_SPRING, 1.0f, 1.0f, 0.0f);
 	plunger->GetBody()->SetGravityScale(0.0f);
 	plungerIdleY = plunger->GetCenter().y + 20.0f;
@@ -106,13 +125,15 @@ void Scenario::Update(float deltaTime)
 	}
 
 	plunger->Update(deltaTime);
+
+	for (int i = 0; i < bridgeNodes.size(); ++i) {
+		bridgeNodes[i]->Update(deltaTime);
+	}
 }
 
 void Scenario::Render(Renderer& renderer)
 {
 	dividerWall->Render(renderer);
-	leftThinWall->Render(renderer);
-	rightThinWall->Render(renderer);
 	wallLeft->Render(renderer);
 	wallRight->Render(renderer);
 	diagonalTopLeft->Render(renderer);
@@ -124,6 +145,10 @@ void Scenario::Render(Renderer& renderer)
 
 	plunger->Render(renderer);
 	plungerBase->Render(renderer);
+
+	for (int i = 0; i < bridgeNodes.size(); ++i) {
+		bridgeNodes[i]->Render(renderer);
+	}
 
 	if (drawJoints) {
 		renderer.DrawCenteredText(("Mouse at (" + std::to_string(GetMouseX()) + ", " + std::to_string(GetMouseY()) + ")").c_str(), 20, 5, BLACK);

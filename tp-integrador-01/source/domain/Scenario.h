@@ -2,10 +2,12 @@
 
 #include <box2d.h>
 #include <memory>
+#include <vector>
 
 class Renderer;
 class RectangleEntity;
 class StickEntity;
+class CircleEntity;
 
 class Scenario {
 public:
@@ -23,19 +25,20 @@ public:
 private:
     void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
+	void CreateBridge(b2World& world, float startX, float startY, int nodeCount, float nodeSpacing);
 
 	void CreatePlayableElements(b2World& world);
 
     void CreateStaticWalls(b2World& world);
 	
     std::unique_ptr<RectangleEntity> dividerWall;
-    std::unique_ptr<RectangleEntity> leftThinWall;
-    std::unique_ptr<RectangleEntity> rightThinWall;
     std::unique_ptr<RectangleEntity> wallLeft;
     std::unique_ptr<RectangleEntity> wallRight;
     std::unique_ptr<RectangleEntity> diagonalTopLeft;
     std::unique_ptr<RectangleEntity> diagonalTopRight;
     std::unique_ptr<RectangleEntity> roof;
+
+    std::vector<std::unique_ptr<CircleEntity>> bridgeNodes;
 
     std::unique_ptr<StickEntity> stickLeft;
 	std::unique_ptr<StickEntity> stickRight;

@@ -9,7 +9,6 @@
 #include "../domain/Scenario.h"
 #include "../core/Colors.h"
 #include "../core/PhysicsConstants.h"
-#include "../core/PhysicsConstants.h"
 
 const float GRAVITY = 9.8f;
 const float IMPULSE_STRENGTH = 50000.0f;
@@ -68,7 +67,7 @@ void Game::HandleInput()
 void Game::RestartBallPosition()
 {
 	circleEntity->GetBody()->SetTransform({ initialBallPosition.x * METERS_PER_PIXEL, initialBallPosition.y * METERS_PER_PIXEL }, 0.0f);
-	circleEntity->GetBody()->SetLinearVelocity({ 0.0f, 0.0f });
+	circleEntity->GetBody()->SetLinearVelocity({ 0.0f, 1.0f });
 }
 
 void Game::Update(float deltaTime)
