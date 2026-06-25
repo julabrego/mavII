@@ -77,5 +77,8 @@
     <ClInclude Include="core\BodyData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="game\GameState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

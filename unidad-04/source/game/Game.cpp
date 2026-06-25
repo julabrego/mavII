@@ -13,7 +13,8 @@
 #include "../core/ContactListener.h"
 
 const float GRAVITY = 9.8f;
-const float IMPULSE_STRENGTH = -17.5f;
+const float SPRING_STRENGTH = -17.5f;
+const float IMPULSE_STRENGTH = 30.0f;
 
 Game::Game(int screenWidth, int screenHeight)
 	: physicsWorld(std::make_unique<PhysicsWorld>(GRAVITY))
@@ -50,9 +51,21 @@ void Game::HandleInput()
 	if (IsKeyPressed(KEY_V)) {
 		scenario->ToggleDrawJoints();
 	}
+	else if(IsKeyPressed(KEY_SPACE)) {
+		if (context.state == GameState::Idle) {
+			circleEntity->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(IMPULSE_STRENGTH, 0.0f), true);
+			context.state = GameState::Launching;
+		}
+	}
 
 }
 
+void Game::RestartBallPosition()
+{
+	circleEntity->GetBody()->SetTransform({ initialBallPosition.x * METERS_PER_PIXEL, initialBallPosition.y * METERS_PER_PIXEL }, 0.0f);
+	circleEntity->GetBody()->SetLinearVelocity({ 0.0f, 1.0f });
+	context.state = GameState::Idle;
+}
 
 
 void Game::Update(float deltaTime)
@@ -60,9 +73,12 @@ void Game::Update(float deltaTime)
 	scenario->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 
-	if(physicsWorld->GetContactListener().playerVsSpringContact) {
-		//circleEntity->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0.0f, IMPULSE_STRENGTH), true);
-		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(0.0f, IMPULSE_STRENGTH));
+	if(context.state == GameState::Idle && physicsWorld->GetContactListener().playerVsSpringContact) {
+		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(0.0f, SPRING_STRENGTH));
+	}
+
+	if (circleEntity->GetBody()->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth()) {
+		RestartBallPosition();
 	}
 }
 
