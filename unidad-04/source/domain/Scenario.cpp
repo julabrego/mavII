@@ -33,7 +33,6 @@ void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float h
 
 void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float screenHeight) {
 	CreateWall(world, 0.0f, -20.0f, screenWidth, 20.0f);
-	CreateWall(world, screenWidth + 20.0f, 0.0f, 20.0f, screenHeight);
 	CreateWall(world, -20.0f, 0.0f, 20.0f, screenHeight);
 };
 

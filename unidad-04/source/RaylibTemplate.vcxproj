@@ -171,6 +171,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="domain\CircleEntity.h" />
     <ClInclude Include="domain\Entity.h" />
     <ClInclude Include="game\Game.h" />
+    <ClInclude Include="game\GameState.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />
