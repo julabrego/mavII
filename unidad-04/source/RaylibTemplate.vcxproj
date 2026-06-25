@@ -153,6 +153,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="core\ContactListener.cpp" />
     <ClCompile Include="core\PhysicsWorld.cpp" />
     <ClCompile Include="domain\CircleEntity.cpp" />
     <ClCompile Include="game\Game.cpp" />
@@ -162,7 +163,9 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="domain\Scenario.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="core\ContactListener.h" />
     <ClInclude Include="core\Colors.h" />
+    <ClInclude Include="core\PhysicsConstants.h" />
     <ClInclude Include="core\PhysicsWorld.h" />
     <ClInclude Include="domain\CircleEntity.h" />
     <ClInclude Include="domain\Entity.h" />
