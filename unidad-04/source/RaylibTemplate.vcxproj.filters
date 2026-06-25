@@ -74,5 +74,8 @@
     <ClInclude Include="core\ContactListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\BodyData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

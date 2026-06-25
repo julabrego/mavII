@@ -163,6 +163,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="domain\Scenario.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="core\BodyData.h" />
     <ClInclude Include="core\ContactListener.h" />
     <ClInclude Include="core\Colors.h" />
     <ClInclude Include="core\PhysicsConstants.h" />
