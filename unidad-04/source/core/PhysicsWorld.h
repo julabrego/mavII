@@ -15,6 +15,8 @@ public:
 
 	b2World* GetWorld() { return world.get(); }
 
+	ContactListener& GetContactListener() { return contactListener; }
+
 private:
 	std::unique_ptr<b2World> world;
 	ContactListener contactListener;

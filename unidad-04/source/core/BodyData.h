@@ -13,4 +13,3 @@ struct BodyData
 {
 	BodyTag tag;
 };
-
