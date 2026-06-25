@@ -44,9 +44,9 @@ void Scenario::CreateStaticWalls(b2World& world) {
 
 void Scenario::CreatePlayableElements(b2World& world) {
 	spring = RectangleEntity::CreateStatic(world, 20.0f, ground.get()->position.y - 20.0f, 80.0f, 20.0f, 0.0f, COLOR_SPRING);
+	
 	BodyData* springData = new BodyData({ BodyTag::Spring });
 	spring->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(springData);
-	//spring->GetBody()->GetUserData().pointer = spring.get();
 }
 
 
