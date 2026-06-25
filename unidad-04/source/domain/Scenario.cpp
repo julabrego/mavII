@@ -42,7 +42,8 @@ void Scenario::CreateStaticWalls(b2World& world) {
 
 
 void Scenario::CreatePlayableElements(b2World& world) {
-	// TODO: implement me
+	spring = RectangleEntity::CreateStatic(world, 20.0f, ground.get()->position.y - 20.0f, 80.0f, 20.0f, 0.0f, COLOR_SPRING);
+	//spring->GetBody()->GetUserData().pointer = spring.get();
 }
 
 
@@ -54,6 +55,7 @@ void Scenario::Update(float deltaTime)
 void Scenario::Render(Renderer& renderer)
 {
 	ground->Render(renderer);
+	spring->Render(renderer);
 
 	if (drawJoints) {
 		renderer.DrawCenteredText(("Mouse at (" + std::to_string(GetMouseX()) + ", " + std::to_string(GetMouseY()) + ")").c_str(), 20, 5, BLACK);

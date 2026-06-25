@@ -3,6 +3,7 @@
 
 #include <box2d.h>
 #include <memory>
+#include "ContactListener.h"
 
 class PhysicsWorld
 {
@@ -16,6 +17,7 @@ public:
 
 private:
 	std::unique_ptr<b2World> world;
+	ContactListener contactListener;
 
 	const int VELOCITY_ITERATIONS = 6;
 	const int POSITION_ITERATIONS = 2;

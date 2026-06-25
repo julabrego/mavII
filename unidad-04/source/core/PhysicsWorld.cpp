@@ -4,6 +4,7 @@ PhysicsWorld::PhysicsWorld(float gravityY)
 	: world(std::make_unique<b2World>(b2Vec2(0.0f, gravityY)))
 {
 	b2Vec2 gravity(0.0f, gravityY);
+	world->SetContactListener(&contactListener);
 }
 
 PhysicsWorld::~PhysicsWorld()

@@ -27,6 +27,7 @@ private:
     void CreateStaticWalls(b2World& world);
 	
     std::unique_ptr<RectangleEntity> ground;
+	std::unique_ptr<RectangleEntity> spring;
 
     std::vector<std::unique_ptr<CircleEntity>> bridgeNodes;
 
