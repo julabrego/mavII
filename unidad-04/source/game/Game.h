@@ -3,6 +3,7 @@
 #include <memory>
 #include "raylib.h"
 #include "GameState.h"
+#include "GameUI.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -27,12 +28,13 @@ private:
 
 	std::unique_ptr<Scenario> scenario;
 
+	GameUI ui;
+
 	Vector2 initialBallPosition = { 62.0f, GetScreenHeight() / 2.0f };
 
 	void HandleInput();
 	void RestartBallPosition();
 	void Update(float deltaTime);
 	void Draw();
-	void DrawUI();
 };
 
