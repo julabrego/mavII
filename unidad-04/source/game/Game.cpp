@@ -111,26 +111,7 @@ void Game::Draw()
 	scenario->Render(*renderer);
 	circleEntity->Render(*renderer);
 
-	DrawUI();
+	ui.Draw(*renderer, context);
 
 	renderer->End();
-}
-
-void Game::DrawUI() {
-
-	if (context.state == GameState::MainMenu) {
-		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
-		renderer->DrawCenteredText(
-			("Espacio para jugar"), 40, GetScreenHeight() / 2 - 100, RED);
-	}
-	else if (context.state == GameState::Finished) {
-		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
-		renderer->DrawCenteredText(
-			(R"(Game Over
-Score: )" + std::to_string(context.score) + R"(
-Espacio para volver a jugar)").c_str(),
-			40, GetScreenHeight() / 2 - 100, RED);
-	}
-
-	DrawText(("Score: " + std::to_string(context.score)).c_str(), 20, 570, 20, BLACK);
 }

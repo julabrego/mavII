@@ -36,6 +36,9 @@
     <ClCompile Include="game\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\GameUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="core\ContactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\GameUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="core\Colors.h">

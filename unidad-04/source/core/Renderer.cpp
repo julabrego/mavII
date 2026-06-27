@@ -3,6 +3,7 @@
 #include "../domain/RectangleEntity.h"
 #include "raylib.h"
 #include "rlgl.h"
+#include <string>
 
 Renderer::Renderer(Color clearColor)
 	: clearColor(std::make_unique<Color>(clearColor))
@@ -44,5 +45,19 @@ void Renderer::Draw(const RectangleEntity& rectangle)
 }
 
 void Renderer::DrawCenteredText(const char* text, int fontSize, int posY, Color color) {
-	DrawText(text, GetScreenWidth() / 2 - MeasureText(text, fontSize) / 2, posY, fontSize, color);
+	int screenWidth = GetScreenWidth();
+	const char* lineStart = text;
+	const char* ptr = text;
+
+	while (*ptr) {
+		if (*ptr == '\n' || *(ptr + 1) == '\0') {
+			int len = (ptr - lineStart) + (*ptr != '\n' ? 1 : 0);
+			std::string line(lineStart, len);
+			int textWidth = MeasureText(line.c_str(), fontSize);
+			DrawText(line.c_str(), screenWidth / 2 - textWidth / 2, posY, fontSize, color);
+			posY += fontSize + 4;
+			lineStart = ptr + 1;
+		}
+		ptr++;
+	}
 }
