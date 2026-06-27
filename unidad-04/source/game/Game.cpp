@@ -49,16 +49,10 @@ void Game::Run()
 
 void Game::HandleInput()
 {
-	if (IsKeyPressed(KEY_V)) {
-		scenario->ToggleDrawJoints();
-	}
-
-	else if (IsKeyPressed(KEY_SPACE)) {
+	if (IsKeyPressed(KEY_SPACE)) {
 		if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
-			RestartBallPosition();
-			context.score = 0;
-			context.touchedGround = false;
-		}
+			RestartGame();
+		} 
 		else if (context.state == GameState::Idle) {
 			circleEntity->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(IMPULSE_STRENGTH, 0.0f), true);
 			context.state = GameState::Launching;
@@ -67,10 +61,12 @@ void Game::HandleInput()
 
 }
 
-void Game::RestartBallPosition()
+void Game::RestartGame()
 {
 	circleEntity->GetBody()->SetTransform({ initialBallPosition.x * METERS_PER_PIXEL, initialBallPosition.y * METERS_PER_PIXEL }, 0.0f);
 	circleEntity->GetBody()->SetLinearVelocity({ 0.0f, 1.0f });
+	context.score = 0;
+	context.touchedGround = false;
 	context.state = GameState::Idle;
 }
 
@@ -79,29 +75,29 @@ void Game::Update(float deltaTime)
 {
 	scenario->Update(deltaTime);
 	circleEntity->Update(deltaTime);
+	auto* circleBody = circleEntity->GetBody();
+	auto& contactListener = physicsWorld->GetContactListener();
+	b2Vec2 circleVelocity = circleBody->GetLinearVelocity();
 
-	b2Vec2 vel = circleEntity->GetBody()->GetLinearVelocity();
-	if (physicsWorld->GetContactListener().playerVsSpringContact) {
-		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(vel.x, SPRING_STRENGTH));
+	if (contactListener.playerVsSpringContact) {
+		circleBody->SetLinearVelocity(b2Vec2(circleVelocity.x, SPRING_STRENGTH));
 	}
 
-	if (circleEntity->GetBody()->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth() || context.isStopped) {
-		context.state = GameState::Finished;
+	if (contactListener.playerVsGroundContact) {
+		circleBody->SetLinearVelocity(b2Vec2(circleVelocity.x * 0.95f, circleVelocity.y));
 	}
 
-	if (physicsWorld->GetContactListener().playerVsGroundContact) {
-		b2Vec2 velocity = circleEntity->GetBody()->GetLinearVelocity();
-		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(velocity.x * 0.95f, velocity.y));
-	}
-	
-	if (context.state == GameState::Launching && fabs(vel.x) < 0.05f && fabs(vel.y) < 0.05f) {
-		context.state = GameState::Finished;
-	}
-
-	if (physicsWorld->GetContactListener().playerVsTargetContact) {
+	if (contactListener.playerVsTargetContact) {
 		context.score += 100;
 	}
 	
+	bool isCircleOutOfBounds = circleBody->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth();
+	float stoppedVelocityThreshold = 0.05f;
+	bool isBallStopped = fabs(circleVelocity.x) < stoppedVelocityThreshold && fabs(circleVelocity.y) < stoppedVelocityThreshold;
+
+	if (isCircleOutOfBounds || (context.state == GameState::Launching && isBallStopped)) {
+		context.state = GameState::Finished;
+	}
 }
 
 void Game::Draw()

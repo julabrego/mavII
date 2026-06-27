@@ -33,7 +33,7 @@ private:
 	Vector2 initialBallPosition = { 62.0f, GetScreenHeight() / 2.0f };
 
 	void HandleInput();
-	void RestartBallPosition();
+	void RestartGame();
 	void Update(float deltaTime);
 	void Draw();
 };

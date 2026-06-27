@@ -16,8 +16,6 @@ public:
     void Update(float deltaTime);
     void Render(Renderer& renderer);
 
-    void ToggleDrawJoints() { drawJoints = !drawJoints; }
-
 private:
     void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
@@ -31,6 +29,4 @@ private:
 	std::unique_ptr<RectangleEntity> spring;
 
     std::vector<std::unique_ptr<CircleEntity>> targets;
-
-    bool drawJoints = false;
 };
