@@ -11,6 +11,7 @@
 #include "../core/PhysicsConstants.h"
 #include "../core/BodyData.h"
 #include "../core/ContactListener.h"
+#include <string>
 
 const float GRAVITY = 9.8f;
 const float SPRING_STRENGTH = -17.5f;
@@ -51,8 +52,14 @@ void Game::HandleInput()
 	if (IsKeyPressed(KEY_V)) {
 		scenario->ToggleDrawJoints();
 	}
-	else if(IsKeyPressed(KEY_SPACE)) {
-		if (context.state == GameState::Idle) {
+
+	else if (IsKeyPressed(KEY_SPACE)) {
+		if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
+			RestartBallPosition();
+			context.score = 0;
+			context.touchedGround = false;
+		}
+		else if (context.state == GameState::Idle) {
 			circleEntity->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(IMPULSE_STRENGTH, 0.0f), true);
 			context.state = GameState::Launching;
 		}
@@ -73,13 +80,28 @@ void Game::Update(float deltaTime)
 	scenario->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 
-	if(context.state == GameState::Idle && physicsWorld->GetContactListener().playerVsSpringContact) {
-		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(0.0f, SPRING_STRENGTH));
+	b2Vec2 vel = circleEntity->GetBody()->GetLinearVelocity();
+	if (physicsWorld->GetContactListener().playerVsSpringContact) {
+		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(vel.x, SPRING_STRENGTH));
 	}
 
-	if (circleEntity->GetBody()->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth()) {
-		RestartBallPosition();
+	if (circleEntity->GetBody()->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth() || context.isStopped) {
+		context.state = GameState::Finished;
 	}
+
+	if (physicsWorld->GetContactListener().playerVsGroundContact) {
+		b2Vec2 velocity = circleEntity->GetBody()->GetLinearVelocity();
+		circleEntity->GetBody()->SetLinearVelocity(b2Vec2(velocity.x * 0.95f, velocity.y));
+	}
+	
+	if (context.state == GameState::Launching && fabs(vel.x) < 0.05f && fabs(vel.y) < 0.05f) {
+		context.state = GameState::Finished;
+	}
+
+	if (physicsWorld->GetContactListener().playerVsTargetContact) {
+		context.score += 100;
+	}
+	
 }
 
 void Game::Draw()
@@ -95,7 +117,20 @@ void Game::Draw()
 }
 
 void Game::DrawUI() {
-	//DrawRectangle(10, 116, 265, 450, Fade(BLACK, 1.0f));
 
-	DrawText(R"(02:00 | Score: 1000)", 20, 570, 20, BLACK);
+	if (context.state == GameState::MainMenu) {
+		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
+		renderer->DrawCenteredText(
+			("Espacio para jugar"), 40, GetScreenHeight() / 2 - 100, RED);
+	}
+	else if (context.state == GameState::Finished) {
+		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
+		renderer->DrawCenteredText(
+			(R"(Game Over
+Score: )" + std::to_string(context.score) + R"(
+Espacio para volver a jugar)").c_str(),
+			40, GetScreenHeight() / 2 - 100, RED);
+	}
+
+	DrawText(("Score: " + std::to_string(context.score)).c_str(), 20, 570, 20, BLACK);
 }

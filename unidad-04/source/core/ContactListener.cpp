@@ -22,6 +22,18 @@ void ContactListener::BeginContact(b2Contact* contact)
 		if (playerVsSpring) {
 			playerVsSpringContact = true;
 		}
+
+		bool playerVsGround = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::Player);
+
+		if (playerVsGround) {
+			playerVsGroundContact = true;
+		}
+
+		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
+
+		if (playerVsTarget) {
+			playerVsTargetContact = true;
+		}
 	}
 	void ContactListener::EndContact(b2Contact* contact)
 	{
@@ -42,6 +54,18 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		if (playerVsSpring) {
 			playerVsSpringContact = false;
+		}
+
+		bool playerVsGround = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::Player);
+
+		if (playerVsGround) {
+			playerVsGroundContact = false;
+		}
+
+		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
+
+		if (playerVsTarget) {
+			playerVsTargetContact = false;
 		}
 
 	}

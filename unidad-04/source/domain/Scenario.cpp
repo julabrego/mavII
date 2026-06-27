@@ -39,6 +39,9 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 
 void Scenario::CreateStaticWalls(b2World& world) {
 	ground = RectangleEntity::CreateStatic(world, 0.0f, 560.0f, GetScreenWidth(), 40.0f, 0.0f, COLOR_GROUND);
+	
+	BodyData* groundData = new BodyData({ BodyTag::Ground });
+	ground->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
 };
 
 void Scenario::CreateTargets(b2World& world) {
@@ -56,7 +59,7 @@ void Scenario::CreateTargets(b2World& world) {
 	for (int i = 0; i < 8; ++i) {
 		targets.push_back(std::make_unique<CircleEntity>(
 			world, positions[i][0], positions[i][1], 15.0f, RED,
-			0.0f, 0.0f, 0.0f, 0.0f, BLACK, b2_staticBody
+			0.0f, 0.0f, 1.5f, 0.0f, BLACK, b2_staticBody
 		));
 		BodyData* targetData = new BodyData({ BodyTag::Target });
 		targets[i]->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(targetData);
