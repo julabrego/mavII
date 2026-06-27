@@ -25,11 +25,12 @@ private:
 	void CreatePlayableElements(b2World& world);
 
     void CreateStaticWalls(b2World& world);
+	void CreateTargets(b2World& world);
 	
     std::unique_ptr<RectangleEntity> ground;
 	std::unique_ptr<RectangleEntity> spring;
 
-    std::vector<std::unique_ptr<CircleEntity>> bridgeNodes;
+    std::vector<std::unique_ptr<CircleEntity>> targets;
 
     bool drawJoints = false;
 };
