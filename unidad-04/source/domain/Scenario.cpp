@@ -87,8 +87,4 @@ void Scenario::Render(Renderer& renderer)
 	for (auto& target : targets) {
 		target->Render(renderer);
 	}
-
-	if (drawJoints) {
-		renderer.DrawCenteredText(("Mouse at (" + std::to_string(GetMouseX()) + ", " + std::to_string(GetMouseY()) + ")").c_str(), 20, 5, BLACK);
-	}
 }
