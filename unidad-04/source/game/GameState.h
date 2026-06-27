@@ -9,12 +9,9 @@ enum class GameState {
 };
 
 struct GameContext {
-	// TODO: implement main menu
-	GameState state = GameState::Idle;
+	GameState state = GameState::MainMenu;
 	int score = 0;
-	int lives = 3;
-	float timer = 60.0f * 2; // 2 minutes
 
-	bool hitTarget = false;
-	bool outOfBounds = false;
+	bool touchedGround = false;
+	bool isStopped = false;
 };
