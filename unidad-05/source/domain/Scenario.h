@@ -3,6 +3,7 @@
 #include <box2d.h>
 #include <memory>
 #include <vector>
+#include <raylib.h>
 
 class Renderer;
 class RectangleEntity;
@@ -23,4 +24,11 @@ private:
     void CreateStaticWalls(b2World& world);
 	
     std::unique_ptr<RectangleEntity> ground;
+    std::unique_ptr<RectangleEntity> ground2;
+    std::unique_ptr<RectangleEntity> wall1;
+    std::unique_ptr<RectangleEntity> ground3;
+
+    std::unique_ptr<RectangleEntity> rotablePlatform;
+
+    Texture2D finalFlagTexture = LoadTexture("../assets/flag.png");
 };

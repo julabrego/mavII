@@ -12,6 +12,7 @@ ESPACIO - Lanzar la pelota
 Rebota contra los targets para sumar puntos)";
 
 void GameUI::Draw(Renderer& renderer, const GameContext& context) {
+	return;
 	if (context.state == GameState::MainMenu) {
 		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		renderer.DrawCenteredText(

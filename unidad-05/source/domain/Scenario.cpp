@@ -1,4 +1,5 @@
 #include "Scenario.h"
+
 #include "RectangleEntity.h"
 #include "CircleEntity.h"
 #include "raylib.h"
@@ -8,12 +9,15 @@
 #include "../core/BodyData.h"
 #include <string>
 
-Scenario::~Scenario() = default;
+Scenario::~Scenario() {
+	UnloadTexture(finalFlagTexture);
+}
 
 Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
 	CreateStaticWalls(world);
+
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -36,19 +40,43 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 };
 
 void Scenario::CreateStaticWalls(b2World& world) {
-	ground = RectangleEntity::CreateStatic(world, 0.0f, 560.0f, GetScreenWidth(), 40.0f, 0.0f, COLOR_GROUND);
+	// Grounds and static walls
+	ground = RectangleEntity::CreateStatic(world, 0.0f, 540.0f, 735.0f, 60.0f, 0.0f, COLOR_GROUND);
+	ground2 = RectangleEntity::CreateStatic(world, 900.0f, 540.0f, 105.0f, 60.0f, 0.0f, COLOR_GROUND);
+	wall1 = RectangleEntity::CreateStatic(world, 450.0f, 375.0f, 30.0f, 165.0f, 0.0f, COLOR_GROUND);
+	ground3 = RectangleEntity::CreateStatic(world, 375.0f, 360.0f, 105.0f, 15.0f, 0.0f, COLOR_GROUND);
 	
 	BodyData* groundData = new BodyData({ BodyTag::Ground });
 	ground->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
+	ground2->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
+	ground3->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
+	
+	// Rotable platform
+	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.1f, 0.1f, 0.2f);
+	b2RevoluteJointDef rotablePlatformJointDef;
+	b2Vec2 rotablePlatformInitialPos = b2Vec2((rotablePlatform->GetCenter().x + rotablePlatform->width / 2) * METERS_PER_PIXEL, 
+		rotablePlatform->GetCenter().y * METERS_PER_PIXEL);
+	rotablePlatformJointDef.Initialize(rotablePlatform->GetBody(), ground3->GetBody(),
+		rotablePlatformInitialPos);
+	
+	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)world.CreateJoint(&rotablePlatformJointDef);
+	
 };
 
 
 void Scenario::Update(float deltaTime)
 {
-	// TODO: wathever->Update(deltaTime);
+	rotablePlatform->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
 {
 	ground->Render(renderer);
+	ground2->Render(renderer);
+
+	wall1->Render(renderer);
+	ground3->Render(renderer);
+	rotablePlatform->Render(renderer);
+
+	DrawTexture(finalFlagTexture, 922.5f, 470.0f, WHITE);
 }
