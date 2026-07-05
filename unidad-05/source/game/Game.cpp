@@ -4,7 +4,6 @@
 #include "box2d.h"
 #include "raylib.h"
 #include "../core/Renderer.h"
-#include "../domain/CircleEntity.h"
 #include "../domain/RectangleEntity.h"
 #include "../domain/Scenario.h"
 #include "../core/Colors.h"
@@ -24,11 +23,9 @@ Game::Game(int screenWidth, int screenHeight)
 	b2World& world = *physicsWorld->GetWorld();
 
 	scenario = std::make_unique<Scenario>(world, screenWidth, screenHeight);
-	player = std::make_unique<Player>(world);
-
-	circleEntity = std::make_unique<CircleEntity>(world, initialBallPosition.x, initialBallPosition.y, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
+	player = std::make_unique<Player>(world, 30.0f, 480.0f);
 	BodyData* playerData = new BodyData({ BodyTag::Player });
-	circleEntity->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(playerData);
+
 }
 
 Game::~Game()
@@ -50,22 +47,21 @@ void Game::Run()
 
 void Game::HandleInput()
 {
-	if (IsKeyPressed(KEY_SPACE)) {
-		if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
-			RestartGame();
-		} 
-		else if (context.state == GameState::Idle) {
-			circleEntity->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(IMPULSE_STRENGTH, 0.0f), true);
-			context.state = GameState::Launching;
-		}
-	}
+	// Player movement input
+	player->SetAction(PlayerAction::Left, IsKeyDown(KEY_LEFT));
+	player->SetAction(PlayerAction::Right, IsKeyDown(KEY_RIGHT));
+	player->SetAction(PlayerAction::Jump, IsKeyDown(KEY_SPACE));
+
+	// if (IsKeyPressed(KEY_SPACE)) {
+	// 	if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
+	// 		RestartGame();
+	// 	}
+	// }
 
 }
 
 void Game::RestartGame()
 {
-	circleEntity->GetBody()->SetTransform({ initialBallPosition.x * METERS_PER_PIXEL, initialBallPosition.y * METERS_PER_PIXEL }, 0.0f);
-	circleEntity->GetBody()->SetLinearVelocity({ 0.0f, 1.0f });
 	context.score = 0;
 	context.touchedGround = false;
 	context.state = GameState::Idle;
@@ -76,29 +72,10 @@ void Game::Update(float deltaTime)
 {
 	scenario->Update(deltaTime);
 	player->Update(deltaTime);
-	circleEntity->Update(deltaTime);
-	auto* circleBody = circleEntity->GetBody();
 	auto& contactListener = physicsWorld->GetContactListener();
-	b2Vec2 circleVelocity = circleBody->GetLinearVelocity();
-
-	if (contactListener.playerVsSpringContact) {
-		circleBody->SetLinearVelocity(b2Vec2(circleVelocity.x, SPRING_STRENGTH));
-	}
-
-	if (contactListener.playerVsGroundContact) {
-		circleBody->SetLinearVelocity(b2Vec2(circleVelocity.x * 0.95f, circleVelocity.y));
-	}
 
 	if (contactListener.playerVsTargetContact) {
 		context.score += 100;
-	}
-	
-	bool isCircleOutOfBounds = circleBody->GetPosition().x / METERS_PER_PIXEL > GetScreenWidth();
-	float stoppedVelocityThreshold = 0.05f;
-	bool isBallStopped = fabs(circleVelocity.x) < stoppedVelocityThreshold && fabs(circleVelocity.y) < stoppedVelocityThreshold;
-
-	if (isCircleOutOfBounds || (context.state == GameState::Launching && isBallStopped)) {
-		context.state = GameState::Finished;
 	}
 }
 
@@ -108,7 +85,6 @@ void Game::Draw()
 
 	scenario->Render(*renderer);
 	player->Render(*renderer);
-	circleEntity->Render(*renderer);
 
 	ui.Draw(*renderer, context);
 

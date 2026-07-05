@@ -25,8 +25,6 @@ private:
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Renderer> renderer;
 	
-	std::unique_ptr<CircleEntity> circleEntity;
-
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<Player> player;
 

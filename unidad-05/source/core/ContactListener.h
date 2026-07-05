@@ -8,8 +8,7 @@ public:
 	void BeginContact(b2Contact* contact) override;
 	void EndContact(b2Contact* contact) override;
 
-	bool playerVsGroundContact = false;
-	bool playerVsSpringContact = false;
+	bool playerGroundSensorVsGroundContact = false;
 	bool playerVsTargetContact = false;
 };
 

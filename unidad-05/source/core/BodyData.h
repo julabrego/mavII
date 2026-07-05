@@ -3,7 +3,7 @@ enum class BodyTag
 {
 	None,
 	Player,
-	Spring,
+	PlayerGroundSensor,
 	Target,
 	Wall,
 	Ground,
@@ -12,4 +12,5 @@ enum class BodyTag
 struct BodyData
 {
 	BodyTag tag;
+	void* entity = nullptr;
 };

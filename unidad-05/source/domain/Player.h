@@ -17,6 +17,7 @@ public:
 	~Player();
 
 	void SetAction(PlayerAction action, bool active);
+	void SetGrounded(bool grounded) { isGrounded = grounded; }
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
@@ -35,5 +36,7 @@ private:
 	float density = 1.0f;
 	float bounciness = 0.0f;
 	float friction = 0.5f;
+
+	bool isGrounded = false;
 
 };

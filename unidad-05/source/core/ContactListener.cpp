@@ -1,5 +1,6 @@
 #include "ContactListener.h"
 #include "BodyData.h"
+#include "../domain/Player.h"
 #include <box2d.h>
 
 void ContactListener::BeginContact(b2Contact* contact)
@@ -16,17 +17,12 @@ void ContactListener::BeginContact(b2Contact* contact)
 		
 		printf("Contact began between fixtures: %d and %d\n", static_cast<int>(dataA->tag), static_cast<int>(dataB->tag));
 
-		bool playerVsSpring = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Spring) ||
-			(dataA->tag == BodyTag::Spring && dataB->tag == BodyTag::Player);
-		
-		if (playerVsSpring) {
-			playerVsSpringContact = true;
-		}
+		bool playerSensorVsGround = (dataA->tag == BodyTag::PlayerGroundSensor && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::PlayerGroundSensor);
 
-		bool playerVsGround = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::Player);
-
-		if (playerVsGround) {
-			playerVsGroundContact = true;
+		if (playerSensorVsGround) {
+			BodyData* playerSensorData = (dataA->tag == BodyTag::PlayerGroundSensor) ? dataA : dataB;
+			Player* player = reinterpret_cast<Player*>(playerSensorData->entity);
+			player->SetGrounded(true);
 		}
 
 		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
@@ -49,17 +45,12 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		printf("Contact ended between fixtures: %d and %d\n", static_cast<int>(dataA->tag), static_cast<int>(dataB->tag));
 
-		bool playerVsSpring = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Spring) ||
-			(dataA->tag == BodyTag::Spring && dataB->tag == BodyTag::Player);
+		bool playerGroundSensorVsGround = (dataA->tag == BodyTag::PlayerGroundSensor && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::PlayerGroundSensor);
 
-		if (playerVsSpring) {
-			playerVsSpringContact = false;
-		}
-
-		bool playerVsGround = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::Player);
-
-		if (playerVsGround) {
-			playerVsGroundContact = false;
+		if (playerGroundSensorVsGround) {
+			BodyData* playerSensorData = (dataA->tag == BodyTag::PlayerGroundSensor) ? dataA : dataB;
+			Player* player = reinterpret_cast<Player*>(playerSensorData->entity);
+			player->SetGrounded(false);
 		}
 
 		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
