@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "GameState.h"
 #include "GameUI.h"
+#include "../domain/Player.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -27,6 +28,7 @@ private:
 	std::unique_ptr<CircleEntity> circleEntity;
 
 	std::unique_ptr<Scenario> scenario;
+	std::unique_ptr<Player> player;
 
 	GameUI ui;
 

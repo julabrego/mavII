@@ -24,6 +24,7 @@ Game::Game(int screenWidth, int screenHeight)
 	b2World& world = *physicsWorld->GetWorld();
 
 	scenario = std::make_unique<Scenario>(world, screenWidth, screenHeight);
+	player = std::make_unique<Player>(world);
 
 	circleEntity = std::make_unique<CircleEntity>(world, initialBallPosition.x, initialBallPosition.y, 25.0f, COLOR_BALL, 1.0f, 0.5f, 0.5f, 2.0f);
 	BodyData* playerData = new BodyData({ BodyTag::Player });
@@ -74,6 +75,7 @@ void Game::RestartGame()
 void Game::Update(float deltaTime)
 {
 	scenario->Update(deltaTime);
+	player->Update(deltaTime);
 	circleEntity->Update(deltaTime);
 	auto* circleBody = circleEntity->GetBody();
 	auto& contactListener = physicsWorld->GetContactListener();
@@ -105,6 +107,7 @@ void Game::Draw()
 	renderer->Begin();
 
 	scenario->Render(*renderer);
+	player->Render(*renderer);
 	circleEntity->Render(*renderer);
 
 	ui.Draw(*renderer, context);
