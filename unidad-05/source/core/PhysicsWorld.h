@@ -21,8 +21,8 @@ private:
 	std::unique_ptr<b2World> world;
 	ContactListener contactListener;
 
-	const int VELOCITY_ITERATIONS = 6;
-	const int POSITION_ITERATIONS = 2;
+	const int VELOCITY_ITERATIONS = 8;
+	const int POSITION_ITERATIONS = 4;
 };
 
 #endif

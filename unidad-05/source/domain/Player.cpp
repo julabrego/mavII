@@ -3,21 +3,20 @@
 #include "../core/BodyData.h"
 
 Player::Player(b2World& world, float startX, float startY) {
-	float width = 30.0f;
-	float height = 60.0f;
-
-	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, width, height, 0.0f, YELLOW, density, friction, bounciness);
-	BodyData* playerData = new BodyData({ BodyTag::Player });
+	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, YELLOW, density, friction, bounciness);
+	hitbox->GetBody()->SetFixedRotation(true);
+	BodyData* playerData = new BodyData({ BodyTag::Player, this });
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(playerData);
 
 	b2PolygonShape sensorShape;
-	sensorShape.SetAsBox(0.5f * METERS_PER_PIXEL, 2.0f * METERS_PER_PIXEL);
+	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,
+		b2Vec2(0.0f, (PLAYER_HEIGHT / 2.0f) * METERS_PER_PIXEL), 0.0f);
 
 	b2FixtureDef sensorFixtureDef;
 	sensorFixtureDef.shape = &sensorShape;
 	sensorFixtureDef.isSensor = true;
 
-	b2Fixture* sensorFixture = hitbox->GetBody()->CreateFixture(&sensorFixtureDef);
+	hitbox->GetBody()->CreateFixture(&sensorFixtureDef);
 }
 
 Player::~Player() {
@@ -61,12 +60,9 @@ void Player::Update(float deltaTime) {
 void Player::Render(Renderer& renderer) {
 	hitbox->Render(renderer);
 
-	// DEBUG
-	b2Body* body = hitbox->GetBody();
-	b2Vec2 pos = body->GetPosition();
-	float sensorWidth = 30.0f;
-	float sensorHeight = 5.0f;
-	float x = pos.x * PIXELS_PER_METER - sensorWidth / 2.0f;
-	float y = pos.y * PIXELS_PER_METER + hitbox->height / 2.0f - sensorHeight / 2.0f; // Position the sensor below the player
-	DrawRectangle(x, y, sensorWidth, sensorHeight, RED);
+	// DEBUG: draw sensor
+	b2Vec2 pos = hitbox->GetBody()->GetPosition();
+	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
+	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;
+	DrawRectangle(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, SENSOR_DEBUG_COLOR);
 }

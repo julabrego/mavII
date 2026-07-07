@@ -17,11 +17,15 @@ void ContactListener::BeginContact(b2Contact* contact)
 		
 		printf("Contact began between fixtures: %d and %d\n", static_cast<int>(dataA->tag), static_cast<int>(dataB->tag));
 
-		bool playerSensorVsGround = (dataA->tag == BodyTag::PlayerGroundSensor && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::PlayerGroundSensor);
+		bool sensorA = contact->GetFixtureA()->IsSensor();
+		bool sensorB = contact->GetFixtureB()->IsSensor();
+		bool groundA = dataA->tag == BodyTag::Ground;
+		bool groundB = dataB->tag == BodyTag::Ground;
 
-		if (playerSensorVsGround) {
-			BodyData* playerSensorData = (dataA->tag == BodyTag::PlayerGroundSensor) ? dataA : dataB;
-			Player* player = reinterpret_cast<Player*>(playerSensorData->entity);
+		if ((sensorA && groundB) || (sensorB && groundA)) {
+			b2Body* playerBody = sensorA ? bodyA : bodyB;
+			BodyData* playerData = reinterpret_cast<BodyData*>(playerBody->GetUserData().pointer);
+			Player* player = reinterpret_cast<Player*>(playerData->entity);
 			player->SetGrounded(true);
 		}
 
@@ -45,11 +49,15 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		printf("Contact ended between fixtures: %d and %d\n", static_cast<int>(dataA->tag), static_cast<int>(dataB->tag));
 
-		bool playerGroundSensorVsGround = (dataA->tag == BodyTag::PlayerGroundSensor && dataB->tag == BodyTag::Ground) || (dataA->tag == BodyTag::Ground && dataB->tag == BodyTag::PlayerGroundSensor);
+		bool sensorA = contact->GetFixtureA()->IsSensor();
+		bool sensorB = contact->GetFixtureB()->IsSensor();
+		bool groundA = dataA->tag == BodyTag::Ground;
+		bool groundB = dataB->tag == BodyTag::Ground;
 
-		if (playerGroundSensorVsGround) {
-			BodyData* playerSensorData = (dataA->tag == BodyTag::PlayerGroundSensor) ? dataA : dataB;
-			Player* player = reinterpret_cast<Player*>(playerSensorData->entity);
+		if ((sensorA && groundB) || (sensorB && groundA)) {
+			b2Body* playerBody = sensorA ? bodyA : bodyB;
+			BodyData* playerData = reinterpret_cast<BodyData*>(playerBody->GetUserData().pointer);
+			Player* player = reinterpret_cast<Player*>(playerData->entity);
 			player->SetGrounded(false);
 		}
 

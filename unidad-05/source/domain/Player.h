@@ -23,6 +23,11 @@ public:
 	void Render(Renderer& renderer) override;
 
 private:
+	static constexpr float PLAYER_WIDTH = 30.0f;
+	static constexpr float PLAYER_HEIGHT = 60.0f;
+	static constexpr float SENSOR_HEIGHT = 1.0f;
+	static constexpr Color SENSOR_DEBUG_COLOR = RED;
+
 	struct ActionState {
 		bool left = false;
 		bool right = false;
@@ -32,7 +37,7 @@ private:
 	std::unique_ptr<RectangleEntity> hitbox;
 
 	float moveSpeed = 5.0f;
-	float jumpImpulse = 10.0f;
+	float jumpImpulse = 8.0f;
 	float density = 1.0f;
 	float bounciness = 0.0f;
 	float friction = 0.5f;

@@ -52,13 +52,16 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	ground3->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
 	
 	// Rotable platform
-	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.1f, 0.1f, 0.2f);
+	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.5f, 0.1f, 0.2f);
 	b2RevoluteJointDef rotablePlatformJointDef;
 	b2Vec2 rotablePlatformInitialPos = b2Vec2((rotablePlatform->GetCenter().x + rotablePlatform->width / 2) * METERS_PER_PIXEL, 
 		rotablePlatform->GetCenter().y * METERS_PER_PIXEL);
 	rotablePlatformJointDef.Initialize(rotablePlatform->GetBody(), ground3->GetBody(),
 		rotablePlatformInitialPos);
-	
+	rotablePlatformJointDef.enableLimit = true;
+	rotablePlatformJointDef.lowerAngle = 0.0f * DEG2RAD;
+	rotablePlatformJointDef.upperAngle = 95.0f * DEG2RAD;
+
 	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)world.CreateJoint(&rotablePlatformJointDef);
 	
 };
