@@ -74,8 +74,8 @@ void Game::Update(float deltaTime)
 	player->Update(deltaTime);
 	auto& contactListener = physicsWorld->GetContactListener();
 
-	if (contactListener.playerVsTargetContact) {
-		context.score += 100;
+	if (contactListener.isRotablePlatformTriggered) {
+		scenario->EnablePlatformRotation();
 	}
 }
 

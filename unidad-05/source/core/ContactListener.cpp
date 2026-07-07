@@ -17,6 +17,7 @@ void ContactListener::BeginContact(b2Contact* contact)
 		
 		printf("Contact began between fixtures: %d and %d\n", static_cast<int>(dataA->tag), static_cast<int>(dataB->tag));
 
+		// TODO: extract: player in ground flag
 		bool sensorA = contact->GetFixtureA()->IsSensor();
 		bool sensorB = contact->GetFixtureB()->IsSensor();
 		bool groundA = dataA->tag == BodyTag::Ground;
@@ -33,6 +34,13 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		if (playerVsTarget) {
 			playerVsTargetContact = true;
+		}
+
+		// TODO: extract: rotable platform trigger area vs rotable platform triggerer
+		bool rotablePlatformTriggererIsInArea = (dataA->tag == BodyTag::RotablePlatformTriggerArea && dataB->tag == BodyTag::RotablePlatformTriggerer) || (dataA->tag == BodyTag::RotablePlatformTriggerer && dataB->tag == BodyTag::RotablePlatformTriggerArea);
+
+		if (rotablePlatformTriggererIsInArea) {
+			isRotablePlatformTriggered = true;
 		}
 	}
 	void ContactListener::EndContact(b2Contact* contact)

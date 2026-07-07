@@ -17,6 +17,8 @@ public:
     void Update(float deltaTime);
     void Render(Renderer& renderer);
 
+	void EnablePlatformRotation();
+
 private:
     void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
@@ -29,6 +31,12 @@ private:
     std::unique_ptr<RectangleEntity> ground3;
 
     std::unique_ptr<RectangleEntity> rotablePlatform;
+    std::unique_ptr<RectangleEntity> movableWall;
+    std::unique_ptr<RectangleEntity> box1;
+    std::unique_ptr<RectangleEntity> box2;
+    std::unique_ptr<RectangleEntity> box3;
+    
+    std::unique_ptr<RectangleEntity> obstacleSensor1;
 
     Texture2D finalFlagTexture = LoadTexture("../assets/flag.png");
 };

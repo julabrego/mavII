@@ -51,6 +51,7 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	ground2->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
 	ground3->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundData);
 	
+	// Dynamic elements
 	// Rotable platform
 	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.5f, 0.1f, 0.2f);
 	b2RevoluteJointDef rotablePlatformJointDef;
@@ -59,27 +60,56 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	rotablePlatformJointDef.Initialize(rotablePlatform->GetBody(), ground3->GetBody(),
 		rotablePlatformInitialPos);
 	rotablePlatformJointDef.enableLimit = true;
-	rotablePlatformJointDef.lowerAngle = 0.0f * DEG2RAD;
-	rotablePlatformJointDef.upperAngle = 95.0f * DEG2RAD;
+	rotablePlatformJointDef.lowerAngle = 0.0f;
+	rotablePlatformJointDef.upperAngle = 0.0f;
 
 	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)world.CreateJoint(&rotablePlatformJointDef);
+
+	movableWall = RectangleEntity::CreateDynamic(world, 210.0f, 375.0f, 15.0f, 164.0f, 0.0f, COLOR_STICK, 10.0f, 30.0f, 0.0f);
+	movableWall->GetBody()->SetFixedRotation(true);
+	BodyData* movableWallData = new BodyData({ BodyTag::RotablePlatformTriggerer });
+	movableWall->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(movableWallData);
+
+	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
+	box2 = RectangleEntity::CreateDynamic(world, 555.0f, 495.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
+	box3 = RectangleEntity::CreateDynamic(world, 675.0f, 495.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
+
+	obstacleSensor1 = RectangleEntity::CreateSensor(world, 390.0f, 405.0f, 60.0f, 135.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
+	BodyData* sensorData = new BodyData({ BodyTag::RotablePlatformTriggerArea });
+	obstacleSensor1->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(sensorData);
 	
 };
 
+void Scenario::EnablePlatformRotation()
+{
+	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)rotablePlatform->GetBody()->GetJointList()->joint;
+	rotablePlatformJoint->EnableLimit(false);
+}
 
 void Scenario::Update(float deltaTime)
 {
 	rotablePlatform->Update(deltaTime);
+	movableWall->Update(deltaTime);
+	box1->Update(deltaTime);
+	box2->Update(deltaTime);
+	box3->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
 {
 	ground->Render(renderer);
 	ground2->Render(renderer);
-
 	wall1->Render(renderer);
 	ground3->Render(renderer);
+	
 	rotablePlatform->Render(renderer);
+	movableWall->Render(renderer);
+	box1->Render(renderer);
+	box2->Render(renderer);
+	box3->Render(renderer);
 
 	DrawTexture(finalFlagTexture, 922.5f, 470.0f, WHITE);
+
+	// DEBUG
+	obstacleSensor1->Render(renderer);
 }

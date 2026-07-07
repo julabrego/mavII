@@ -4,6 +4,8 @@ enum class BodyTag
 	None,
 	Player,
 	PlayerGroundSensor,
+	RotablePlatformTriggerArea,
+	RotablePlatformTriggerer,
 	Target,
 	Wall,
 	Ground,
