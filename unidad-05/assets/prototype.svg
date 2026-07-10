@@ -29,12 +29,12 @@
      inkscape:snap-to-guides="true"
      inkscape:snap-bbox="true"
      inkscape:zoom="1"
-     inkscape:cx="511.5"
+     inkscape:cx="511"
      inkscape:cy="451.5"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-height="1001"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -132,24 +132,17 @@
        id="path3786" />
     <rect
        style="opacity:1;fill:#d45500;fill-opacity:1;stroke-width:5.66208;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
-       id="rect4480"
-       width="11.90625"
-       height="11.90625"
-       x="178.59375"
-       y="130.96875" />
-    <rect
-       style="opacity:1;fill:#d45500;fill-opacity:1;stroke-width:5.66208;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
-       id="rect4482"
-       width="11.90625"
-       height="11.90625"
-       x="146.84375"
-       y="130.96875" />
-    <rect
-       style="opacity:1;fill:#d45500;fill-opacity:1;stroke-width:5.66208;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
        id="rect4484"
        width="11.90625"
        height="11.90625"
        x="115.09375"
        y="83.34375" />
+    <rect
+       style="fill:#ff0000;stroke-width:9.63976;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect1054"
+       width="7.9375"
+       height="15.875"
+       x="158.75"
+       y="127" />
   </g>
 </svg>

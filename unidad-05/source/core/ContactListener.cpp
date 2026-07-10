@@ -49,7 +49,7 @@ void ContactListener::BeginContact(b2Contact* contact)
 		bool playerVsEnemy = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Enemy) 
 			|| (dataA->tag == BodyTag::Enemy && dataB->tag == BodyTag::Player);
 
-		if (playerVsEnemy) {
+		if (playerVsEnemy && !sensorA && !sensorB) {
 			Player* player = (dataA->tag == BodyTag::Player) ? reinterpret_cast<Player*>(dataA->entity) : reinterpret_cast<Player*>(dataB->entity);
 			if (player->GetState() != PlayerState::Falling) {
 				player->TakeDamage();
@@ -105,14 +105,18 @@ void ContactListener::BeginContact(b2Contact* contact)
 		bool isEnemyBodyB = dataB && dataB->tag == BodyTag::Enemy;
 
 		if ((isPlayerBodyA && isEnemyBodyB) || (isEnemyBodyA && isPlayerBodyB)) {
-			b2Body* playerBody = isPlayerBodyA ? bodyA : bodyB;
-			BodyData* playerData = isPlayerBodyA ? dataA : dataB;
-			BodyData* enemyData = isEnemyBodyA ? dataA : dataB;
-			if (playerBody->GetLinearVelocity().y > 1.0f) { // is player falling
-				Player* player = reinterpret_cast<Player*>(playerData->entity);
-				player->Bounce();
-				Enemy* enemy = reinterpret_cast<Enemy*>(enemyData->entity);
-				enemy->TakeDamage();
+			bool fixtureSensorA = contact->GetFixtureA()->IsSensor();
+			bool fixtureSensorB = contact->GetFixtureB()->IsSensor();
+			if (!fixtureSensorA && !fixtureSensorB) {
+				b2Body* playerBody = isPlayerBodyA ? bodyA : bodyB;
+				BodyData* playerData = isPlayerBodyA ? dataA : dataB;
+				BodyData* enemyData = isEnemyBodyA ? dataA : dataB;
+				if (playerBody->GetLinearVelocity().y > 1.0f) {
+					Player* player = reinterpret_cast<Player*>(playerData->entity);
+					player->Bounce();
+					Enemy* enemy = reinterpret_cast<Enemy*>(enemyData->entity);
+					enemy->TakeDamage();
+				}
 			}
 		}
 
