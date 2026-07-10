@@ -156,6 +156,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="core\ContactListener.cpp" />
     <ClCompile Include="core\PhysicsWorld.cpp" />
     <ClCompile Include="domain\CircleEntity.cpp" />
+    <ClCompile Include="domain\Enemy.cpp" />
     <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\GameUI.cpp" />
     <ClCompile Include="main.cpp" />
@@ -172,6 +173,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="core\PhysicsWorld.h" />
     <ClInclude Include="domain\CircleEntity.h" />
     <ClInclude Include="domain\Entity.h" />
+    <ClInclude Include="domain\Enemy.h" />
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\GameUI.h" />
     <ClInclude Include="game\GameState.h" />

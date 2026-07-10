@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <raylib.h>
+#include "Enemy.h"
 
 class Renderer;
 class RectangleEntity;

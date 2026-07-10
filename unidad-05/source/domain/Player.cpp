@@ -23,6 +23,20 @@ Player::Player(b2World& world, float startX, float startY) {
 Player::~Player() {
 }
 
+void Player::TakeDamage() {
+	if (state != PlayerState::TakingDamage && state != PlayerState::Dead) {
+		printf("Player has taken damage.\n");
+		state = PlayerState::TakingDamage;
+	}
+}
+
+void Player::Die() {
+	if(state != PlayerState::Dead) {
+		printf("Player has died.\n");
+		state = PlayerState::Dead;
+	}
+}
+
 void Player::IncrementGroundContacts() {
 	groundContactCount++;
 }
@@ -47,8 +61,22 @@ void Player::SetAction(PlayerAction action, bool active) {
 	}
 }
 
+void Player::Bounce() {
+	hitbox->GetBody()->SetLinearVelocity(b2Vec2(hitbox->GetBody()->GetLinearVelocity().x, 0.0f));
+	hitbox->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0.0f, -jumpImpulse / 2.0f), true);
+}
+
 void Player::Update(float deltaTime) {
 	isGrounded = groundContactCount > 0 && hitbox->GetBody()->GetLinearVelocity().y >= 0;
+
+	if(state == PlayerState::TakingDamage) {
+		life--;
+		if (life <= 0) {
+			Die();
+		} else {
+			state = PlayerState::Idle; 
+		}
+	}
 
 	if(actionState.left) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(-moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
@@ -63,6 +91,25 @@ void Player::Update(float deltaTime) {
 	if(actionState.jump && isGrounded) {
 		hitbox->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0.0f, -jumpImpulse), true);
 		actionState.jump = false; // Prevent continuous jumping
+	}
+
+	if (state != PlayerState::TakingDamage && state != PlayerState::Dead) {
+		if (isGrounded) {
+			if (hitbox->GetBody()->GetLinearVelocity().x != 0.0f) {
+				state = PlayerState::Walking;
+			}
+			else {
+				state = PlayerState::Idle;
+			}
+		}
+		else {
+			if (hitbox->GetBody()->GetLinearVelocity().y < 0.0f) {
+				state = PlayerState::Jumping;
+			}
+			else {
+				state = PlayerState::Falling;
+			}
+		}
 	}
 
 	hitbox->Update(deltaTime);

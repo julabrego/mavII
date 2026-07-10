@@ -5,6 +5,7 @@
 #include "GameState.h"
 #include "GameUI.h"
 #include "../domain/Player.h"
+#include "../domain/Enemy.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -27,6 +28,7 @@ private:
 	
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<Player> player;
+	std::unique_ptr<Enemy> enemy1;
 
 	GameUI ui;
 

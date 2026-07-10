@@ -3,7 +3,7 @@ enum class BodyTag
 {
 	None,
 	Player,
-	PlayerGroundSensor,
+	Enemy,
 	RotablePlatformTriggerArea,
 	RotablePlatformTriggerer,
 	Target,

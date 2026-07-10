@@ -1,6 +1,7 @@
 #include "ContactListener.h"
 #include "BodyData.h"
 #include "../domain/Player.h"
+#include "../domain/Enemy.h"
 #include <box2d.h>
 
 void ContactListener::BeginContact(b2Contact* contact)
@@ -43,6 +44,16 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		if (rotablePlatformTriggererIsInArea) {
 			isRotablePlatformTriggered = true;
+		}
+
+		bool playerVsEnemy = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Enemy) 
+			|| (dataA->tag == BodyTag::Enemy && dataB->tag == BodyTag::Player);
+
+		if (playerVsEnemy) {
+			Player* player = (dataA->tag == BodyTag::Player) ? reinterpret_cast<Player*>(dataA->entity) : reinterpret_cast<Player*>(dataB->entity);
+			if (player->GetState() != PlayerState::Falling) {
+				player->TakeDamage();
+			}
 		}
 	}
 	void ContactListener::EndContact(b2Contact* contact)
@@ -87,6 +98,23 @@ void ContactListener::BeginContact(b2Contact* contact)
 		b2Body* bodyB = contact->GetFixtureB()->GetBody();
 		BodyData* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
 		BodyData* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
+
+		bool isPlayerBodyA = dataA && dataA->tag == BodyTag::Player;
+		bool isEnemyBodyA = dataA && dataA->tag == BodyTag::Enemy;
+		bool isPlayerBodyB = dataB && dataB->tag == BodyTag::Player;
+		bool isEnemyBodyB = dataB && dataB->tag == BodyTag::Enemy;
+
+		if ((isPlayerBodyA && isEnemyBodyB) || (isEnemyBodyA && isPlayerBodyB)) {
+			b2Body* playerBody = isPlayerBodyA ? bodyA : bodyB;
+			BodyData* playerData = isPlayerBodyA ? dataA : dataB;
+			BodyData* enemyData = isEnemyBodyA ? dataA : dataB;
+			if (playerBody->GetLinearVelocity().y > 1.0f) { // is player falling
+				Player* player = reinterpret_cast<Player*>(playerData->entity);
+				player->Bounce();
+				Enemy* enemy = reinterpret_cast<Enemy*>(enemyData->entity);
+				enemy->TakeDamage();
+			}
+		}
 
 		bool playerA = dataA && dataA->tag == BodyTag::Player;
 		bool playerB = dataB && dataB->tag == BodyTag::Player;

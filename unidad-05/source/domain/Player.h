@@ -10,6 +10,15 @@ enum class PlayerAction {
 	Jump
 };
 
+enum class PlayerState {
+	Idle,
+	Walking,
+	Jumping,
+	Falling,
+	TakingDamage,
+	Dead
+};
+
 class Player : public Entity
 {
 public:
@@ -17,17 +26,25 @@ public:
 	~Player();
 
 	void SetAction(PlayerAction action, bool active);
+	void Bounce();
 	void IncrementGroundContacts();
 	void DecrementGroundContacts();
+	void TakeDamage();
+	void Die();
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
+
+	PlayerState GetState() const { return state; }
+	b2Body* GetBody() const { return hitbox->GetBody(); }
+
 
 private:
 	static constexpr float PLAYER_WIDTH = 30.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float SENSOR_HEIGHT = 12.0f;
 	static constexpr Color SENSOR_DEBUG_COLOR = RED;
+	PlayerState state = PlayerState::Idle;
 
 	struct ActionState {
 		bool left = false;
@@ -45,5 +62,7 @@ private:
 
 	bool isGrounded = false;
 	int groundContactCount = 0;
+
+	int life = 1;
 
 };

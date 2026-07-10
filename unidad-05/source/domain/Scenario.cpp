@@ -17,7 +17,6 @@ Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
 	CreateStaticWalls(world);
-
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -71,7 +70,7 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	movableWall->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(movableWallData);
 	movableWall->GetBody()->SetLinearDamping(5.0f);
 
-	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, GREEN, 1.0f, 10.0f, 0.0f);
+	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, ORANGE, 1.0f, 10.0f, 0.0f);
 	box1->GetBody()->SetLinearDamping(1.5f);
 	box1->GetBody()->SetAngularDamping(2.0f);
 	BodyData* box1Data = new BodyData({ BodyTag::Box });
