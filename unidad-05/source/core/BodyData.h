@@ -9,6 +9,7 @@ enum class BodyTag
 	Target,
 	Wall,
 	Ground,
+	Box,
 };
 
 struct BodyData

@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../core/PhysicsConstants.h"
 #include "../core/BodyData.h"
+#include <algorithm>
 
 Player::Player(b2World& world, float startX, float startY) {
 	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, YELLOW, density, friction, bounciness);
@@ -22,6 +23,14 @@ Player::Player(b2World& world, float startX, float startY) {
 Player::~Player() {
 }
 
+void Player::IncrementGroundContacts() {
+	groundContactCount++;
+}
+
+void Player::DecrementGroundContacts() {
+	groundContactCount = std::max(0, groundContactCount - 1);
+}
+
 void Player::SetAction(PlayerAction action, bool active) {
 	switch (action) {
 	case PlayerAction::Left:
@@ -39,6 +48,8 @@ void Player::SetAction(PlayerAction action, bool active) {
 }
 
 void Player::Update(float deltaTime) {
+	isGrounded = groundContactCount > 0 && hitbox->GetBody()->GetLinearVelocity().y >= 0;
+
 	if(actionState.left) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(-moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
 	}

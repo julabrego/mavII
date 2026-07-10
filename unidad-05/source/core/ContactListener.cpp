@@ -20,14 +20,16 @@ void ContactListener::BeginContact(b2Contact* contact)
 		// TODO: extract: player in ground flag
 		bool sensorA = contact->GetFixtureA()->IsSensor();
 		bool sensorB = contact->GetFixtureB()->IsSensor();
-		bool groundA = dataA->tag == BodyTag::Ground;
-		bool groundB = dataB->tag == BodyTag::Ground;
+		bool groundA = dataA->tag == BodyTag::Ground || dataA->tag == BodyTag::Box;
+		bool groundB = dataB->tag == BodyTag::Ground || dataB->tag == BodyTag::Box;
 
 		if ((sensorA && groundB) || (sensorB && groundA)) {
-			b2Body* playerBody = sensorA ? bodyA : bodyB;
-			BodyData* playerData = reinterpret_cast<BodyData*>(playerBody->GetUserData().pointer);
-			Player* player = reinterpret_cast<Player*>(playerData->entity);
-			player->SetGrounded(true);
+			b2Body* sensorBody = sensorA ? bodyA : bodyB;
+			BodyData* sensorData = reinterpret_cast<BodyData*>(sensorBody->GetUserData().pointer);
+			if (sensorData && sensorData->tag == BodyTag::Player && sensorData->entity) {
+				Player* player = reinterpret_cast<Player*>(sensorData->entity);
+				player->IncrementGroundContacts();
+			}
 		}
 
 		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
@@ -59,14 +61,16 @@ void ContactListener::BeginContact(b2Contact* contact)
 
 		bool sensorA = contact->GetFixtureA()->IsSensor();
 		bool sensorB = contact->GetFixtureB()->IsSensor();
-		bool groundA = dataA->tag == BodyTag::Ground;
-		bool groundB = dataB->tag == BodyTag::Ground;
+		bool groundA = dataA->tag == BodyTag::Ground || dataA->tag == BodyTag::Box;
+		bool groundB = dataB->tag == BodyTag::Ground || dataB->tag == BodyTag::Box;
 
 		if ((sensorA && groundB) || (sensorB && groundA)) {
-			b2Body* playerBody = sensorA ? bodyA : bodyB;
-			BodyData* playerData = reinterpret_cast<BodyData*>(playerBody->GetUserData().pointer);
-			Player* player = reinterpret_cast<Player*>(playerData->entity);
-			player->SetGrounded(false);
+			b2Body* sensorBody = sensorA ? bodyA : bodyB;
+			BodyData* sensorData = reinterpret_cast<BodyData*>(sensorBody->GetUserData().pointer);
+			if (sensorData && sensorData->tag == BodyTag::Player && sensorData->entity) {
+				Player* player = reinterpret_cast<Player*>(sensorData->entity);
+				player->DecrementGroundContacts();
+			}
 		}
 
 		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
@@ -75,4 +79,37 @@ void ContactListener::BeginContact(b2Contact* contact)
 			playerVsTargetContact = false;
 		}
 
+	}
+
+	void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+	{
+		b2Body* bodyA = contact->GetFixtureA()->GetBody();
+		b2Body* bodyB = contact->GetFixtureB()->GetBody();
+		BodyData* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
+		BodyData* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
+
+		if (!dataA || !dataB) return;
+
+		bool playerA = dataA->tag == BodyTag::Player;
+		bool playerB = dataB->tag == BodyTag::Player;
+		bool boxA = dataA->tag == BodyTag::Box;
+		bool boxB = dataB->tag == BodyTag::Box;
+
+		if ((playerA && boxB) || (playerB && boxA))
+		{
+			if (contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())
+				return;
+
+			b2WorldManifold manifold;
+			contact->GetWorldManifold(&manifold);
+
+			if (fabs(manifold.normal.y) > fabs(manifold.normal.x))
+			{
+				contact->SetFriction(0.0f);
+			}
+			else
+			{
+				contact->ResetFriction();
+			}
+		}
 	}

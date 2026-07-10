@@ -65,14 +65,17 @@ void Scenario::CreateStaticWalls(b2World& world) {
 
 	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)world.CreateJoint(&rotablePlatformJointDef);
 
-	movableWall = RectangleEntity::CreateDynamic(world, 210.0f, 375.0f, 15.0f, 164.0f, 0.0f, COLOR_STICK, 10.0f, 30.0f, 0.0f);
+	movableWall = RectangleEntity::CreateDynamic(world, 210.0f, 375.0f, 15.0f, 160.0f, 0.0f, COLOR_STICK, 10.0f, 30.0f, 0.0f);
 	movableWall->GetBody()->SetFixedRotation(true);
 	BodyData* movableWallData = new BodyData({ BodyTag::RotablePlatformTriggerer });
 	movableWall->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(movableWallData);
+	movableWall->GetBody()->SetLinearDamping(5.0f);
 
-	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
-	box2 = RectangleEntity::CreateDynamic(world, 555.0f, 495.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
-	box3 = RectangleEntity::CreateDynamic(world, 675.0f, 495.0f, 45.0f, 45.0f, 0.0f, COLOR_STICK, 1.0f, 30.0f, 0.0f);
+	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, GREEN, 1.0f, 10.0f, 0.0f);
+	box1->GetBody()->SetLinearDamping(1.5f);
+	box1->GetBody()->SetAngularDamping(2.0f);
+	BodyData* box1Data = new BodyData({ BodyTag::Box });
+	box1->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(box1Data);
 
 	obstacleSensor1 = RectangleEntity::CreateSensor(world, 390.0f, 405.0f, 60.0f, 135.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
 	BodyData* sensorData = new BodyData({ BodyTag::RotablePlatformTriggerArea });
@@ -91,8 +94,6 @@ void Scenario::Update(float deltaTime)
 	rotablePlatform->Update(deltaTime);
 	movableWall->Update(deltaTime);
 	box1->Update(deltaTime);
-	box2->Update(deltaTime);
-	box3->Update(deltaTime);
 }
 
 void Scenario::Render(Renderer& renderer)
@@ -105,8 +106,6 @@ void Scenario::Render(Renderer& renderer)
 	rotablePlatform->Render(renderer);
 	movableWall->Render(renderer);
 	box1->Render(renderer);
-	box2->Render(renderer);
-	box3->Render(renderer);
 
 	DrawTexture(finalFlagTexture, 922.5f, 470.0f, WHITE);
 

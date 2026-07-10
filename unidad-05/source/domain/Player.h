@@ -17,7 +17,8 @@ public:
 	~Player();
 
 	void SetAction(PlayerAction action, bool active);
-	void SetGrounded(bool grounded) { isGrounded = grounded; }
+	void IncrementGroundContacts();
+	void DecrementGroundContacts();
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
@@ -25,7 +26,7 @@ public:
 private:
 	static constexpr float PLAYER_WIDTH = 30.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
-	static constexpr float SENSOR_HEIGHT = 1.0f;
+	static constexpr float SENSOR_HEIGHT = 12.0f;
 	static constexpr Color SENSOR_DEBUG_COLOR = RED;
 
 	struct ActionState {
@@ -37,11 +38,12 @@ private:
 	std::unique_ptr<RectangleEntity> hitbox;
 
 	float moveSpeed = 5.0f;
-	float jumpImpulse = 8.0f;
+	float jumpImpulse = 18.0f;
 	float density = 1.0f;
 	float bounciness = 0.0f;
 	float friction = 0.5f;
 
 	bool isGrounded = false;
+	int groundContactCount = 0;
 
 };

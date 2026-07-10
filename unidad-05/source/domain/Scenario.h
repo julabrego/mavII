@@ -33,8 +33,6 @@ private:
     std::unique_ptr<RectangleEntity> rotablePlatform;
     std::unique_ptr<RectangleEntity> movableWall;
     std::unique_ptr<RectangleEntity> box1;
-    std::unique_ptr<RectangleEntity> box2;
-    std::unique_ptr<RectangleEntity> box3;
     
     std::unique_ptr<RectangleEntity> obstacleSensor1;
 
