@@ -88,28 +88,14 @@ void ContactListener::BeginContact(b2Contact* contact)
 		BodyData* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
 		BodyData* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
 
-		if (!dataA || !dataB) return;
+		bool playerA = dataA && dataA->tag == BodyTag::Player;
+		bool playerB = dataB && dataB->tag == BodyTag::Player;
 
-		bool playerA = dataA->tag == BodyTag::Player;
-		bool playerB = dataB->tag == BodyTag::Player;
-		bool boxA = dataA->tag == BodyTag::Box;
-		bool boxB = dataB->tag == BodyTag::Box;
-
-		if ((playerA && boxB) || (playerB && boxA))
+		if (playerA || playerB)
 		{
 			if (contact->GetFixtureA()->IsSensor() || contact->GetFixtureB()->IsSensor())
 				return;
 
-			b2WorldManifold manifold;
-			contact->GetWorldManifold(&manifold);
-
-			if (fabs(manifold.normal.y) > fabs(manifold.normal.x))
-			{
-				contact->SetFriction(0.0f);
-			}
-			else
-			{
-				contact->ResetFriction();
-			}
+			contact->SetFriction(0.0f);
 		}
 	}
