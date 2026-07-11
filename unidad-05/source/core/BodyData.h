@@ -6,10 +6,10 @@ enum class BodyTag
 	Enemy,
 	RotablePlatformTriggerArea,
 	RotablePlatformTriggerer,
-	Target,
 	Wall,
 	Ground,
 	Box,
+	FinishSensor
 };
 
 struct BodyData

@@ -3,6 +3,7 @@
 #include <memory>
 #include "RectangleEntity.h"
 #include "../core/Renderer.h"
+#include "../game/GameState.h"
 
 enum class PlayerAction {
 	Left,
@@ -22,7 +23,7 @@ enum class PlayerState {
 class Player : public Entity
 {
 public:
-	Player(b2World& world, float startX = GetScreenWidth() / 2.0f, float startY = GetScreenHeight() / 2.0f);
+	Player(b2World& world, GameContext& gameContext, float startX = GetScreenWidth() / 2.0f, float startY = GetScreenHeight() / 2.0f);
 	~Player();
 
 	void SetAction(PlayerAction action, bool active);
@@ -38,8 +39,9 @@ public:
 	PlayerState GetState() const { return state; }
 	b2Body* GetBody() const { return hitbox->GetBody(); }
 
-
 private:
+	void DrawDebugSensors(); 
+
 	static constexpr float PLAYER_WIDTH = 30.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float SENSOR_HEIGHT = 12.0f;
@@ -51,6 +53,8 @@ private:
 		bool right = false;
 		bool jump = false;
 	} actionState;
+
+	GameContext& context;
 
 	std::unique_ptr<RectangleEntity> hitbox;
 

@@ -33,12 +33,6 @@ void ContactListener::BeginContact(b2Contact* contact)
 			}
 		}
 
-		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
-
-		if (playerVsTarget) {
-			playerVsTargetContact = true;
-		}
-
 		// TODO: extract: rotable platform trigger area vs rotable platform triggerer
 		bool rotablePlatformTriggererIsInArea = (dataA->tag == BodyTag::RotablePlatformTriggerArea && dataB->tag == BodyTag::RotablePlatformTriggerer) || (dataA->tag == BodyTag::RotablePlatformTriggerer && dataB->tag == BodyTag::RotablePlatformTriggerArea);
 
@@ -54,6 +48,13 @@ void ContactListener::BeginContact(b2Contact* contact)
 			if (player->GetState() != PlayerState::Falling) {
 				player->TakeDamage();
 			}
+		}
+
+		bool playerEnteredFinishSensor = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::FinishSensor) 
+			|| (dataA->tag == BodyTag::FinishSensor && dataB->tag == BodyTag::Player);
+
+		if (playerEnteredFinishSensor) {
+			playerReachedFinishSensor = true;
 		}
 	}
 	void ContactListener::EndContact(b2Contact* contact)
@@ -83,13 +84,6 @@ void ContactListener::BeginContact(b2Contact* contact)
 				player->DecrementGroundContacts();
 			}
 		}
-
-		bool playerVsTarget = (dataA->tag == BodyTag::Player && dataB->tag == BodyTag::Target) || (dataA->tag == BodyTag::Target && dataB->tag == BodyTag::Player);
-
-		if (playerVsTarget) {
-			playerVsTargetContact = false;
-		}
-
 	}
 
 	void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)

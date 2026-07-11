@@ -5,6 +5,7 @@
 #include <vector>
 #include <raylib.h>
 #include "Enemy.h"
+#include "../game/GameState.h"
 
 class Renderer;
 class RectangleEntity;
@@ -13,7 +14,7 @@ class CircleEntity;
 
 class Scenario {
 public:
-    Scenario(b2World& world, float screenWidth, float screenHeight);
+    Scenario(b2World& world, GameContext& gameContext, float screenWidth, float screenHeight);
     ~Scenario();
     void Update(float deltaTime);
     void Render(Renderer& renderer);
@@ -25,6 +26,8 @@ private:
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
 
     void CreateStaticWalls(b2World& world);
+
+	GameContext& context;
 	
     std::unique_ptr<RectangleEntity> ground;
     std::unique_ptr<RectangleEntity> ground2;
@@ -36,6 +39,8 @@ private:
     std::unique_ptr<RectangleEntity> box1;
     
     std::unique_ptr<RectangleEntity> obstacleSensor1;
+
+    std::unique_ptr<RectangleEntity> finishSensor;
 
     Texture2D finalFlagTexture = LoadTexture("../assets/flag.png");
 };

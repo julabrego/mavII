@@ -18,15 +18,10 @@ const float IMPULSE_STRENGTH = 30.0f;
 Game::Game(int screenWidth, int screenHeight)
 	: physicsWorld(std::make_unique<PhysicsWorld>(GRAVITY))
 	, renderer(std::make_unique<Renderer>(COLOR_SKY))
+	, screenWidth(screenWidth)
+	, screenHeight(screenHeight)
 {
-	b2World& world = *physicsWorld->GetWorld();
-
-	scenario = std::make_unique<Scenario>(world, screenWidth, screenHeight);
-	player = std::make_unique<Player>(world, 30.0f, 480.0f);
-
-	// TODO: extract: create stuff
-	enemy1 = std::make_unique<Enemy>(world, 600.0f, 480.0f);
-
+	RestartGame();
 }
 
 Game::~Game()
@@ -48,32 +43,56 @@ void Game::Run()
 
 void Game::HandleInput()
 {
-	if (!player) return;
+	if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
+		if (IsKeyPressed(KEY_ENTER)) {
+			StartGame();
+		}
+		return;
+	}
 
-	// Player movement input
-	player->SetAction(PlayerAction::Left, IsKeyDown(KEY_LEFT));
-	player->SetAction(PlayerAction::Right, IsKeyDown(KEY_RIGHT));
-	player->SetAction(PlayerAction::Jump, IsKeyDown(KEY_SPACE));
+	if (player) {
+		// Player movement input
+		player->SetAction(PlayerAction::Left, IsKeyDown(KEY_LEFT));
+		player->SetAction(PlayerAction::Right, IsKeyDown(KEY_RIGHT));
+		player->SetAction(PlayerAction::Jump, IsKeyDown(KEY_SPACE));
+	}
 
 	// TODO: debug
-	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-		b2Vec2 mousePos = { GetMouseX() * METERS_PER_PIXEL, GetMouseY() * METERS_PER_PIXEL };
-		player->GetBody()->SetTransform(mousePos, 0.0f);
-		player->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+	if (
+		IsKeyPressed(KEY_D)) {
+		ToggleDebugMode();
 	}
-	// if (IsKeyPressed(KEY_SPACE)) {
-	// 	if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
-	// 		RestartGame();
-	// 	}
-	// }
 
+	if (context.debugMode) {
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+			b2Vec2 mousePos = { GetMouseX() * METERS_PER_PIXEL, GetMouseY() * METERS_PER_PIXEL };
+			player->GetBody()->SetTransform(mousePos, 0.0f);
+			player->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+		}
+	}
+}
+
+void Game::StartGame()
+{
+	RestartGame();
+	context.state = GameState::Playing;
 }
 
 void Game::RestartGame()
 {
-	context.score = 0;
-	context.touchedGround = false;
-	context.state = GameState::Idle;
+	physicsWorld = std::make_unique<PhysicsWorld>(GRAVITY);
+	b2World& world = *physicsWorld->GetWorld();
+
+	context = GameContext{};
+
+	scenario = std::make_unique<Scenario>(world, context, screenWidth, screenHeight);
+	player = std::make_unique<Player>(world, context, 30.0f, 480.0f);
+	enemy1 = std::make_unique<Enemy>(world, context, 600.0f, 480.0f);
+}
+
+void Game::ToggleDebugMode()
+{
+	context.debugMode = !context.debugMode;
 }
 
 
@@ -83,15 +102,18 @@ void Game::Update(float deltaTime)
 
 	if (player) {
 		player->Update(deltaTime);
-		if(player->GetState() == PlayerState::Dead) {
+		if(player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
 			physicsWorld->GetWorld()->DestroyBody(player->GetBody());
 			player.reset();
+
+			context.state = GameState::Finished;
+			context.finishState = GameFinishState::Lost;
 		}
 	}
 
 	if (enemy1) {
 		enemy1->Update(deltaTime);
-		if(enemy1->GetState() == EnemyState::Dead) {
+		if(enemy1->GetState() == EnemyState::Dead ) {
 			physicsWorld->GetWorld()->DestroyBody(enemy1->GetBody());
 			enemy1.reset();
 		}
@@ -101,6 +123,11 @@ void Game::Update(float deltaTime)
 
 	if (contactListener.isRotablePlatformTriggered) {
 		scenario->EnablePlatformRotation();
+	}
+
+	if(contactListener.playerReachedFinishSensor && context.state == GameState::Playing) {
+		context.state = GameState::Finished;
+		context.finishState = GameFinishState::Won;
 	}
 }
 

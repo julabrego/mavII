@@ -3,7 +3,7 @@
 #include "../core/BodyData.h"
 #include <algorithm>
 
-Player::Player(b2World& world, float startX, float startY) {
+Player::Player(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
 	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, YELLOW, density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
 	BodyData* playerData = new BodyData({ BodyTag::Player, this });
@@ -31,7 +31,7 @@ void Player::TakeDamage() {
 }
 
 void Player::Die() {
-	if(state != PlayerState::Dead) {
+	if (state != PlayerState::Dead) {
 		printf("Player has died.\n");
 		state = PlayerState::Dead;
 	}
@@ -67,28 +67,36 @@ void Player::Bounce() {
 }
 
 void Player::Update(float deltaTime) {
+	if (context.state != GameState::Playing) {
+		b2Body* body = hitbox->GetBody();
+		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+		body->SetGravityScale(0.0f);
+		return;
+	}
+
 	isGrounded = groundContactCount > 0 && hitbox->GetBody()->GetLinearVelocity().y >= 0;
 
-	if(state == PlayerState::TakingDamage) {
+	if (state == PlayerState::TakingDamage) {
 		life--;
 		if (life <= 0) {
 			Die();
-		} else {
-			state = PlayerState::Idle; 
+		}
+		else {
+			state = PlayerState::Idle;
 		}
 	}
 
-	if(actionState.left) {
+	if (actionState.left) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(-moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
 	}
-	else if(actionState.right) {
+	else if (actionState.right) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
 	}
 	else {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, hitbox->GetBody()->GetLinearVelocity().y));
 	}
 
-	if(actionState.jump && isGrounded) {
+	if (actionState.jump && isGrounded) {
 		hitbox->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0.0f, -jumpImpulse), true);
 		actionState.jump = false; // Prevent continuous jumping
 	}
@@ -118,7 +126,12 @@ void Player::Update(float deltaTime) {
 void Player::Render(Renderer& renderer) {
 	hitbox->Render(renderer);
 
-	// DEBUG: draw sensor
+	if (context.debugMode) {
+		DrawDebugSensors();
+	}
+}
+
+void Player::DrawDebugSensors() {
 	b2Vec2 pos = hitbox->GetBody()->GetPosition();
 	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
 	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;

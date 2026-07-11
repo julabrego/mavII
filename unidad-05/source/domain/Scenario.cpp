@@ -13,10 +13,15 @@ Scenario::~Scenario() {
 	UnloadTexture(finalFlagTexture);
 }
 
-Scenario::Scenario(b2World& world, float screenWidth, float screenHeight)
+Scenario::Scenario(b2World& world, GameContext& gameContext, float screenWidth, float screenHeight) 
+	: context(gameContext)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
 	CreateStaticWalls(world);
+
+	finishSensor = RectangleEntity::CreateSensor(world, 900.0f, 405.0f, 105.0f, 135.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
+	BodyData* finishSensorData = new BodyData({ BodyTag::FinishSensor });
+	finishSensor->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(finishSensorData);
 }
 
 void Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -109,5 +114,8 @@ void Scenario::Render(Renderer& renderer)
 	DrawTexture(finalFlagTexture, 922.5f, 470.0f, WHITE);
 
 	// DEBUG
-	obstacleSensor1->Render(renderer);
+	if(context.debugMode) {
+		obstacleSensor1->Render(renderer);
+		finishSensor->Render(renderer);
+	}
 }

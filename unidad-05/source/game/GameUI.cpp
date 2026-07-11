@@ -2,17 +2,17 @@
 #include "../core/Renderer.h"
 #include <string>
 
-std::string mainMenuText = R"(--- LA BOUNCING BOCH ---
+std::string mainMenuText = R"(--- SUPER MAYRO BOSS ---
 
-ESPACIO - Comenzar
+ENTER - Comenzar
 
 Instrucciones:
-ESPACIO - Lanzar la pelota
+FLECHAS - Moverse
+ESPACIO - Saltar
 
-Rebota contra los targets para sumar puntos)";
+D - Modo debug)";
 
 void GameUI::Draw(Renderer& renderer, const GameContext& context) {
-	return;
 	if (context.state == GameState::MainMenu) {
 		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		renderer.DrawCenteredText(
@@ -20,9 +20,17 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context) {
 	}
 	else if (context.state == GameState::Finished) {
 		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
-		std::string msg = "Game Over\nScore: " + std::to_string(context.score) + "\n\nESPACIO - volver a jugar";
+		std::string msg = "";
+		if (context.finishState == GameFinishState::Won) {
+			msg = "Ganaste!\n\ENTER - volver a jugar";
+		}
+		else if (context.finishState == GameFinishState::Lost) {
+			msg = "Perdiste\n\ENTER - volver a jugar";
+		}
 		renderer.DrawCenteredText(msg.c_str(), 40, GetScreenHeight() / 2 - 100, WHITE);
 	}
 
-	DrawText(("Score: " + std::to_string(context.score)).c_str(), 20, 570, 20, BLACK);
+	if (context.debugMode) {
+		DrawText("DEBUG MODE (click para reubicar al personaje)", 10, 10, 20, RED);
+	}
 }

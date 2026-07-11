@@ -32,11 +32,14 @@ private:
 
 	GameUI ui;
 
-	Vector2 initialBallPosition = { 62.0f, GetScreenHeight() / 2.0f };
+	int screenWidth;
+	int screenHeight;
 
 	void HandleInput();
+	void StartGame();
 	void RestartGame();
 	void Update(float deltaTime);
 	void Draw();
+	void ToggleDebugMode();
 };
 

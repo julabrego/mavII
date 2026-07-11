@@ -3,6 +3,7 @@
 #include "../core/Renderer.h"
 #include "RectangleEntity.h"
 #include <box2d.h>
+#include "../game/GameState.h"	
 
 enum class EnemyState {
 	Moving,
@@ -13,7 +14,7 @@ enum class EnemyState {
 class Enemy : public Entity
 {
 public:
-	Enemy(b2World& world, float startX = GetScreenWidth() / 2.0f, float startY = GetScreenHeight() / 2.0f);
+	Enemy(b2World& world, GameContext& gameContext, float startX = GetScreenWidth() / 2.0f, float startY = GetScreenHeight() / 2.0f);
 	~Enemy();
 
 	void TakeDamage();
@@ -43,4 +44,6 @@ private:
 	b2Fixture* rightEdgeSensor = nullptr;
 	b2Fixture* leftEdgeSensor = nullptr;
 	float wallCooldown = 0.0f;
+
+	GameContext& context;
 };

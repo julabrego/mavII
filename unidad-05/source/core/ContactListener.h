@@ -10,6 +10,6 @@ public:
 	void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
 
 	bool isRotablePlatformTriggered = false;
-	bool playerVsTargetContact = false;
+	bool playerReachedFinishSensor = false;
 };
 

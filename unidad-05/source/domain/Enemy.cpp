@@ -2,8 +2,8 @@
 #include "../core/BodyData.h"
 #include "../core/PhysicsConstants.h"
 
-Enemy::Enemy(b2World& world, float startX, float startY)
-	: world(world) {
+Enemy::Enemy(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext)
+, world(world) {
 	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, ENEMY_WIDTH, ENEMY_HEIGHT, 0.0f, RED, density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
 	BodyData* enemyData = new BodyData({ BodyTag::Enemy, this });
@@ -44,11 +44,19 @@ void Enemy::Die() {
 void Enemy::Update(float deltaTime) {
 	if (state == EnemyState::TakingDamage) {
 		life--;
-		if(life <= 0) {
+		if (life <= 0) {
 			Die();
-		} else {
-			state = EnemyState::Moving; 
 		}
+		else {
+			state = EnemyState::Moving;
+		}
+	}
+
+	if (context.state != GameState::Playing) {
+		b2Body* body = hitbox->GetBody();
+		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+		body->SetGravityScale(0.0f);
+		return;
 	}
 
 	if (state == EnemyState::Moving) {
@@ -61,7 +69,7 @@ void Enemy::Update(float deltaTime) {
 
 		if (isGrounded) {
 			bool blockedByWall = (prevVelX * direction <= 0.0f && direction != 0.0f) ||
-			               (prevVelX != 0.0f && fabsf(prevVelX) < moveSpeed * 0.5f);
+				(prevVelX != 0.0f && fabsf(prevVelX) < moveSpeed * 0.5f);
 
 			// TODO: extract pit detection via edge sensor
 			b2Fixture* activeEdge = (direction > 0) ? rightEdgeSensor : leftEdgeSensor;
@@ -87,7 +95,8 @@ void Enemy::Update(float deltaTime) {
 			if (wallCooldown <= 0.0f && blockedByWall) {
 				direction *= -1.0f;
 				wallCooldown = 0.3f;
-			} else if (!groundAhead) {
+			}
+			else if (!groundAhead) {
 				direction *= -1.0f;
 			}
 		}
@@ -98,7 +107,10 @@ void Enemy::Update(float deltaTime) {
 
 void Enemy::Render(Renderer& renderer) {
 	hitbox->Render(renderer);
-	DrawDebugSensors();
+
+	if (context.debugMode) {
+		DrawDebugSensors();
+	}
 }
 
 void Enemy::DrawDebugSensors() {

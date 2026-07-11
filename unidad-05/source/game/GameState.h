@@ -2,16 +2,18 @@
 
 enum class GameState {
 	MainMenu,
-	Idle,
-	Launching,
-	Resolved,
+	Playing,
 	Finished,
+};
+
+enum class GameFinishState {
+	None,
+	Won,
+	Lost
 };
 
 struct GameContext {
 	GameState state = GameState::MainMenu;
-	int score = 0;
-
-	bool touchedGround = false;
-	bool isStopped = false;
+	GameFinishState finishState = GameFinishState::None;
+	bool debugMode = false;
 };
