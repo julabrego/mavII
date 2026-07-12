@@ -36,7 +36,7 @@ void Game::Run()
 
 		float deltaTime = GetFrameTime();
 
-		if(context.state == GameState::Playing) {
+		if (context.state == GameState::Playing) {
 			physicsWorld->Update(deltaTime);
 		}
 
@@ -47,7 +47,7 @@ void Game::Run()
 
 void Game::HandleInput()
 {
-	if(context.state == GameState::MainMenu || context.state == GameState::Finished) {
+	if (context.state == GameState::MainMenu || context.state == GameState::Finished) {
 		if (IsKeyPressed(KEY_ENTER)) {
 			StartGame();
 		}
@@ -55,24 +55,23 @@ void Game::HandleInput()
 	}
 
 	if (player) {
-		// Player movement input
 		player->SetAction(PlayerAction::Left, IsKeyDown(KEY_LEFT));
 		player->SetAction(PlayerAction::Right, IsKeyDown(KEY_RIGHT));
 		player->SetAction(PlayerAction::Jump, IsKeyDown(KEY_SPACE));
 	}
 
-	if (
-		IsKeyPressed(KEY_D)) {
+	if (IsKeyPressed(KEY_D)) {
 		ToggleDebugMode();
-	} else if (IsKeyPressed(KEY_R)) {
+	}
+	else if (IsKeyPressed(KEY_R)) {
 		RestartGame();
 	}
 
 	if (context.debugMode) {
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-			b2Vec2 mousePos = { GetMouseX() * METERS_PER_PIXEL, GetMouseY() * METERS_PER_PIXEL };
-			player->GetBody()->SetTransform(mousePos, 0.0f);
-			player->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+			float mouseX = GetMouseX() * METERS_PER_PIXEL;
+			float mouseY = GetMouseY() * METERS_PER_PIXEL;
+			player->TeleportTo(mouseX, mouseY);
 		}
 	}
 }
@@ -100,21 +99,11 @@ void Game::ToggleDebugMode()
 	context.debugMode = !context.debugMode;
 }
 
-
 void Game::Update(float deltaTime)
 {
 	auto& contactListener = physicsWorld->GetContactListener();
 
-	if (contactListener.groundContactDelta > 0 && player) {
-		for (int i = 0; i < contactListener.groundContactDelta; i++) {
-			player->IncrementGroundContacts();
-		}
-	}
-	else if (contactListener.groundContactDelta < 0 && player) {
-		for (int i = 0; i > contactListener.groundContactDelta; i--) {
-			player->DecrementGroundContacts();
-		}
-	}
+	ProcessGroundContacts(contactListener);
 
 	scenario->Update(deltaTime);
 
@@ -126,50 +115,89 @@ void Game::Update(float deltaTime)
 		enemy1->Update(deltaTime);
 	}
 
+	HandlePlayerEnemyCollisions(contactListener);
+	HandlePlayerStompsOnEnemy(contactListener);
+	HandlePlayerDeath();
+	CleanupDeadEnemy();
+	HandlePlatformTrigger(contactListener);
+	HandleWinCondition(contactListener);
+
+	contactListener.ClearFrameEvents();
+}
+
+void Game::ProcessGroundContacts(ContactListener& contactListener)
+{
+	if (!player) return;
+
+	if (contactListener.groundContactDelta > 0) {
+		for (int i = 0; i < contactListener.groundContactDelta; i++) {
+			player->IncrementGroundContacts();
+		}
+	}
+	else if (contactListener.groundContactDelta < 0) {
+		for (int i = 0; i > contactListener.groundContactDelta; i--) {
+			player->DecrementGroundContacts();
+		}
+	}
+}
+
+void Game::HandlePlayerEnemyCollisions(ContactListener& contactListener)
+{
 	if (contactListener.playerVsEnemyContact && player && enemy1) {
 		if (player->GetState() != PlayerState::Falling) {
 			player->TakeDamage();
 		}
 	}
+}
 
+void Game::HandlePlayerStompsOnEnemy(ContactListener& contactListener)
+{
 	if (contactListener.playerStompContact && player && enemy1) {
 		player->Bounce();
 		enemy1->TakeDamage();
 	}
+}
 
-	if (player) {
-		float playerY = player->GetBody()->GetPosition().y * PIXELS_PER_METER;
-		float playerHalfHeight = 30.0f;
-		if (playerY > screenHeight + playerHalfHeight && context.state == GameState::Playing) {
-			player->Die();
-		}
+void Game::HandlePlayerDeath()
+{
+	if (!player) return;
 
-		if (player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
-			physicsWorld->DestroyBody(player->GetBody());
-			player.reset();
-
-			context.state = GameState::Finished;
-			context.finishState = GameFinishState::Lost;
-		}
+	float playerY = player->GetBody()->GetPosition().y * PIXELS_PER_METER;
+	float playerHalfHeight = 30.0f;
+	if (playerY > screenHeight + playerHalfHeight && context.state == GameState::Playing) {
+		player->Die();
 	}
 
-	if (enemy1) {
-		if (enemy1->GetState() == EnemyState::Dead) {
-			physicsWorld->DestroyBody(enemy1->GetBody());
-			enemy1.reset();
-		}
-	}
+	if (player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
+		physicsWorld->DestroyBody(player->GetBody());
+		player.reset();
 
+		context.state = GameState::Finished;
+		context.finishState = GameFinishState::Lost;
+	}
+}
+
+void Game::CleanupDeadEnemy()
+{
+	if (enemy1 && enemy1->GetState() == EnemyState::Dead) {
+		physicsWorld->DestroyBody(enemy1->GetBody());
+		enemy1.reset();
+	}
+}
+
+void Game::HandlePlatformTrigger(ContactListener& contactListener)
+{
 	if (contactListener.isRotablePlatformTriggered) {
 		scenario->EnablePlatformRotation();
 	}
+}
 
+void Game::HandleWinCondition(ContactListener& contactListener)
+{
 	if (contactListener.playerReachedFinishSensor && context.state == GameState::Playing) {
 		context.state = GameState::Finished;
 		context.finishState = GameFinishState::Won;
 	}
-
-	contactListener.ClearFrameEvents();
 }
 
 void Game::Draw()
@@ -178,7 +206,7 @@ void Game::Draw()
 
 	scenario->Render(*renderer);
 
-	if(player) {
+	if (player) {
 		player->Render(*renderer);
 	}
 

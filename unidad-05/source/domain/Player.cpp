@@ -67,6 +67,11 @@ void Player::Bounce() {
 	hitbox->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0.0f, -jumpImpulse / 2.0f), true);
 }
 
+void Player::TeleportTo(float x, float y) {
+	hitbox->GetBody()->SetTransform(b2Vec2(x, y), 0.0f);
+	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+}
+
 void Player::Update(float deltaTime) {
 	if (context.state != GameState::Playing) {
 		b2Body* body = hitbox->GetBody();

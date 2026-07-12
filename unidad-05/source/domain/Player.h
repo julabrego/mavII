@@ -28,6 +28,7 @@ public:
 
 	void SetAction(PlayerAction action, bool active);
 	void Bounce();
+	void TeleportTo(float x, float y);
 	void IncrementGroundContacts();
 	void DecrementGroundContacts();
 	void TakeDamage();

@@ -12,6 +12,7 @@ class Renderer;
 class CircleEntity;
 class RectangleEntity;
 class Scenario;
+class ContactListener;
 
 class Game
 {
@@ -20,7 +21,7 @@ class Game
 	~Game();
 	void Run();
 
-private:
+	private:
 	GameContext context;
 
 	std::unique_ptr<PhysicsWorld> physicsWorld;
@@ -41,5 +42,13 @@ private:
 	void Update(float deltaTime);
 	void Draw();
 	void ToggleDebugMode();
+
+	void ProcessGroundContacts(ContactListener& contactListener);
+	void HandlePlayerEnemyCollisions(ContactListener& contactListener);
+	void HandlePlayerStompsOnEnemy(ContactListener& contactListener);
+	void HandlePlayerDeath();
+	void CleanupDeadEnemy();
+	void HandlePlatformTrigger(ContactListener& contactListener);
+	void HandleWinCondition(ContactListener& contactListener);
 };
 
