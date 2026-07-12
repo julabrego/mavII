@@ -6,8 +6,8 @@ Enemy::Enemy(b2World& world, GameContext& gameContext, float startX, float start
 , world(world) {
 	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, ENEMY_WIDTH, ENEMY_HEIGHT, 0.0f, Fade(RED, 0.5f), density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
-	BodyData* enemyData = new BodyData({ BodyTag::Enemy, this });
-	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(enemyData);
+	bodyData = { BodyTag::Enemy, this };
+	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 
 	b2Body* body = hitbox->GetBody();
 	float halfW = (ENEMY_WIDTH / 2.0f) * METERS_PER_PIXEL;

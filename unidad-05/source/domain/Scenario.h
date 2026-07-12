@@ -6,6 +6,7 @@
 #include <raylib.h>
 #include "Enemy.h"
 #include "../game/GameState.h"
+#include "../core/BodyData.h"
 
 class Renderer;
 class RectangleEntity;
@@ -22,10 +23,10 @@ public:
 	void EnablePlatformRotation();
 
 private:
-    void CreateWall(b2World& world, float x, float y, float halfW, float halfH);
+    b2Body* CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World&, float screenWidth, float screenHeight);
-
     void CreateStaticWalls(b2World& world);
+    void RegisterBodyData(b2Body* body, BodyTag tag, void* entity = nullptr);
 
 	GameContext& context;
 	
@@ -43,4 +44,5 @@ private:
     std::unique_ptr<RectangleEntity> finishSensor;
 
     Texture2D finalFlagTexture = LoadTexture("../assets/flag.png");
+    std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
 };

@@ -6,8 +6,8 @@
 Player::Player(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
 	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
-	BodyData* playerData = new BodyData({ BodyTag::Player, this });
-	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(playerData);
+	bodyData = { BodyTag::Player, this };
+	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 
 	b2PolygonShape sensorShape;
 	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,

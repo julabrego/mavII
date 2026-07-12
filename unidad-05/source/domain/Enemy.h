@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include "../core/Renderer.h"
+#include "../core/BodyData.h"
 #include "RectangleEntity.h"
 #include <box2d.h>
 #include "../game/GameState.h"	
@@ -50,5 +51,5 @@ private:
 
 	bool facingRight = true;
 	Texture2D enemyTexture = LoadTexture("../assets/enemy.png");
-
+	BodyData bodyData;
 };

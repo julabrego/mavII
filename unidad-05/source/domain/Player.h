@@ -3,6 +3,7 @@
 #include <memory>
 #include "RectangleEntity.h"
 #include "../core/Renderer.h"
+#include "../core/BodyData.h"
 #include "../game/GameState.h"
 
 enum class PlayerAction {
@@ -71,5 +72,5 @@ private:
 
 	bool facingRight = true;
 	Texture2D playerTexture = LoadTexture("../assets/mayro.png");
-
+	BodyData bodyData;
 };

@@ -14,6 +14,9 @@ enum class BodyTag
 
 struct BodyData
 {
+	BodyData() = default;
+	BodyData(BodyTag tag, void* entity = nullptr) : tag(tag), entity(entity) {}
+
 	BodyTag tag;
 	void* entity = nullptr;
 };
