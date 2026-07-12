@@ -45,7 +45,6 @@ private:
 	static constexpr float PLAYER_WIDTH = 30.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float SENSOR_HEIGHT = 12.0f;
-	static constexpr Color SENSOR_DEBUG_COLOR = RED;
 	PlayerState state = PlayerState::Idle;
 
 	struct ActionState {
@@ -68,5 +67,8 @@ private:
 	int groundContactCount = 0;
 
 	int life = 1;
+
+	bool facingRight = true;
+	Texture2D playerTexture = LoadTexture("../assets/mayro.png");
 
 };

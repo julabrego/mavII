@@ -19,7 +19,7 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, float screenWidth, 
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
 	CreateStaticWalls(world);
 
-	finishSensor = RectangleEntity::CreateSensor(world, 900.0f, 405.0f, 105.0f, 135.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
+	finishSensor = RectangleEntity::CreateSensor(world, 915.0f, 465.0f, 90.0f, 75.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
 	BodyData* finishSensorData = new BodyData({ BodyTag::FinishSensor });
 	finishSensor->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(finishSensorData);
 }

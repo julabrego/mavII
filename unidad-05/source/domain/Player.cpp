@@ -4,7 +4,7 @@
 #include <algorithm>
 
 Player::Player(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
-	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, YELLOW, density, friction, bounciness);
+	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
 	BodyData* playerData = new BodyData({ BodyTag::Player, this });
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(playerData);
@@ -21,6 +21,7 @@ Player::Player(b2World& world, GameContext& gameContext, float startX, float sta
 }
 
 Player::~Player() {
+	UnloadTexture(playerTexture);
 }
 
 void Player::TakeDamage() {
@@ -88,9 +89,11 @@ void Player::Update(float deltaTime) {
 
 	if (actionState.left) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(-moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
+		facingRight = false;
 	}
 	else if (actionState.right) {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(moveSpeed, hitbox->GetBody()->GetLinearVelocity().y));
+		facingRight = true;
 	}
 	else {
 		hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, hitbox->GetBody()->GetLinearVelocity().y));
@@ -124,9 +127,13 @@ void Player::Update(float deltaTime) {
 }
 
 void Player::Render(Renderer& renderer) {
-	hitbox->Render(renderer);
+	float drawWidth = facingRight ? (float)playerTexture.width : -(float)playerTexture.width;
+	Rectangle src = { 0.0f, 0.0f, drawWidth, (float)playerTexture.height };
+	Rectangle dst = { hitbox->position.x, hitbox->position.y + 3, (float)playerTexture.width, (float)playerTexture.height };
+	DrawTexturePro(playerTexture, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
 
 	if (context.debugMode) {
+		hitbox->Render(renderer);
 		DrawDebugSensors();
 	}
 }
@@ -135,5 +142,5 @@ void Player::DrawDebugSensors() {
 	b2Vec2 pos = hitbox->GetBody()->GetPosition();
 	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
 	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;
-	DrawRectangle(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, SENSOR_DEBUG_COLOR);
+	DrawRectangle(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, Fade(RED, 0.5f));
 }

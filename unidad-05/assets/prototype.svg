@@ -29,8 +29,8 @@
      inkscape:snap-to-guides="true"
      inkscape:snap-bbox="true"
      inkscape:zoom="1"
-     inkscape:cx="511"
-     inkscape:cy="451.5"
+     inkscape:cx="1110"
+     inkscape:cy="531.5"
      inkscape:window-width="1920"
      inkscape:window-height="1001"
      inkscape:window-x="-9"
@@ -50,12 +50,12 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="opacity:0.5;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:6.11575;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+       style="opacity:0.5;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:4.22027;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
        id="rect4630"
-       width="27.78125"
-       height="35.71875"
-       x="238.125"
-       y="107.15625" />
+       width="23.8125"
+       height="19.84375"
+       x="242.09375"
+       y="123.03125" />
     <path
        style="fill:#008000;stroke-width:11.0705;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
        d="M 265.90625,142.875 H 238.125 v 15.875 h 27.78125 z"

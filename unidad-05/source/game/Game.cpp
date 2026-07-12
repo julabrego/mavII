@@ -61,6 +61,8 @@ void Game::HandleInput()
 	if (
 		IsKeyPressed(KEY_D)) {
 		ToggleDebugMode();
+	} else if (IsKeyPressed(KEY_R)) {
+		RestartGame();
 	}
 
 	if (context.debugMode) {

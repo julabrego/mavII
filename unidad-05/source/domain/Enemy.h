@@ -4,6 +4,7 @@
 #include "RectangleEntity.h"
 #include <box2d.h>
 #include "../game/GameState.h"	
+#include <raylib.h>
 
 enum class EnemyState {
 	Moving,
@@ -46,4 +47,8 @@ private:
 	float wallCooldown = 0.0f;
 
 	GameContext& context;
+
+	bool facingRight = true;
+	Texture2D enemyTexture = LoadTexture("../assets/enemy.png");
+
 };

@@ -4,7 +4,7 @@
 
 Enemy::Enemy(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext)
 , world(world) {
-	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, ENEMY_WIDTH, ENEMY_HEIGHT, 0.0f, RED, density, friction, bounciness);
+	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, ENEMY_WIDTH, ENEMY_HEIGHT, 0.0f, Fade(RED, 0.5f), density, friction, bounciness);
 	hitbox->GetBody()->SetFixedRotation(true);
 	BodyData* enemyData = new BodyData({ BodyTag::Enemy, this });
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(enemyData);
@@ -27,6 +27,7 @@ Enemy::Enemy(b2World& world, GameContext& gameContext, float startX, float start
 }
 
 Enemy::~Enemy() {
+	UnloadTexture(enemyTexture);
 }
 
 void Enemy::TakeDamage() {
@@ -53,9 +54,6 @@ void Enemy::Update(float deltaTime) {
 	}
 
 	if (context.state != GameState::Playing) {
-		b2Body* body = hitbox->GetBody();
-		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-		body->SetGravityScale(0.0f);
 		return;
 	}
 
@@ -99,6 +97,8 @@ void Enemy::Update(float deltaTime) {
 			else if (!groundAhead) {
 				direction *= -1.0f;
 			}
+
+			facingRight = direction > 0.0f;
 		}
 	}
 
@@ -106,9 +106,13 @@ void Enemy::Update(float deltaTime) {
 }
 
 void Enemy::Render(Renderer& renderer) {
-	hitbox->Render(renderer);
+	float drawWidth = facingRight ? (float)enemyTexture.width : -(float)enemyTexture.width;
+	Rectangle src = { 0.0f, 0.0f, drawWidth, (float)enemyTexture.height };
+	Rectangle dst = { hitbox->position.x, hitbox->position.y + 3, (float)enemyTexture.width, (float)enemyTexture.height };
+	DrawTexturePro(enemyTexture, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
 
 	if (context.debugMode) {
+		hitbox->Render(renderer);
 		DrawDebugSensors();
 	}
 }

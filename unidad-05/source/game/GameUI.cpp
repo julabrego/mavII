@@ -10,7 +10,8 @@ Instrucciones:
 FLECHAS - Moverse
 ESPACIO - Saltar
 
-D - Modo debug)";
+D - Modo debug
+R - Reiniciar juego)";
 
 void GameUI::Draw(Renderer& renderer, const GameContext& context) {
 	if (context.state == GameState::MainMenu) {
