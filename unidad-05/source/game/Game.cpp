@@ -35,7 +35,11 @@ void Game::Run()
 		HandleInput();
 
 		float deltaTime = GetFrameTime();
-		physicsWorld->Update(deltaTime);
+
+		if(context.state == GameState::Playing) {
+			physicsWorld->Update(deltaTime);
+		}
+
 		Update(deltaTime);
 		Draw();
 	}
@@ -57,7 +61,6 @@ void Game::HandleInput()
 		player->SetAction(PlayerAction::Jump, IsKeyDown(KEY_SPACE));
 	}
 
-	// TODO: debug
 	if (
 		IsKeyPressed(KEY_D)) {
 		ToggleDebugMode();
@@ -104,6 +107,13 @@ void Game::Update(float deltaTime)
 
 	if (player) {
 		player->Update(deltaTime);
+
+		float playerY = player->GetBody()->GetPosition().y * PIXELS_PER_METER;
+		float playerHalfHeight = 30.0f;
+		if (playerY > screenHeight + playerHalfHeight && context.state == GameState::Playing) {
+			player->Die();
+		}
+
 		if(player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
 			physicsWorld->GetWorld()->DestroyBody(player->GetBody());
 			player.reset();

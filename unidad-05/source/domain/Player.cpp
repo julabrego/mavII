@@ -75,7 +75,7 @@ void Player::Update(float deltaTime) {
 		return;
 	}
 
-	isGrounded = groundContactCount > 0 && hitbox->GetBody()->GetLinearVelocity().y >= 0;
+	isGrounded = groundContactCount > 0 && hitbox->GetBody()->GetLinearVelocity().y > -2.0f;
 
 	if (state == PlayerState::TakingDamage) {
 		life--;
