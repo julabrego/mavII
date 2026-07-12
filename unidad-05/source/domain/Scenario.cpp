@@ -88,7 +88,7 @@ void Scenario::CreateRotablePlatform(b2World& world) {
 }
 
 void Scenario::CreateDynamicElements(b2World& world) {
-	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, ORANGE, 1.0f, 10.0f, 0.0f);
+	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, ORANGE, 1.0f, 0.0f, 0.0f);
 	box1->GetBody()->SetLinearDamping(1.5f);
 	box1->GetBody()->SetAngularDamping(2.0f);
 	RegisterBodyData(box1->GetBody(), BodyTag::Box);
