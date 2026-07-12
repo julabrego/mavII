@@ -44,6 +44,22 @@ void Renderer::Draw(const RectangleEntity& rectangle)
 	rlPopMatrix();
 }
 
+void Renderer::DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, Color tint) {
+	DrawTexturePro(texture, src, dst, { 0.0f, 0.0f }, 0.0f, tint);
+}
+
+void Renderer::DrawRect(int x, int y, int w, int h, Color color) {
+	DrawRectangle(x, y, w, h, color);
+}
+
+void Renderer::DrawRectLines(int x, int y, int w, int h, Color color) {
+	DrawRectangleLines(x, y, w, h, color);
+}
+
+void Renderer::DrawText(const char* text, int x, int y, int fontSize, Color color) {
+	::DrawText(text, x, y, fontSize, color);
+}
+
 void Renderer::DrawCenteredText(const char* text, int fontSize, int posY, Color color) {
 	int screenWidth = GetScreenWidth();
 	const char* lineStart = text;

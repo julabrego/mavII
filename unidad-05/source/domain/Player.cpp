@@ -130,17 +130,17 @@ void Player::Render(Renderer& renderer) {
 	float drawWidth = facingRight ? (float)playerTexture.width : -(float)playerTexture.width;
 	Rectangle src = { 0.0f, 0.0f, drawWidth, (float)playerTexture.height };
 	Rectangle dst = { hitbox->position.x, hitbox->position.y + 3, (float)playerTexture.width, (float)playerTexture.height };
-	DrawTexturePro(playerTexture, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
+	renderer.DrawSprite(playerTexture, src, dst, WHITE);
 
 	if (context.debugMode) {
 		hitbox->Render(renderer);
-		DrawDebugSensors();
+		DrawDebugSensors(renderer);
 	}
 }
 
-void Player::DrawDebugSensors() {
+void Player::DrawDebugSensors(Renderer& renderer) {
 	b2Vec2 pos = hitbox->GetBody()->GetPosition();
 	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
 	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;
-	DrawRectangle(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, Fade(RED, 0.5f));
+	renderer.DrawRect(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, Fade(RED, 0.5f));
 }

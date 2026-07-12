@@ -40,7 +40,7 @@ public:
 	b2Body* GetBody() const { return hitbox->GetBody(); }
 
 private:
-	void DrawDebugSensors(); 
+	void DrawDebugSensors(Renderer& renderer); 
 
 	static constexpr float PLAYER_WIDTH = 30.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;

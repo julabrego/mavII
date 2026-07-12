@@ -109,15 +109,15 @@ void Enemy::Render(Renderer& renderer) {
 	float drawWidth = facingRight ? (float)enemyTexture.width : -(float)enemyTexture.width;
 	Rectangle src = { 0.0f, 0.0f, drawWidth, (float)enemyTexture.height };
 	Rectangle dst = { hitbox->position.x, hitbox->position.y + 3, (float)enemyTexture.width, (float)enemyTexture.height };
-	DrawTexturePro(enemyTexture, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
+	renderer.DrawSprite(enemyTexture, src, dst, WHITE);
 
 	if (context.debugMode) {
 		hitbox->Render(renderer);
-		DrawDebugSensors();
+		DrawDebugSensors(renderer);
 	}
 }
 
-void Enemy::DrawDebugSensors() {
+void Enemy::DrawDebugSensors(Renderer& renderer) {
 	b2Vec2 bodyPos = hitbox->GetBody()->GetPosition();
 	float centerX = bodyPos.x * PIXELS_PER_METER;
 	float centerY = bodyPos.y * PIXELS_PER_METER;
@@ -128,8 +128,8 @@ void Enemy::DrawDebugSensors() {
 	float sensorHeight = 4.0f;
 
 	Color activeColor = (direction > 0) ? GREEN : GRAY;
-	DrawRectangleLines(centerX + sensorOffsetX - sensorWidth / 2, centerY + halfHeight - sensorHeight / 2, sensorWidth, sensorHeight, activeColor);
+	renderer.DrawRectLines(centerX + sensorOffsetX - sensorWidth / 2, centerY + halfHeight - sensorHeight / 2, sensorWidth, sensorHeight, activeColor);
 	Color inactiveColor = (direction > 0) ? GRAY : GREEN;
-	DrawRectangleLines(centerX - sensorOffsetX - sensorWidth / 2, centerY + halfHeight - sensorHeight / 2, sensorWidth, sensorHeight, inactiveColor);
+	renderer.DrawRectLines(centerX - sensorOffsetX - sensorWidth / 2, centerY + halfHeight - sensorHeight / 2, sensorWidth, sensorHeight, inactiveColor);
 }
 

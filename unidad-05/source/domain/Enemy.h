@@ -23,7 +23,7 @@ public:
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
-	void DrawDebugSensors();
+	void DrawDebugSensors(Renderer& renderer);
 	EnemyState GetState() const { return state; }
 	b2Body* GetBody() const { return hitbox->GetBody(); }
 

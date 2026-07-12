@@ -21,6 +21,10 @@ public:
 	void Draw(const CircleEntity& circle);
 	void Draw(const RectangleEntity& rectangle);
 
+	void DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, Color tint);
+	void DrawRect(int x, int y, int w, int h, Color color);
+	void DrawRectLines(int x, int y, int w, int h, Color color);
+	void DrawText(const char* text, int x, int y, int fontSize, Color color);
 	void DrawCenteredText(const char* text, int fontSize, int posY, Color color);
 
 private:

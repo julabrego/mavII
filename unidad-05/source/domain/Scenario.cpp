@@ -112,7 +112,7 @@ void Scenario::Render(Renderer& renderer)
 	movableWall->Render(renderer);
 	box1->Render(renderer);
 
-	DrawTexture(finalFlagTexture, 922.5f, 470.0f, WHITE);
+	renderer.DrawSprite(finalFlagTexture, { 0, 0, (float)finalFlagTexture.width, (float)finalFlagTexture.height }, { 922.5f, 470.0f, (float)finalFlagTexture.width, (float)finalFlagTexture.height }, WHITE);
 
 	// DEBUG
 	if(context.debugMode) {

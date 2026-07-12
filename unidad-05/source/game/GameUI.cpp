@@ -15,12 +15,12 @@ R - Reiniciar juego)";
 
 void GameUI::Draw(Renderer& renderer, const GameContext& context) {
 	if (context.state == GameState::MainMenu) {
-		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
+		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		renderer.DrawCenteredText(
 			mainMenuText.c_str(), 30, GetScreenHeight() / 2 - 150, WHITE);
 	}
 	else if (context.state == GameState::Finished) {
-		DrawRectangle(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
+		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		std::string msg = "";
 		if (context.finishState == GameFinishState::Won) {
 			msg = "Ganaste!\n\ENTER - volver a jugar";
@@ -32,6 +32,6 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context) {
 	}
 
 	if (context.debugMode) {
-		DrawText("DEBUG MODE (click para reubicar al personaje)", 10, 10, 20, RED);
+		renderer.DrawText("DEBUG MODE (click para reubicar al personaje)", 10, 10, 20, RED);
 	}
 }
