@@ -103,18 +103,48 @@ void Game::ToggleDebugMode()
 
 void Game::Update(float deltaTime)
 {
+	auto& contactListener = physicsWorld->GetContactListener();
+
+	if (contactListener.groundContactDelta > 0 && player) {
+		for (int i = 0; i < contactListener.groundContactDelta; i++) {
+			player->IncrementGroundContacts();
+		}
+	}
+	else if (contactListener.groundContactDelta < 0 && player) {
+		for (int i = 0; i > contactListener.groundContactDelta; i--) {
+			player->DecrementGroundContacts();
+		}
+	}
+
 	scenario->Update(deltaTime);
 
 	if (player) {
 		player->Update(deltaTime);
+	}
 
+	if (enemy1) {
+		enemy1->Update(deltaTime);
+	}
+
+	if (contactListener.playerVsEnemyContact && player && enemy1) {
+		if (player->GetState() != PlayerState::Falling) {
+			player->TakeDamage();
+		}
+	}
+
+	if (contactListener.playerStompContact && player && enemy1) {
+		player->Bounce();
+		enemy1->TakeDamage();
+	}
+
+	if (player) {
 		float playerY = player->GetBody()->GetPosition().y * PIXELS_PER_METER;
 		float playerHalfHeight = 30.0f;
 		if (playerY > screenHeight + playerHalfHeight && context.state == GameState::Playing) {
 			player->Die();
 		}
 
-		if(player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
+		if (player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
 			physicsWorld->GetWorld()->DestroyBody(player->GetBody());
 			player.reset();
 
@@ -124,23 +154,22 @@ void Game::Update(float deltaTime)
 	}
 
 	if (enemy1) {
-		enemy1->Update(deltaTime);
-		if(enemy1->GetState() == EnemyState::Dead ) {
+		if (enemy1->GetState() == EnemyState::Dead) {
 			physicsWorld->GetWorld()->DestroyBody(enemy1->GetBody());
 			enemy1.reset();
 		}
 	}
 
-	auto& contactListener = physicsWorld->GetContactListener();
-
 	if (contactListener.isRotablePlatformTriggered) {
 		scenario->EnablePlatformRotation();
 	}
 
-	if(contactListener.playerReachedFinishSensor && context.state == GameState::Playing) {
+	if (contactListener.playerReachedFinishSensor && context.state == GameState::Playing) {
 		context.state = GameState::Finished;
 		context.finishState = GameFinishState::Won;
 	}
+
+	contactListener.ClearFrameEvents();
 }
 
 void Game::Draw()
