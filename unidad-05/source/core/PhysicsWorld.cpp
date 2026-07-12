@@ -15,3 +15,8 @@ void PhysicsWorld::Update(float delta)
 {
 	world->Step(delta, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 }
+
+void PhysicsWorld::DestroyBody(b2Body* body)
+{
+	world->DestroyBody(body);
+}

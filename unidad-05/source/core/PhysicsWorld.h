@@ -12,6 +12,7 @@ public:
 	~PhysicsWorld();
 
 	void Update(float delta);
+	void DestroyBody(b2Body* body);
 
 	b2World* GetWorld() { return world.get(); }
 

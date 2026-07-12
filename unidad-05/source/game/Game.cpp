@@ -145,7 +145,7 @@ void Game::Update(float deltaTime)
 		}
 
 		if (player->GetState() == PlayerState::Dead && context.state == GameState::Playing) {
-			physicsWorld->GetWorld()->DestroyBody(player->GetBody());
+			physicsWorld->DestroyBody(player->GetBody());
 			player.reset();
 
 			context.state = GameState::Finished;
@@ -155,7 +155,7 @@ void Game::Update(float deltaTime)
 
 	if (enemy1) {
 		if (enemy1->GetState() == EnemyState::Dead) {
-			physicsWorld->GetWorld()->DestroyBody(enemy1->GetBody());
+			physicsWorld->DestroyBody(enemy1->GetBody());
 			enemy1.reset();
 		}
 	}
