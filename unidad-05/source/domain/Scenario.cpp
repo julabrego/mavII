@@ -1,5 +1,4 @@
 #include "Scenario.h"
-
 #include "RectangleEntity.h"
 #include "CircleEntity.h"
 #include "raylib.h"
@@ -23,10 +22,10 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, float screenWidth, 
 	: context(gameContext)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
-	CreateStaticWalls(world);
-
-	finishSensor = RectangleEntity::CreateSensor(world, 930.0f, 510.0f, 60.0f, 30.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
-	RegisterBodyData(finishSensor->GetBody(), BodyTag::FinishSensor);
+	CreateGroundsAndWalls(world);
+	CreateRotablePlatform(world);
+	CreateDynamicElements(world);
+	CreateFinishSensor(world);
 }
 
 b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -40,7 +39,11 @@ b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, floa
 	b2PolygonShape shape;
 	shape.SetAsBox(halfW * METERS_PER_PIXEL, halfH * METERS_PER_PIXEL);
 
-	body->CreateFixture(&shape, 0.0f);
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &shape;
+	fixtureDef.density = 0.0f;
+	fixtureDef.friction = 0.0f;
+	body->CreateFixture(&fixtureDef);
 	return body;
 }
 
@@ -48,14 +51,14 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 	RegisterBodyData(CreateWall(world, 0.0f, -20.0f, screenWidth, 20.0f), BodyTag::Wall);
 	RegisterBodyData(CreateWall(world, screenWidth + 20.0f, 0.0f, 20.0f, screenHeight), BodyTag::Wall);
 	RegisterBodyData(CreateWall(world, -20.0f, 0.0f, 20.0f, screenHeight), BodyTag::Wall);
-};
+}
 
-void Scenario::CreateStaticWalls(b2World& world) {
+void Scenario::CreateGroundsAndWalls(b2World& world) {
 	ground = RectangleEntity::CreateStatic(world, 0.0f, 540.0f, 735.0f, 60.0f, 0.0f, COLOR_GROUND);
 	ground2 = RectangleEntity::CreateStatic(world, 900.0f, 540.0f, 105.0f, 60.0f, 0.0f, COLOR_GROUND);
 	wall1 = RectangleEntity::CreateStatic(world, 450.0f, 375.0f, 30.0f, 165.0f, 0.0f, COLOR_GROUND);
 	ground3 = RectangleEntity::CreateStatic(world, 375.0f, 360.0f, 105.0f, 15.0f, 0.0f, COLOR_GROUND);
-	
+
 	auto groundData = std::make_unique<BodyData>(BodyTag::Ground);
 	BodyData* groundDataPtr = groundData.get();
 	bodyDataRegistry.push_back(std::move(groundData));
@@ -63,10 +66,12 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	ground2->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundDataPtr);
 	ground3->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundDataPtr);
 	RegisterBodyData(wall1->GetBody(), BodyTag::Wall);
-	
-	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.5f, 0.1f, 0.2f);
+}
+
+void Scenario::CreateRotablePlatform(b2World& world) {
+	rotablePlatform = RectangleEntity::CreateDynamic(world, 210.0f, 360.0f, 165.0f, 15.0f, 0.0f, COLOR_STICK, 0.5f, 0.0f, 0.2f);
 	b2RevoluteJointDef rotablePlatformJointDef;
-	b2Vec2 rotablePlatformInitialPos = b2Vec2((rotablePlatform->GetCenter().x + rotablePlatform->width / 2) * METERS_PER_PIXEL, 
+	b2Vec2 rotablePlatformInitialPos = b2Vec2((rotablePlatform->GetCenter().x + rotablePlatform->width / 2) * METERS_PER_PIXEL,
 		rotablePlatform->GetCenter().y * METERS_PER_PIXEL);
 	rotablePlatformJointDef.Initialize(rotablePlatform->GetBody(), ground3->GetBody(),
 		rotablePlatformInitialPos);
@@ -74,13 +79,15 @@ void Scenario::CreateStaticWalls(b2World& world) {
 	rotablePlatformJointDef.lowerAngle = 0.0f;
 	rotablePlatformJointDef.upperAngle = 0.0f;
 
-	b2RevoluteJoint* rotablePlatformJoint = (b2RevoluteJoint*)world.CreateJoint(&rotablePlatformJointDef);
+	world.CreateJoint(&rotablePlatformJointDef);
 
-	movableWall = RectangleEntity::CreateDynamic(world, 210.0f, 375.0f, 15.0f, 160.0f, 0.0f, COLOR_STICK, 10.0f, 30.0f, 0.0f);
+	movableWall = RectangleEntity::CreateDynamic(world, 210.0f, 375.0f, 15.0f, 160.0f, 0.0f, COLOR_STICK, 10.0f, 0.0f, 0.0f);
 	movableWall->GetBody()->SetFixedRotation(true);
 	RegisterBodyData(movableWall->GetBody(), BodyTag::RotablePlatformTriggerer);
 	movableWall->GetBody()->SetLinearDamping(5.0f);
+}
 
+void Scenario::CreateDynamicElements(b2World& world) {
 	box1 = RectangleEntity::CreateDynamic(world, 285.0f, 315.0f, 60.0f, 60.0f, 0.0f, ORANGE, 1.0f, 10.0f, 0.0f);
 	box1->GetBody()->SetLinearDamping(1.5f);
 	box1->GetBody()->SetAngularDamping(2.0f);
@@ -88,7 +95,12 @@ void Scenario::CreateStaticWalls(b2World& world) {
 
 	obstacleSensor1 = RectangleEntity::CreateSensor(world, 390.0f, 405.0f, 60.0f, 135.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
 	RegisterBodyData(obstacleSensor1->GetBody(), BodyTag::RotablePlatformTriggerArea);
-};
+}
+
+void Scenario::CreateFinishSensor(b2World& world) {
+	finishSensor = RectangleEntity::CreateSensor(world, 930.0f, 510.0f, 60.0f, 30.0f, 0.0f, Fade(Fade(GREEN, 0.5f), 0.5f));
+	RegisterBodyData(finishSensor->GetBody(), BodyTag::FinishSensor);
+}
 
 void Scenario::EnablePlatformRotation()
 {
@@ -109,7 +121,7 @@ void Scenario::Render(Renderer& renderer)
 	ground2->Render(renderer);
 	wall1->Render(renderer);
 	ground3->Render(renderer);
-	
+
 	rotablePlatform->Render(renderer);
 	movableWall->Render(renderer);
 	box1->Render(renderer);

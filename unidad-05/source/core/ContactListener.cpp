@@ -48,7 +48,6 @@ void ContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold
 	if (!info.dataA || !info.dataB) return;
 
 	HandleEnemyStompContact(info);
-	HandlePlayerAgainstWallFrictionContact(contact, info);
 }
 
 void ContactListener::HandlePlayerGroundContact(b2Contact* contact, const ContactInfo& info, int sign) {
@@ -95,16 +94,6 @@ void ContactListener::HandleEnemyStompContact(const ContactInfo& info) {
 				playerStompContact = true;
 			}
 		}
-	}
-}
-
-void ContactListener::HandlePlayerAgainstWallFrictionContact(b2Contact* contact, const ContactInfo& info) {
-	bool isPlayerA = info.dataA->tag == BodyTag::Player;
-	bool isPlayerB = info.dataB->tag == BodyTag::Player;
-
-	if (isPlayerA || isPlayerB) {
-		if (info.sensorA || info.sensorB) return;
-		contact->SetFriction(0.0f);
 	}
 }
 

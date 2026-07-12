@@ -33,6 +33,5 @@ private:
 	void HandleRotablePlatformContacts(const ContactInfo& info);
 	void HandlePlayerVsEnemyContact(const ContactInfo& info);
 	void HandleEnemyStompContact(const ContactInfo& info);
-	void HandlePlayerAgainstWallFrictionContact(b2Contact* contact, const ContactInfo& info);
 	void HandlePlayerVsFinishedSensorContact(const ContactInfo& info);
 };
