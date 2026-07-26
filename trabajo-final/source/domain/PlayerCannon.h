@@ -33,6 +33,7 @@ public:
 	~PlayerCannon();
 
 	void SetAction(PlayerCannonAction action, bool active);
+	bool ConsumeShoot();
 	
 	void TeleportTo(float x, float y);
 	
@@ -68,12 +69,12 @@ private:
 	GameContext& context;
 
 	std::unique_ptr<CircleEntity> hitbox;
-	//std::unique_ptr<RectangleEntity> hitbox;
+
+	bool shootRequested = false;
 
 	float rotationSpeed = 5.0f;
 	float moveSpeed = 50.0f;
 	float linearDamping = 5.0f;
-	float shootSpeed = 5.0f;
 	
 	Texture2D cannonBaseTexture = LoadTexture("../assets/cannonBase.png");
 	Texture2D cannonTopTexture = LoadTexture("../assets/cannonTop.png");

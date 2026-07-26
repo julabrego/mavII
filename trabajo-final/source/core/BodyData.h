@@ -8,7 +8,8 @@ enum class BodyTag
 	Wall,
 	Ground,
 	Box,
-	FinishSensor
+	FinishSensor,
+	WreckingBall
 };
 
 struct BodyData

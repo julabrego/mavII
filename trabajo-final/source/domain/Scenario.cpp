@@ -51,7 +51,7 @@ void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float scre
 }
 
 void Scenario::CreateGroundsAndWalls(b2World& world) {
-	ground = RectangleEntity::CreateStatic(world, 0.0f, 540.0f, GetScreenWidth(), 60.0f, 0.0f, COLOR_GROUND);
+	ground = RectangleEntity::CreateStatic(world, 0.0f, 540.0f, GetScreenWidth(), 60.0f, 0.0f, COLOR_GROUND, 1.0f);
 
 	auto groundData = std::make_unique<BodyData>(BodyTag::Ground);
 	BodyData* groundDataPtr = groundData.get();

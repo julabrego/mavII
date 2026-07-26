@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include "raylib.h"
 #include "GameState.h"
 #include "GameUI.h"
 #include "../domain/PlayerCannon.h"
+#include "../domain/WreckingBall.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -28,6 +30,7 @@ class Game
 	
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<PlayerCannon> player;
+	std::vector<std::unique_ptr<WreckingBall>> projectiles;
 
 	GameUI ui;
 
@@ -42,5 +45,7 @@ class Game
 	void ToggleDebugMode();
 
 	void HandlePlayerDeath();
+	void SpawnProjectile();
+	void CleanupProjectiles();
 };
 

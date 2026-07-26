@@ -11,7 +11,7 @@ class RectangleEntity : public Entity
 {
 public:
 	static std::unique_ptr<RectangleEntity> CreateStatic(b2World& world, float x, float y, float width, float height,
-		float angle, Color color, 
+		float angle, Color color, float friction = 0.0f,
 		float borderThickness = 0.0f, Color borderColor = BLACK);
 	
 	static std::unique_ptr<RectangleEntity> CreateDynamic(b2World& world, float x, float y, float width, float height,
