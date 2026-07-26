@@ -19,7 +19,10 @@ public:
 	void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
 	void ClearFrameEvents();
 
+	bool IsGrounded() const { return groundContactCount > 0; }
+	
 	int groundContactDelta = 0;
+	int groundContactCount = 0;
 	
 	bool isRotablePlatformTriggered = false;
 

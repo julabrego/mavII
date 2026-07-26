@@ -162,7 +162,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="domain\RectangleEntity.cpp" />
     <ClCompile Include="domain\Scenario.cpp" />
-    <ClCompile Include="domain\Player.cpp" />
+    <ClCompile Include="domain\PlayerCannon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\BodyData.h" />
@@ -179,7 +179,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />
     <ClInclude Include="domain\Scenario.h" />
-    <ClInclude Include="domain\Player.h" />
+    <ClInclude Include="domain\PlayerCannon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

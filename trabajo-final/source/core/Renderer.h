@@ -22,6 +22,7 @@ public:
 	void Draw(const RectangleEntity& rectangle);
 
 	void DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, float rotation = 0.0f, Color tint = WHITE);
+	void DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, Vector2 origin, float rotation = 0.0f, Color tint = WHITE);
 	void DrawRect(int x, int y, int w, int h, Color color);
 	void DrawRectLines(int x, int y, int w, int h, Color color);
 	void DrawText(const char* text, int x, int y, int fontSize, Color color);

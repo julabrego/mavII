@@ -42,7 +42,7 @@
     <ClCompile Include="core\ContactListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="domain\Player.cpp">
+    <ClCompile Include="domain\PlayerCannon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,7 +89,7 @@
     <ClInclude Include="game\GameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="domain\Player.h">
+    <ClInclude Include="domain\PlayerCannon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

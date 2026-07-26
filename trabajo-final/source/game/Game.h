@@ -4,7 +4,7 @@
 #include "raylib.h"
 #include "GameState.h"
 #include "GameUI.h"
-#include "../domain/Player.h"
+#include "../domain/PlayerCannon.h"
 
 class PhysicsWorld;
 class Renderer;

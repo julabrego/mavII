@@ -1,13 +1,16 @@
-#include "Player.h"
+#include "PlayerCannon.h"
 #include "../core/PhysicsConstants.h"
 #include "../core/BodyData.h"
 #include <algorithm>
 
 PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
-	hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), 0.0f, 0.0f, 0.0f);
+	//hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
+	hitbox = CircleEntity::CreateDynamic(world, startX, startY, PLAYER_RADIUS, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
 	
 	bodyData = { BodyTag::Player, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
+	hitbox->GetBody()->SetGravityScale(0.0f);
+	hitbox->GetBody()->SetLinearDamping(linearDamping);
 
 	b2PolygonShape sensorShape;
 	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,
@@ -21,7 +24,7 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 }
 
 PlayerCannon::~PlayerCannon() {
-	UnloadTexture(playerTexture);
+	UnloadTexture(cannonBaseTexture);
 }
 
 void PlayerCannon::Die() {
@@ -82,6 +85,31 @@ void PlayerCannon::Update(float deltaTime) {
 		hitbox->GetBody()->SetAngularVelocity(0.0f);
 	}
 
+	if(actionState.moveUp) {
+		b2Vec2 velocity = hitbox->GetBody()->GetLinearVelocity();
+		//if (velocity.y < maxMoveSpeed) {
+			hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, -moveSpeed), true);
+		//}
+		//velocity.y = -moveSpeed;
+		//hitbox->GetBody()->SetLinearVelocity(velocity);
+	}
+	else if(actionState.moveDown) {
+		b2Vec2 velocity = hitbox->GetBody()->GetLinearVelocity();
+		//if(velocity.y > -maxMoveSpeed) {
+			hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, moveSpeed), true);
+		//}
+		//velocity.y = moveSpeed;
+		//hitbox->GetBody()->SetLinearVelocity(velocity);
+	}
+	else {
+		b2Vec2 velocity = hitbox->GetBody()->GetLinearVelocity();
+		//if(velocity.y > 0.0f) velocity.y = std::max(velocity.y - moveSpeed * deltaTime, 0.0f);
+		//else if(velocity.y < 0.0f) velocity.y = std::min(velocity.y + moveSpeed * deltaTime, 0.0f);
+		//else
+		//velocity.y = 0.0f;
+		//hitbox->GetBody()->SetLinearVelocity(velocity);
+	}
+
 	if (actionState.shoot) {
 		printf("Player shoots!\n");
 		actionState.shoot = false; // Prevent continuous shooting
@@ -96,9 +124,14 @@ void PlayerCannon::Update(float deltaTime) {
 
 void PlayerCannon::Render(Renderer& renderer) {
 	
-	Rectangle src = { 0.0f, 0.0f, (float)playerTexture.width, (float)playerTexture.height };
-	Rectangle dst = { hitbox->position.x, hitbox->position.y, hitbox->width, hitbox->height };
-	renderer.DrawSprite(playerTexture, src, dst, hitbox->angle, WHITE);
+	Rectangle srcBase = { 0.0f, 0.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
+	Rectangle dstBase = { hitbox->position.x - cannonBaseTexture.width / 2.0f, hitbox->position.y - cannonBaseTexture.height / 2.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
+	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+
+	Rectangle srcTop = { 0.0f, 0.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
+	Rectangle dstTop = { hitbox->position.x - 10.0f, hitbox->position.y - cannonTopTexture.height / 2.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
+	Vector2 topOrigin = { 10.0f, cannonTopTexture.height / 2.0f };
+	renderer.DrawSprite(cannonTopTexture, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
 
 	if (context.debugMode) {
 		hitbox->Render(renderer);

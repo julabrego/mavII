@@ -57,6 +57,8 @@ void Game::HandleInput()
 	if (player) {
 		player->SetAction(PlayerCannonAction::RotateLeft, IsKeyDown(KEY_LEFT));
 		player->SetAction(PlayerCannonAction::RotateRight, IsKeyDown(KEY_RIGHT));
+		player->SetAction(PlayerCannonAction::MoveUp, IsKeyDown(KEY_UP));
+		player->SetAction(PlayerCannonAction::MoveDown, IsKeyDown(KEY_DOWN));
 		player->SetAction(PlayerCannonAction::Shoot, IsKeyDown(KEY_SPACE));
 	}
 

@@ -50,6 +50,11 @@ void Renderer::DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, float
 	DrawTexturePro(texture, src, adjustedDst, origin, rotation, tint);
 }
 
+void Renderer::DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, Vector2 origin, float rotation, Color tint) {
+	Rectangle adjustedDst = { dst.x + origin.x, dst.y + origin.y, dst.width, dst.height };
+	DrawTexturePro(texture, src, adjustedDst, origin, rotation, tint);
+}
+
 void Renderer::DrawRect(int x, int y, int w, int h, Color color) {
 	DrawRectangle(x, y, w, h, color);
 }

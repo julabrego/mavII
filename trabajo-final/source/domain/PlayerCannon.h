@@ -1,7 +1,7 @@
 #pragma once
 #include "Entity.h"
 #include <memory>
-#include "RectangleEntity.h"
+#include "CircleEntity.h"
 #include "../core/Renderer.h"
 #include "../core/BodyData.h"
 #include "../game/GameState.h"
@@ -47,7 +47,9 @@ public:
 private:
 	void DrawDebugSensors(Renderer& renderer); 
 
-	static constexpr float PLAYER_WIDTH = 30.0f;
+	
+	static constexpr float PLAYER_RADIUS = 30.0f;
+	static constexpr float PLAYER_WIDTH = 60.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float SENSOR_HEIGHT = 12.0f;
 
@@ -65,12 +67,15 @@ private:
 
 	GameContext& context;
 
-	std::unique_ptr<RectangleEntity> hitbox;
+	std::unique_ptr<CircleEntity> hitbox;
+	//std::unique_ptr<RectangleEntity> hitbox;
 
 	float rotationSpeed = 5.0f;
-	float moveSpeed = 5.0f;
+	float moveSpeed = 50.0f;
+	float linearDamping = 5.0f;
 	float shootSpeed = 5.0f;
 	
-	Texture2D playerTexture = LoadTexture("../assets/mayro.png");
+	Texture2D cannonBaseTexture = LoadTexture("../assets/cannonBase.png");
+	Texture2D cannonTopTexture = LoadTexture("../assets/cannonTop.png");
 	BodyData bodyData;
 };

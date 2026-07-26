@@ -4,6 +4,7 @@
 
 void ContactListener::ClearFrameEvents()
 {
+	groundContactCount += groundContactDelta;
 	groundContactDelta = 0;
 }
 
