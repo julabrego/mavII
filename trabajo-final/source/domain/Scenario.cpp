@@ -22,6 +22,7 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, float screenWidth, 
 	: context(gameContext)
 {
 	CreateBoundaryWalls(world, screenWidth, screenHeight);
+	CreateBuildingBlocks(world);
 	CreateGroundsAndWalls(world);
 }
 
@@ -59,14 +60,35 @@ void Scenario::CreateGroundsAndWalls(b2World& world) {
 	ground->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(groundDataPtr);
 }
 
+void Scenario::CreateBuildingBlocks(b2World& world) {
+	int numBlocks = 4;
+	float xBlocks = 449.0f;
+	float yBlocks = 179.5f;
+	float blockWidth = 90.0f;
+	float blockHeight = 90.0f;
 
+	for (int i = 0; i < numBlocks; ++i) {
+		float x = xBlocks;
+		float y = yBlocks + i * blockHeight;
+
+		auto block = RectangleEntity::CreateDynamic(world, x, y, blockWidth, blockHeight, 0.0f, COLOR_WALL, 1.0f, 0.5f, 0.3f, 1.0f);
+		RegisterBodyData(block->GetBody(), BodyTag::Box, block.get());
+		buildingBlocks.push_back(std::move(block));
+	}
+}
 
 void Scenario::Update(float deltaTime)
 {
-	// TODO: update dynamic elements if needed
+	for (auto& block : buildingBlocks) {
+		block->Update(deltaTime);
+	}
 }
 
 void Scenario::Render(Renderer& renderer)
 {
 	ground->Render(renderer);
+
+	for (auto& block : buildingBlocks) {
+		block->Render(renderer);
+	}
 }
