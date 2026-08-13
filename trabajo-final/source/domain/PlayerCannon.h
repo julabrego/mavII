@@ -47,12 +47,15 @@ public:
 
 private:
 	void DrawDebugSensors(Renderer& renderer); 
-
+	void HandleMovement(float deltaTime);
+	void HandleCannonRotation(float deltaTime);
 	
 	static constexpr float PLAYER_RADIUS = 30.0f;
 	static constexpr float PLAYER_WIDTH = 60.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float SENSOR_HEIGHT = 12.0f;
+	static constexpr float TOP_OFFSET = 40.0f;
+	static constexpr float BOTTOM_OFFSET = 100.0f;
 
 	PlayerCannonState state = PlayerCannonState::Idle;
 
@@ -73,8 +76,10 @@ private:
 	bool shootRequested = false;
 
 	float rotationSpeed = 5.0f;
-	float moveSpeed = 50.0f;
-	float linearDamping = 5.0f;
+	float velocityY = 0.0f;
+	float moveAcceleration = 80.0f;
+	float moveDamping = 0.85f;
+	float maxMoveSpeed = 4.0f;
 	
 	Texture2D cannonBaseTexture = LoadTexture("../assets/cannonBase.png");
 	Texture2D cannonTopTexture = LoadTexture("../assets/cannonTop.png");

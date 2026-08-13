@@ -2,15 +2,14 @@
 #include "../core/PhysicsConstants.h"
 #include "../core/BodyData.h"
 #include <algorithm>
+#include <cmath>
 
 PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
-	//hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, PLAYER_RADIUS, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
 
 	bodyData = { BodyTag::Player, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
-	hitbox->GetBody()->SetGravityScale(0.0f);
-	hitbox->GetBody()->SetLinearDamping(linearDamping);
+	hitbox->GetBody()->SetType(b2_kinematicBody);
 
 	b2PolygonShape sensorShape;
 	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,
@@ -79,31 +78,16 @@ void PlayerCannon::Update(float deltaTime) {
 	if (context.state != GameState::Playing) {
 		b2Body* body = hitbox->GetBody();
 		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-		body->SetGravityScale(0.0f);
 		return;
-	}
-
-	if (actionState.rotateLeft) {
-		hitbox->GetBody()->SetAngularVelocity(-rotationSpeed);
-	}
-	else if (actionState.rotateRight) {
-		hitbox->GetBody()->SetAngularVelocity(rotationSpeed);
-	}
-	else {
-		hitbox->GetBody()->SetAngularVelocity(0.0f);
-	}
-
-	if (actionState.moveUp) {
-		hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, -moveSpeed), true);
-	}
-	else if (actionState.moveDown) {
-		hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, moveSpeed), true);
 	}
 
 	if (actionState.shoot) {
 		shootRequested = true;
 		actionState.shoot = false;
 	}
+
+	HandleMovement(deltaTime);
+	HandleCannonRotation(deltaTime);
 
 	if (state != PlayerCannonState::Pulling && state != PlayerCannonState::Dead) {
 		// TODO: Implement movement logic based on actionState.moveDown and actionState.moveUp
@@ -126,6 +110,46 @@ void PlayerCannon::Render(Renderer& renderer) {
 	if (context.debugMode) {
 		hitbox->Render(renderer);
 		DrawDebugSensors(renderer);
+	}
+}
+
+void PlayerCannon::HandleMovement(float deltaTime) {
+	if (actionState.moveUp) {
+		velocityY -= moveAcceleration * deltaTime;
+	}
+	else if (actionState.moveDown) {
+		velocityY += moveAcceleration * deltaTime;
+	}
+	else {
+		velocityY *= moveDamping;
+		if (fabsf(velocityY) < 0.1f) velocityY = 0.0f;
+	}
+
+	if (velocityY > maxMoveSpeed) velocityY = maxMoveSpeed;
+	if (velocityY < -maxMoveSpeed) velocityY = -maxMoveSpeed;
+
+	b2Body* body = hitbox->GetBody();
+	b2Vec2 pos = body->GetPosition();
+	pos.y += velocityY * deltaTime;
+
+	float minY = TOP_OFFSET * METERS_PER_PIXEL;
+	float maxY = (GetScreenHeight() - BOTTOM_OFFSET) * METERS_PER_PIXEL;
+	
+	if (pos.y < minY) { pos.y = minY; velocityY = 0.0f; }
+	if (pos.y > maxY) { pos.y = maxY; velocityY = 0.0f; }
+	
+	body->SetTransform(pos, body->GetAngle());
+}
+
+void PlayerCannon::HandleCannonRotation(float deltaTime) {
+	if (actionState.rotateLeft) {
+		hitbox->GetBody()->SetAngularVelocity(-rotationSpeed);
+	}
+	else if (actionState.rotateRight) {
+		hitbox->GetBody()->SetAngularVelocity(rotationSpeed);
+	}
+	else {
+		hitbox->GetBody()->SetAngularVelocity(0.0f);
 	}
 }
 
