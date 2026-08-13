@@ -11,15 +11,6 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 	hitbox->GetBody()->SetType(b2_kinematicBody);
 
-	b2PolygonShape sensorShape;
-	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,
-		b2Vec2(0.0f, (PLAYER_HEIGHT / 2.0f) * METERS_PER_PIXEL), 0.0f);
-
-	b2FixtureDef sensorFixtureDef;
-	sensorFixtureDef.shape = &sensorShape;
-	sensorFixtureDef.isSensor = true;
-
-	hitbox->GetBody()->CreateFixture(&sensorFixtureDef);
 }
 
 PlayerCannon::~PlayerCannon() {
@@ -156,6 +147,4 @@ void PlayerCannon::HandleCannonRotation(float deltaTime) {
 void PlayerCannon::DrawDebugSensors(Renderer& renderer) {
 	b2Vec2 pos = hitbox->GetBody()->GetPosition();
 	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
-	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;
-	renderer.DrawRect(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, Fade(RED, 0.5f));
 }

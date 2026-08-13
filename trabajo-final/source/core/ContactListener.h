@@ -28,6 +28,4 @@ public:
 
 private:
 	ContactInfo ExtractContactInfo(b2Contact* contact);
-
-	void HandlePlayerGroundContact(b2Contact* contact, const ContactInfo& info, int sign);
 };

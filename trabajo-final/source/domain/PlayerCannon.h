@@ -53,7 +53,6 @@ private:
 	static constexpr float PLAYER_RADIUS = 30.0f;
 	static constexpr float PLAYER_WIDTH = 60.0f;
 	static constexpr float PLAYER_HEIGHT = 60.0f;
-	static constexpr float SENSOR_HEIGHT = 12.0f;
 	static constexpr float TOP_OFFSET = 40.0f;
 	static constexpr float BOTTOM_OFFSET = 100.0f;
 
