@@ -2,10 +2,10 @@
 #include "../core/PhysicsConstants.h"
 #include <cmath>
 
-ChainLink::ChainLink(b2World& world, float startX, float startY, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
+ChainLink::ChainLink(b2World& world, float startX, float startY, float angle, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
 	: radius(radius), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
 {
-	hitbox = CircleEntity::CreateDynamic(world, startX, startY, radius, Fade(BLACK, 0.2f), density, friction, restitution);
+	hitbox = RectangleEntity::CreateDynamic(world, startX - LINK_WIDTH / 2.0f, startY - LINK_HEIGHT / 2.0f, LINK_WIDTH, LINK_HEIGHT, angle * RAD2DEG, Fade(BLACK, 0.2f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
 	hitbox->GetBody()->SetAngularDamping(angularDamping);
 	bodyData = { BodyTag::ChainLink, this };

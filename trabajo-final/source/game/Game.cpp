@@ -161,7 +161,7 @@ void Game::SpawnProjectile()
 	printf("Distance: %.2f, Can Spawn: %s\n", distance, canSpawnProjectile ? "true" : "false");
 
 	if (canSpawnProjectile) {
-		auto ball = std::make_unique<ChainLink>(world, spawnX, spawnY);
+		auto ball = std::make_unique<ChainLink>(world, spawnX, spawnY, angleRad);
 		ball->Launch(angleRad, SHOOT_SPEED);
 		projectiles.push_back(std::move(ball));
 	}

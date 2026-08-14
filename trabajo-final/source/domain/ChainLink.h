@@ -2,7 +2,7 @@
 #include "../core/Renderer.h"
 #include "Entity.h"
 #include <memory>
-#include "CircleEntity.h"
+#include "RectangleEntity.h"
 #include "../core/BodyData.h"
 #include "../game/GameState.h"
 
@@ -12,12 +12,14 @@ const float LINK_DEFAULT_FRICTION = 1.0f;
 const float LINK_DEFAULT_RESTITUTION = 0.5f;
 const float LINK_DEFAULT_LINEAR_DAMPING = 0.0f;
 const float LINK_DEFAULT_ANGULAR_DAMPING = 2.0f;
+const float LINK_WIDTH = 20.0f;
+const float LINK_HEIGHT = 10.0f;
 
 class ChainLink :
 	public Entity
 {
 public:
-	ChainLink(b2World& world, float startX, float startY, float radius = LINK_DEFAULT_RADIUS, float density = LINK_DEFAULT_DENSITY, float friction = LINK_DEFAULT_FRICTION, float restitution = LINK_DEFAULT_RESTITUTION, float linearDamping = LINK_DEFAULT_LINEAR_DAMPING, float angularDamping = LINK_DEFAULT_ANGULAR_DAMPING);
+	ChainLink(b2World& world, float startX, float startY, float angle = 0.0f, float radius = LINK_DEFAULT_RADIUS, float density = LINK_DEFAULT_DENSITY, float friction = LINK_DEFAULT_FRICTION, float restitution = LINK_DEFAULT_RESTITUTION, float linearDamping = LINK_DEFAULT_LINEAR_DAMPING, float angularDamping = LINK_DEFAULT_ANGULAR_DAMPING);
 	~ChainLink();
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
@@ -25,7 +27,7 @@ public:
 	b2Body* GetBody() const { return hitbox->GetBody(); }
 
 private:
-	std::unique_ptr<CircleEntity> hitbox;
+	std::unique_ptr<RectangleEntity> hitbox;
 	BodyData bodyData;
 
 	float radius = LINK_DEFAULT_RADIUS;

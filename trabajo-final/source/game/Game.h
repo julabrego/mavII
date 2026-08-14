@@ -34,7 +34,7 @@ class Game
 	
 	std::unique_ptr<WreckingBall> wreckingBall;
 	std::vector<std::unique_ptr<ChainLink>> projectiles;
-	float chainBetweenProjectilesDistance = 2.5f;
+	float chainBetweenProjectilesDistance = 3.0f;
 	float lastLinkDistance = 0.0f;
 
 	GameUI ui;
