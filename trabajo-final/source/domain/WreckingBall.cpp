@@ -18,8 +18,7 @@ WreckingBall::~WreckingBall()
 
 void WreckingBall::Launch(float angleRad, float speed)
 {
-	b2Vec2 velocity(speed * cosf(angleRad), speed * sinf(angleRad));
-	hitbox->GetBody()->ApplyLinearImpulseToCenter(velocity, true);
+	hitbox->GetBody()->SetLinearVelocity(b2Vec2(speed * cosf(angleRad), speed * sinf(angleRad)));
 }
 
 void WreckingBall::Update(float deltaTime)
