@@ -46,15 +46,14 @@ public:
 	b2Body* GetBody() const { return hitbox->GetBody(); }
 
 private:
-	void DrawDebugSensors(Renderer& renderer); 
 	void HandleMovement(float deltaTime);
-	void HandleCannonRotation(float deltaTime);
+	void HandleRotation(float deltaTime);
 	
 	static constexpr float PLAYER_RADIUS = 30.0f;
-	static constexpr float PLAYER_WIDTH = 60.0f;
-	static constexpr float PLAYER_HEIGHT = 60.0f;
 	static constexpr float TOP_OFFSET = 40.0f;
 	static constexpr float BOTTOM_OFFSET = 100.0f;
+	static constexpr float MAX_ROTATION_ANGLE = 70.0f * DEG2RAD;
+	static constexpr float MIN_ROTATION_ANGLE = -70.0f * DEG2RAD;
 
 	PlayerCannonState state = PlayerCannonState::Idle;
 
@@ -71,10 +70,13 @@ private:
 	GameContext& context;
 
 	std::unique_ptr<CircleEntity> hitbox;
+	b2Body* baseBody = nullptr;
+	b2RevoluteJoint* turretJoint = nullptr;
 
 	bool shootRequested = false;
 
 	float rotationSpeed = 5.0f;
+	float turretMotorTorque = 30.0f;
 	float velocityY = 0.0f;
 	float moveAcceleration = 80.0f;
 	float moveDamping = 0.85f;

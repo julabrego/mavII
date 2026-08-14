@@ -5,12 +5,28 @@
 #include <cmath>
 
 PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
+	b2Vec2 pivot{ startX * METERS_PER_PIXEL, startY * METERS_PER_PIXEL };
+
+	b2BodyDef baseDef;
+	baseDef.type = b2_kinematicBody;
+	baseDef.position = pivot;
+	baseBody = world.CreateBody(&baseDef);
+
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, PLAYER_RADIUS, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
 
 	bodyData = { BodyTag::Player, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
-	hitbox->GetBody()->SetType(b2_kinematicBody);
+	hitbox->GetBody()->SetGravityScale(0.0f);
 
+	b2RevoluteJointDef turrentJointDef;
+	turrentJointDef.Initialize(baseBody, hitbox->GetBody(), pivot);
+	turrentJointDef.enableMotor = true;
+	turrentJointDef.motorSpeed = 0.0f;
+	turrentJointDef.maxMotorTorque = turretMotorTorque;
+	turrentJointDef.enableLimit = true;
+	turrentJointDef.lowerAngle = MIN_ROTATION_ANGLE;
+	turrentJointDef.upperAngle = MAX_ROTATION_ANGLE;
+	turretJoint = static_cast<b2RevoluteJoint*>(world.CreateJoint(&turrentJointDef));
 }
 
 PlayerCannon::~PlayerCannon() {
@@ -61,8 +77,9 @@ void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 }
 
 void PlayerCannon::TeleportTo(float x, float y) {
-	hitbox->GetBody()->SetTransform(b2Vec2(x, y), 0.0f);
+	baseBody->SetTransform(b2Vec2(x, y), baseBody->GetAngle());
 	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+	hitbox->GetBody()->SetAngularVelocity(0.0f);
 }
 
 void PlayerCannon::Update(float deltaTime) {
@@ -78,7 +95,7 @@ void PlayerCannon::Update(float deltaTime) {
 	}
 
 	HandleMovement(deltaTime);
-	HandleCannonRotation(deltaTime);
+	HandleRotation(deltaTime);
 
 	if (state != PlayerCannonState::Pulling && state != PlayerCannonState::Dead) {
 		// TODO: Implement movement logic based on actionState.moveDown and actionState.moveUp
@@ -100,7 +117,6 @@ void PlayerCannon::Render(Renderer& renderer) {
 
 	if (context.debugMode) {
 		hitbox->Render(renderer);
-		DrawDebugSensors(renderer);
 	}
 }
 
@@ -119,8 +135,7 @@ void PlayerCannon::HandleMovement(float deltaTime) {
 	if (velocityY > maxMoveSpeed) velocityY = maxMoveSpeed;
 	if (velocityY < -maxMoveSpeed) velocityY = -maxMoveSpeed;
 
-	b2Body* body = hitbox->GetBody();
-	b2Vec2 pos = body->GetPosition();
+	b2Vec2 pos = baseBody->GetPosition();
 	pos.y += velocityY * deltaTime;
 
 	float minY = TOP_OFFSET * METERS_PER_PIXEL;
@@ -129,22 +144,17 @@ void PlayerCannon::HandleMovement(float deltaTime) {
 	if (pos.y < minY) { pos.y = minY; velocityY = 0.0f; }
 	if (pos.y > maxY) { pos.y = maxY; velocityY = 0.0f; }
 	
-	body->SetTransform(pos, body->GetAngle());
+	baseBody->SetTransform(pos, baseBody->GetAngle());
 }
 
-void PlayerCannon::HandleCannonRotation(float deltaTime) {
+void PlayerCannon::HandleRotation(float deltaTime) {
 	if (actionState.rotateLeft) {
-		hitbox->GetBody()->SetAngularVelocity(-rotationSpeed);
+		turretJoint->SetMotorSpeed(-rotationSpeed);
 	}
 	else if (actionState.rotateRight) {
-		hitbox->GetBody()->SetAngularVelocity(rotationSpeed);
+		turretJoint->SetMotorSpeed(rotationSpeed);
 	}
 	else {
-		hitbox->GetBody()->SetAngularVelocity(0.0f);
+		turretJoint->SetMotorSpeed(0.0f);
 	}
-}
-
-void PlayerCannon::DrawDebugSensors(Renderer& renderer) {
-	b2Vec2 pos = hitbox->GetBody()->GetPosition();
-	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
 }
