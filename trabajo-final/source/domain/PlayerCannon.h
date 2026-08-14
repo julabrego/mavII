@@ -12,7 +12,6 @@ enum class PlayerCannonAction {
 	MoveDown,
 	MoveUp,
 	Shoot,
-	Push,
 	Pull
 };
 
@@ -33,7 +32,7 @@ public:
 	~PlayerCannon();
 
 	void SetAction(PlayerCannonAction action, bool active);
-	bool ConsumeShoot();
+	bool GetShootRequested() const { return shootRequested; }
 	
 	void TeleportTo(float x, float y);
 	
@@ -44,6 +43,7 @@ public:
 
 	PlayerCannonState GetState() const { return state; }
 	b2Body* GetBody() const { return hitbox->GetBody(); }
+	b2Vec2 GetPosition() const { return hitbox->GetBody()->GetPosition(); }
 
 private:
 	void HandleMovement(float deltaTime);
@@ -81,7 +81,7 @@ private:
 	float moveAcceleration = 80.0f;
 	float moveDamping = 0.85f;
 	float maxMoveSpeed = 4.0f;
-	
+
 	Texture2D cannonBaseTexture = LoadTexture("../assets/cannonBase.png");
 	Texture2D cannonTopTexture = LoadTexture("../assets/cannonTop.png");
 	BodyData bodyData;

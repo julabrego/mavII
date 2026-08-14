@@ -7,6 +7,7 @@
 #include "GameUI.h"
 #include "../domain/PlayerCannon.h"
 #include "../domain/WreckingBall.h"
+#include "../domain/ChainLink.h"
 
 class PhysicsWorld;
 class Renderer;
@@ -30,7 +31,11 @@ class Game
 	
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<PlayerCannon> player;
-	std::vector<std::unique_ptr<WreckingBall>> projectiles;
+	
+	std::unique_ptr<WreckingBall> wreckingBall;
+	std::vector<std::unique_ptr<ChainLink>> projectiles;
+	float chainBetweenProjectilesDistance = 5.0f;
+	float lastLinkDistance = 0.0f;
 
 	GameUI ui;
 

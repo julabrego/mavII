@@ -9,7 +9,8 @@ enum class BodyTag
 	Ground,
 	Box,
 	FinishSensor,
-	WreckingBall
+	WreckingBall,
+	ChainLink
 };
 
 struct BodyData

@@ -61,7 +61,7 @@ void Game::HandleInput()
 		player->SetAction(PlayerCannonAction::RotateRight, IsKeyDown(KEY_RIGHT));
 		player->SetAction(PlayerCannonAction::MoveUp, IsKeyDown(KEY_UP));
 		player->SetAction(PlayerCannonAction::MoveDown, IsKeyDown(KEY_DOWN));
-		player->SetAction(PlayerCannonAction::Shoot, IsKeyPressed(KEY_SPACE));
+		player->SetAction(PlayerCannonAction::Shoot, IsKeyDown(KEY_SPACE));
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -96,6 +96,8 @@ void Game::RestartGame()
 
 	scenario = std::make_unique<Scenario>(world, context, screenWidth, screenHeight);
 	player = std::make_unique<PlayerCannon>(world, context, 30.0f, 480.0f);
+
+	wreckingBall.reset();
 }
 
 void Game::ToggleDebugMode()
@@ -112,14 +114,20 @@ void Game::Update(float deltaTime)
 	if (player) {
 		player->Update(deltaTime);
 
-		if (player->ConsumeShoot()) {
+		if (player->GetShootRequested()) {
 			SpawnProjectile();
 		}
+	}
+
+	// Wrecking ball + chain
+	if(wreckingBall) {
+		wreckingBall->Update(deltaTime);
 	}
 
 	for (auto& projectile : projectiles) {
 		projectile->Update(deltaTime);
 	}
+	// ---
 
 	CleanupProjectiles();
 	HandlePlayerDeath();
@@ -136,9 +144,28 @@ void Game::SpawnProjectile()
 	float spawnY = player->GetBody()->GetPosition().y * PIXELS_PER_METER + sinf(angleRad) * LAUNCH_OFFSET;
 
 	b2World& world = *physicsWorld->GetWorld();
-	auto ball = std::make_unique<WreckingBall>(world, spawnX, spawnY, PROJECTILE_RADIUS);
-	ball->Launch(angleRad, SHOOT_SPEED);
-	projectiles.push_back(std::move(ball));
+
+	if (!wreckingBall) {
+		auto ball = std::make_unique<WreckingBall>(world, spawnX, spawnY, PROJECTILE_RADIUS);
+		ball->Launch(angleRad, SHOOT_SPEED);
+		wreckingBall = std::move(ball);
+	}
+
+	b2Vec2 cannonPosition = player->GetPosition();
+	bool canSpawnProjectile = true;
+	b2Vec2 ballPosition = projectiles.size() == 0 ? wreckingBall->GetBody()->GetPosition() : projectiles.back()->GetBody()->GetPosition();
+	float distance = b2Distance(cannonPosition, ballPosition);
+
+	canSpawnProjectile = (distance > chainBetweenProjectilesDistance);
+	
+	printf("Distance: %.2f, Can Spawn: %s\n", distance, canSpawnProjectile ? "true" : "false");
+
+	if (canSpawnProjectile) {
+		auto ball = std::make_unique<ChainLink>(world, spawnX, spawnY);
+		ball->Launch(angleRad, SHOOT_SPEED);
+		projectiles.push_back(std::move(ball));
+	}
+	
 }
 
 void Game::CleanupProjectiles()
@@ -181,9 +208,14 @@ void Game::Draw()
 
 	scenario->Render(*renderer);
 
+	// Wrecking ball + chain
+	if(wreckingBall) {
+		wreckingBall->Render(*renderer);
+	}
 	for (auto& projectile : projectiles) {
 		projectile->Render(*renderer);
 	}
+	// ---
 
 	if (player) {
 		player->Render(*renderer);

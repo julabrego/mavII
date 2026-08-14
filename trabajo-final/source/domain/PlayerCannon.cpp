@@ -40,14 +40,6 @@ void PlayerCannon::Die() {
 	}
 }
 
-bool PlayerCannon::ConsumeShoot() {
-	if (shootRequested) {
-		shootRequested = false;
-		return true;
-	}
-	return false;
-}
-
 void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 	switch (action) {
 	case PlayerCannonAction::RotateLeft:
@@ -65,9 +57,6 @@ void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 	case PlayerCannonAction::Shoot:
 		actionState.shoot = active;
 		break;
-	case PlayerCannonAction::Push:
-		actionState.push = active;
-		break;
 	case PlayerCannonAction::Pull:
 		actionState.pull = active;
 		break;
@@ -78,6 +67,7 @@ void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 
 void PlayerCannon::TeleportTo(float x, float y) {
 	baseBody->SetTransform(b2Vec2(x, y), baseBody->GetAngle());
+	hitbox->GetBody()->SetTransform(b2Vec2(x, y), hitbox->GetBody()->GetAngle());
 	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 	hitbox->GetBody()->SetAngularVelocity(0.0f);
 }
@@ -89,10 +79,7 @@ void PlayerCannon::Update(float deltaTime) {
 		return;
 	}
 
-	if (actionState.shoot) {
-		shootRequested = true;
-		actionState.shoot = false;
-	}
+	shootRequested = actionState.shoot;
 
 	HandleMovement(deltaTime);
 	HandleRotation(deltaTime);
@@ -107,7 +94,10 @@ void PlayerCannon::Update(float deltaTime) {
 void PlayerCannon::Render(Renderer& renderer) {
 
 	Rectangle srcBase = { 0.0f, 0.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
-	Rectangle dstBase = { hitbox->position.x - cannonBaseTexture.width / 2.0f, hitbox->position.y - cannonBaseTexture.height / 2.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
+	b2Vec2 basePos = baseBody->GetPosition();
+	float baseX = basePos.x * PIXELS_PER_METER;
+	float baseY = basePos.y * PIXELS_PER_METER;
+	Rectangle dstBase = { baseX - cannonBaseTexture.width / 2.0f, baseY - cannonBaseTexture.height / 2.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
 	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
 
 	Rectangle srcTop = { 0.0f, 0.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
@@ -145,6 +135,8 @@ void PlayerCannon::HandleMovement(float deltaTime) {
 	if (pos.y > maxY) { pos.y = maxY; velocityY = 0.0f; }
 	
 	baseBody->SetTransform(pos, baseBody->GetAngle());
+	hitbox->GetBody()->SetTransform(pos, hitbox->GetBody()->GetAngle());
+	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
 }
 
 void PlayerCannon::HandleRotation(float deltaTime) {
