@@ -93,6 +93,8 @@ void Game::RestartGame()
 
 	context = GameContext{};
 	projectiles.clear();
+	projectileJoints.clear();
+	cannonRope.reset();
 
 	scenario = std::make_unique<Scenario>(world, context, screenWidth, screenHeight);
 	player = std::make_unique<PlayerCannon>(world, context, 30.0f, 480.0f);
@@ -156,14 +158,47 @@ void Game::SpawnProjectile()
 	b2Vec2 ballPosition = projectiles.size() == 0 ? wreckingBall->GetBody()->GetPosition() : projectiles.back()->GetBody()->GetPosition();
 	float distance = b2Distance(cannonPosition, ballPosition);
 
-	canSpawnProjectile = (distance > chainBetweenProjectilesDistance);
+	canSpawnProjectile = (distance > chainBetweenProjectilesDistance * METERS_PER_PIXEL);
 	
-	printf("Distance: %.2f, Can Spawn: %s\n", distance, canSpawnProjectile ? "true" : "false");
-
 	if (canSpawnProjectile) {
+		if (projectiles.size() >= maxProjectiles) {
+			return;
+		}
+
 		auto ball = std::make_unique<ChainLink>(world, spawnX, spawnY, angleRad);
 		ball->Launch(angleRad, SHOOT_SPEED);
 		projectiles.push_back(std::move(ball));
+
+		float linkGapInMeters = chainBetweenProjectilesDistance * METERS_PER_PIXEL;
+		b2DistanceJointDef distanceJointDef;
+
+		distanceJointDef.bodyA = projectiles.size() == 1 ? wreckingBall->GetBody() : projectiles[projectiles.size() - 2]->GetBody();
+		distanceJointDef.bodyB = projectiles.back()->GetBody();
+
+		float borderA = projectiles.size() == 1 ? 0.0f : -(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL;
+		float borderB = (LINK_WIDTH / 2.0f) * METERS_PER_PIXEL;
+		
+		distanceJointDef.localAnchorA.Set(borderA, 0.0f);
+		distanceJointDef.localAnchorB.Set(borderB, 0.0f);
+		distanceJointDef.length = linkGapInMeters;
+		distanceJointDef.minLength = linkGapInMeters;
+		distanceJointDef.maxLength = linkGapInMeters;
+		projectileJoints.push_back(std::unique_ptr<b2DistanceJoint>(static_cast<b2DistanceJoint*>(world.CreateJoint(&distanceJointDef))));
+
+		if (cannonRope) {
+			world.DestroyJoint(cannonRope.release());
+		}
+
+		float chainMaxLengthMeters = maxProjectiles * linkGapInMeters;
+		b2DistanceJointDef tetherDef;
+		tetherDef.bodyA = player->GetBody();
+		tetherDef.bodyB = projectiles.back()->GetBody();
+		tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
+		tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
+		tetherDef.length = chainMaxLengthMeters;
+		tetherDef.minLength = 0.0f;
+		tetherDef.maxLength = chainMaxLengthMeters;
+		cannonRope = std::unique_ptr<b2DistanceJoint>(static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef)));
 	}
 	
 }
@@ -176,6 +211,8 @@ void Game::CleanupProjectiles()
 		if (x < -100.0f || x > screenWidth + 100.0f || y < -100.0f || y > screenHeight + 100.0f) {
 			physicsWorld->DestroyBody((*it)->GetBody());
 			it = projectiles.erase(it);
+			projectileJoints.clear();
+			cannonRope.reset();
 		}
 		else {
 			++it;
@@ -221,7 +258,24 @@ void Game::Draw()
 		player->Render(*renderer);
 	}
 
+	if (context.debugMode) {
+		for (auto& joint : projectileJoints) {
+			DrawDebugJoint(*joint);
+		}
+		if (cannonRope) {
+			DrawDebugJoint(*cannonRope);
+		}
+	}
+
 	ui.Draw(*renderer, context);
 
 	renderer->End();
+}
+
+void Game::DrawDebugJoint(const b2DistanceJoint& joint)
+{
+	b2Vec2 anchorA = joint.GetAnchorA();
+	b2Vec2 anchorB = joint.GetAnchorB();
+	DrawCircle(static_cast<int>(anchorA.x * PIXELS_PER_METER), static_cast<int>(anchorA.y * PIXELS_PER_METER), 3.0f, RED);
+	DrawCircle(static_cast<int>(anchorB.x * PIXELS_PER_METER), static_cast<int>(anchorB.y * PIXELS_PER_METER), 3.0f, RED);
 }

@@ -34,8 +34,11 @@ class Game
 	
 	std::unique_ptr<WreckingBall> wreckingBall;
 	std::vector<std::unique_ptr<ChainLink>> projectiles;
-	float chainBetweenProjectilesDistance = 3.0f;
+	std::vector<std::unique_ptr<b2DistanceJoint>> projectileJoints;
+	std::unique_ptr<b2DistanceJoint> cannonRope;
+	float chainBetweenProjectilesDistance = 5.0f;
 	float lastLinkDistance = 0.0f;
+	int maxProjectiles = 10;
 
 	GameUI ui;
 
@@ -52,5 +55,6 @@ class Game
 	void HandlePlayerDeath();
 	void SpawnProjectile();
 	void CleanupProjectiles();
+	void DrawDebugJoint(const b2DistanceJoint& joint);
 };
 
