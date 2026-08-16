@@ -190,15 +190,14 @@ void Game::SpawnProjectile()
 			cannonRope = nullptr;
 		}
 
-		float chainMaxLengthMeters = maxProjectiles * linkGapInMeters;
 		b2DistanceJointDef tetherDef;
 		tetherDef.bodyA = player->GetBody();
 		tetherDef.bodyB = projectiles.back()->GetBody();
 		tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
 		tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
-		tetherDef.length = chainMaxLengthMeters;
-		tetherDef.minLength = 0.0f;
-		tetherDef.maxLength = chainMaxLengthMeters;
+		tetherDef.length = linkGapInMeters;
+		tetherDef.minLength = linkGapInMeters;
+		tetherDef.maxLength = linkGapInMeters;
 		cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
 	}
 	
