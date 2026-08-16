@@ -135,9 +135,7 @@ void PlayerCannon::HandleMovement(float deltaTime) {
 	if (pos.y < minY) { pos.y = minY; velocityY = 0.0f; }
 	if (pos.y > maxY) { pos.y = maxY; velocityY = 0.0f; }
 	
-	baseBody->SetTransform(pos, baseBody->GetAngle());
-	hitbox->GetBody()->SetTransform(pos, hitbox->GetBody()->GetAngle());
-	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+	baseBody->SetLinearVelocity(b2Vec2(0.0f, velocityY));
 }
 
 void PlayerCannon::HandleRotation(float deltaTime) {

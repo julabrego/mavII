@@ -13,7 +13,13 @@ PhysicsWorld::~PhysicsWorld()
 
 void PhysicsWorld::Update(float delta)
 {
-	world->Step(delta, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+	accumulator += fminf(delta, MAX_FRAME_TIME);
+
+	while (accumulator >= FIXED_TIME_STEP)
+	{
+		world->Step(FIXED_TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+		accumulator -= FIXED_TIME_STEP;
+	}
 }
 
 void PhysicsWorld::DestroyBody(b2Body* body)

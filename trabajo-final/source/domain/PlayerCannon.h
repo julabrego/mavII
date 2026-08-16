@@ -76,7 +76,7 @@ private:
 	bool shootRequested = false;
 
 	float rotationSpeed = 5.0f;
-	float turretMotorTorque = 30.0f;
+	float turretMotorTorque = 200.0f;
 	float velocityY = 0.0f;
 	float moveAcceleration = 80.0f;
 	float moveDamping = 0.85f;
