@@ -94,7 +94,7 @@ void Game::RestartGame()
 	context = GameContext{};
 	projectiles.clear();
 	projectileJoints.clear();
-	cannonRope.reset();
+	cannonRope = nullptr;
 
 	scenario = std::make_unique<Scenario>(world, context, screenWidth, screenHeight);
 	player = std::make_unique<PlayerCannon>(world, context, 30.0f, 480.0f);
@@ -183,10 +183,11 @@ void Game::SpawnProjectile()
 		distanceJointDef.length = linkGapInMeters;
 		distanceJointDef.minLength = linkGapInMeters;
 		distanceJointDef.maxLength = linkGapInMeters;
-		projectileJoints.push_back(std::unique_ptr<b2DistanceJoint>(static_cast<b2DistanceJoint*>(world.CreateJoint(&distanceJointDef))));
+		projectileJoints.push_back(static_cast<b2DistanceJoint*>(world.CreateJoint(&distanceJointDef)));
 
 		if (cannonRope) {
-			world.DestroyJoint(cannonRope.release());
+			world.DestroyJoint(cannonRope);
+			cannonRope = nullptr;
 		}
 
 		float chainMaxLengthMeters = maxProjectiles * linkGapInMeters;
@@ -198,7 +199,7 @@ void Game::SpawnProjectile()
 		tetherDef.length = chainMaxLengthMeters;
 		tetherDef.minLength = 0.0f;
 		tetherDef.maxLength = chainMaxLengthMeters;
-		cannonRope = std::unique_ptr<b2DistanceJoint>(static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef)));
+		cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
 	}
 	
 }
@@ -212,7 +213,7 @@ void Game::CleanupProjectiles()
 			physicsWorld->DestroyBody((*it)->GetBody());
 			it = projectiles.erase(it);
 			projectileJoints.clear();
-			cannonRope.reset();
+			cannonRope = nullptr;
 		}
 		else {
 			++it;
@@ -232,6 +233,7 @@ void Game::HandlePlayerDeath()
 
 	if (player->GetState() == PlayerCannonState::Dead && context.state == GameState::Playing) {
 		physicsWorld->DestroyBody(player->GetBody());
+		cannonRope = nullptr;
 		player.reset();
 
 		context.state = GameState::Finished;

@@ -31,6 +31,7 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 
 PlayerCannon::~PlayerCannon() {
 	UnloadTexture(cannonBaseTexture);
+	UnloadTexture(cannonTopTexture);
 }
 
 void PlayerCannon::Die() {

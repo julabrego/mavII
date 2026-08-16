@@ -34,8 +34,8 @@ class Game
 	
 	std::unique_ptr<WreckingBall> wreckingBall;
 	std::vector<std::unique_ptr<ChainLink>> projectiles;
-	std::vector<std::unique_ptr<b2DistanceJoint>> projectileJoints;
-	std::unique_ptr<b2DistanceJoint> cannonRope;
+	std::vector<b2DistanceJoint*> projectileJoints;
+	b2DistanceJoint* cannonRope = nullptr;
 	float chainBetweenProjectilesDistance = 5.0f;
 	float lastLinkDistance = 0.0f;
 	int maxProjectiles = 10;
