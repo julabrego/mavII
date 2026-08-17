@@ -85,6 +85,10 @@ void PlayerCannon::Update(float deltaTime) {
 	}
 
 	shootRequested = actionState.shoot;
+	pullRequested = actionState.pull;
+
+	if (actionState.pull) state = PlayerCannonState::Pulling;
+	else if (state != PlayerCannonState::Dead) state = PlayerCannonState::Idle;
 
 	HandleMovement(deltaTime);
 	HandleRotation(deltaTime);

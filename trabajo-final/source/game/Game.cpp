@@ -16,6 +16,7 @@ const float GRAVITY = 9.8f;
 const float SHOOT_SPEED = 20.0f;
 const float PROJECTILE_RADIUS = 10.0f;
 const float LAUNCH_OFFSET = 45.0f;
+const float PULL_SPEED = 60.0f;
 
 Game::Game(int screenWidth, int screenHeight)
 	: physicsWorld(std::make_unique<PhysicsWorld>(GRAVITY))
@@ -62,6 +63,7 @@ void Game::HandleInput()
 		player->SetAction(PlayerCannonAction::MoveUp, IsKeyDown(KEY_UP));
 		player->SetAction(PlayerCannonAction::MoveDown, IsKeyDown(KEY_DOWN));
 		player->SetAction(PlayerCannonAction::Shoot, IsKeyDown(KEY_SPACE));
+		player->SetAction(PlayerCannonAction::Pull, IsKeyDown(KEY_S));
 	}
 
 	if (IsKeyPressed(KEY_D)) {
@@ -116,7 +118,11 @@ void Game::Update(float deltaTime)
 	if (player) {
 		player->Update(deltaTime);
 
-		if (player->GetShootRequested()) {
+		if (player->GetPullRequested()) {
+			PullProjectiles(deltaTime);
+		}
+
+		if (!player->GetPullRequested() && player->GetShootRequested()) {
 			SpawnProjectile();
 		}
 	}
@@ -205,6 +211,66 @@ void Game::SpawnProjectile()
 		}
 	}
 	
+}
+
+void Game::PullProjectiles(float deltaTime)
+{
+	if (!player || !wreckingBall) return;
+
+	if (!cannonRope) {
+		return;
+	}
+
+	float currentMaxPx = cannonRope->GetMaxLength() * PIXELS_PER_METER;
+	float newMaxPx = currentMaxPx - PULL_SPEED * deltaTime;
+
+	if (newMaxPx <= 0.0f) {
+		ConsumeLink();
+	}
+	else {
+		cannonRope->SetMaxLength(newMaxPx * METERS_PER_PIXEL);
+	}
+}
+
+void Game::ConsumeLink()
+{
+	if (!player || !wreckingBall) return;
+
+	b2World& world = *physicsWorld->GetWorld();
+
+	if (projectiles.empty()) {
+		physicsWorld->DestroyBody(wreckingBall->GetBody());
+		wreckingBall.reset();
+		return;
+	}
+
+	physicsWorld->DestroyBody(projectiles.back()->GetBody());
+	projectiles.pop_back();
+	if (!projectileJoints.empty()) {
+		projectileJoints.pop_back();
+	}
+	cannonRope = nullptr;
+
+	if (projectiles.empty()) {
+		physicsWorld->DestroyBody(wreckingBall->GetBody());
+		wreckingBall.reset();
+		return;
+	}
+
+	b2DistanceJointDef tetherDef;
+	tetherDef.bodyA = player->GetBody();
+	tetherDef.bodyB = projectiles.back()->GetBody();
+	tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
+	tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
+
+	b2Vec2 anchorA = player->GetBody()->GetWorldPoint(tetherDef.localAnchorA);
+	b2Vec2 anchorB = projectiles.back()->GetBody()->GetWorldPoint(tetherDef.localAnchorB);
+	float actualLength = b2Distance(anchorA, anchorB);
+
+	tetherDef.length = actualLength;
+	tetherDef.minLength = 0.0f;
+	tetherDef.maxLength = actualLength;
+	cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
 }
 
 void Game::EnableChainCollisions()

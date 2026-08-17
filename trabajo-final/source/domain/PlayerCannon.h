@@ -33,7 +33,8 @@ public:
 
 	void SetAction(PlayerCannonAction action, bool active);
 	bool GetShootRequested() const { return shootRequested; }
-	
+	bool GetPullRequested() const { return pullRequested; }
+
 	void TeleportTo(float x, float y);
 	
 	void Die();
@@ -74,6 +75,7 @@ private:
 	b2RevoluteJoint* turretJoint = nullptr;
 
 	bool shootRequested = false;
+	bool pullRequested = false;
 
 	float rotationSpeed = 5.0f;
 	float turretMotorTorque = 200.0f;

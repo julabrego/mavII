@@ -55,6 +55,8 @@ class Game
 
 	void HandlePlayerDeath();
 	void SpawnProjectile();
+	void PullProjectiles(float deltaTime);
+	void ConsumeLink();
 	void CleanupProjectiles();
 	void EnableChainCollisions();
 	void DrawDebugJoint(const b2DistanceJoint& joint);
