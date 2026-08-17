@@ -16,6 +16,12 @@ class RectangleEntity;
 class Scenario;
 class ContactListener;
 
+const float GRAVITY = 9.8f;
+const float SHOOT_SPEED = 20.0f;
+const float PROJECTILE_RADIUS = 20.0f;
+const float LAUNCH_OFFSET = 45.0f;
+const float PULL_SPEED = 40.0f;
+
 class Game
 {
 	public:

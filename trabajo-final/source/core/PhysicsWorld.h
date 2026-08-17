@@ -22,12 +22,11 @@ private:
 	std::unique_ptr<b2World> world;
 	ContactListener contactListener;
 
-	// TODO: validate if it is ok VEL > POS
-	const int VELOCITY_ITERATIONS = 10;
+	const int VELOCITY_ITERATIONS = 20;
 	const int POSITION_ITERATIONS = 20;
 
-	const float FIXED_TIME_STEP = 1.0f / 60.0f;
-	const float MAX_FRAME_TIME = 0.25f;
+	const float FIXED_TIME_STEP = 1.0f / 120.0f;
+	const float MAX_FRAME_TIME = 0.1f;
 	float accumulator = 0.0f;
 };
 

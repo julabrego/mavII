@@ -61,19 +61,26 @@ void Scenario::CreateGroundsAndWalls(b2World& world) {
 }
 
 void Scenario::CreateBuildingBlocks(b2World& world) {
-	int numBlocks = 4;
-	float xBlocks = 449.0f;
-	float yBlocks = 179.5f;
-	float blockWidth = 90.0f;
-	float blockHeight = 90.0f;
+	int numRows = 5;
+	int numCols = 2;
+	float blockWidth = 45.0f;
+	float blockHeight = 45.0f;
+	float xInitialBlock = GetScreenWidth() / 2.0f - numCols * blockWidth / 2;
+	float yInitialBlock = 540.0f - blockHeight;
 
-	for (int i = 0; i < numBlocks; ++i) {
-		float x = xBlocks;
-		float y = yBlocks + i * blockHeight;
+	float density = 5.0f;
+	float friction = 0.5f;
+	float restitution = 0.3f;
 
-		auto block = RectangleEntity::CreateDynamic(world, x, y, blockWidth, blockHeight, 0.0f, COLOR_WALL, 1.0f, 0.5f, 0.3f, 1.0f);
-		RegisterBodyData(block->GetBody(), BodyTag::Box, block.get());
-		buildingBlocks.push_back(std::move(block));
+	for (int row = 0; row < numRows; ++row) {
+		for (int col = 0; col < numCols; ++col) {
+			float x = xInitialBlock + col * blockWidth;
+			float y = yInitialBlock - row * blockHeight;
+
+			auto block = RectangleEntity::CreateDynamic(world, x, y, blockWidth, blockHeight, 0.0f, COLOR_WALL, density, friction, restitution, 1.0f);
+			RegisterBodyData(block->GetBody(), BodyTag::Box, block.get());
+			buildingBlocks.push_back(std::move(block));
+		}
 	}
 }
 

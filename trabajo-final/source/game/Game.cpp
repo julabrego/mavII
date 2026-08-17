@@ -12,12 +12,6 @@
 #include <string>
 #include <cmath>
 
-const float GRAVITY = 9.8f;
-const float SHOOT_SPEED = 20.0f;
-const float PROJECTILE_RADIUS = 10.0f;
-const float LAUNCH_OFFSET = 45.0f;
-const float PULL_SPEED = 60.0f;
-
 Game::Game(int screenWidth, int screenHeight)
 	: physicsWorld(std::make_unique<PhysicsWorld>(GRAVITY))
 	, renderer(std::make_unique<Renderer>(COLOR_SKY))
