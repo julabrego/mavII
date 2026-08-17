@@ -25,8 +25,8 @@ private:
 	const int VELOCITY_ITERATIONS = 20;
 	const int POSITION_ITERATIONS = 20;
 
-	const float FIXED_TIME_STEP = 1.0f / 120.0f;
-	const float MAX_FRAME_TIME = 0.1f;
+	const float FIXED_TIME_STEP = 1.0f / 240.0f;
+	const float MAX_FRAME_TIME = 0.05f;
 	float accumulator = 0.0f;
 };
 

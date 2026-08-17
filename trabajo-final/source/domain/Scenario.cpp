@@ -61,7 +61,7 @@ void Scenario::CreateGroundsAndWalls(b2World& world) {
 }
 
 void Scenario::CreateBuildingBlocks(b2World& world) {
-	int numRows = 5;
+	int numRows = 7;
 	int numCols = 2;
 	float blockWidth = 45.0f;
 	float blockHeight = 45.0f;
