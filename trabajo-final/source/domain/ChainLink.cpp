@@ -8,6 +8,11 @@ ChainLink::ChainLink(b2World& world, float startX, float startY, float angle, fl
 	hitbox = RectangleEntity::CreateDynamic(world, startX - LINK_WIDTH / 2.0f, startY - LINK_HEIGHT / 2.0f, LINK_WIDTH, LINK_HEIGHT, angle * RAD2DEG, Fade(BLACK, 0.2f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
 	hitbox->GetBody()->SetAngularDamping(angularDamping);
+
+	b2Filter filter;
+	filter.groupIndex = PLAYER_GROUP_INDEX;
+	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
+
 	bodyData = { BodyTag::ChainLink, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 }

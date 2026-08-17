@@ -8,6 +8,11 @@ WreckingBall::WreckingBall(b2World& world, float startX, float startY, float rad
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, radius, Fade(YELLOW, 0.5f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
 	hitbox->GetBody()->SetAngularDamping(angularDamping);
+
+	b2Filter filter;
+	filter.groupIndex = PLAYER_GROUP_INDEX;
+	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
+
 	bodyData = { BodyTag::WreckingBall, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 }

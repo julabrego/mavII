@@ -38,7 +38,8 @@ class Game
 	b2DistanceJoint* cannonRope = nullptr;
 	float chainBetweenProjectilesDistance = 5.0f;
 	float lastLinkDistance = 0.0f;
-	int maxProjectiles = 10;
+	int maxProjectiles = 30;
+	float chainTetherMaxLength = 8.0f;
 
 	GameUI ui;
 
@@ -55,6 +56,7 @@ class Game
 	void HandlePlayerDeath();
 	void SpawnProjectile();
 	void CleanupProjectiles();
+	void EnableChainCollisions();
 	void DrawDebugJoint(const b2DistanceJoint& joint);
 };
 

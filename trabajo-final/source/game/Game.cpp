@@ -181,7 +181,7 @@ void Game::SpawnProjectile()
 		distanceJointDef.localAnchorA.Set(borderA, 0.0f);
 		distanceJointDef.localAnchorB.Set(borderB, 0.0f);
 		distanceJointDef.length = linkGapInMeters;
-		distanceJointDef.minLength = linkGapInMeters;
+		distanceJointDef.minLength = 0.0f;
 		distanceJointDef.maxLength = linkGapInMeters;
 		projectileJoints.push_back(static_cast<b2DistanceJoint*>(world.CreateJoint(&distanceJointDef)));
 
@@ -195,12 +195,29 @@ void Game::SpawnProjectile()
 		tetherDef.bodyB = projectiles.back()->GetBody();
 		tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
 		tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
-		tetherDef.length = linkGapInMeters;
-		tetherDef.minLength = linkGapInMeters;
-		tetherDef.maxLength = linkGapInMeters;
+		tetherDef.length = chainTetherMaxLength * METERS_PER_PIXEL;
+		tetherDef.minLength = 0.0f;
+		tetherDef.maxLength = chainTetherMaxLength * METERS_PER_PIXEL;
 		cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
+
+		if (projectiles.size() >= maxProjectiles) {
+			EnableChainCollisions();
+		}
 	}
 	
+}
+
+void Game::EnableChainCollisions()
+{
+	b2Filter filter;
+	filter.groupIndex = 0;
+
+	if (wreckingBall) {
+		wreckingBall->GetBody()->GetFixtureList()->SetFilterData(filter);
+	}
+	for (auto& link : projectiles) {
+		link->GetBody()->GetFixtureList()->SetFilterData(filter);
+	}
 }
 
 void Game::CleanupProjectiles()

@@ -18,6 +18,10 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 	hitbox->GetBody()->SetGravityScale(0.0f);
 
+	b2Filter filter;
+	filter.groupIndex = PLAYER_GROUP_INDEX;
+	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
+
 	b2RevoluteJointDef turrentJointDef;
 	turrentJointDef.Initialize(baseBody, hitbox->GetBody(), pivot);
 	turrentJointDef.enableMotor = true;
