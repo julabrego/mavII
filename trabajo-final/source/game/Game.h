@@ -15,12 +15,13 @@ class CircleEntity;
 class RectangleEntity;
 class Scenario;
 class ContactListener;
+class Level;
 
 const float GRAVITY = 9.8f;
 const float SHOOT_SPEED = 20.0f;
 const float PROJECTILE_RADIUS = 20.0f;
 const float LAUNCH_OFFSET = 45.0f;
-const float PULL_SPEED = 60.0f;
+const float PULL_SPEED = 120.0f;
 
 class Game
 {
@@ -37,6 +38,7 @@ class Game
 	
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<PlayerCannon> player;
+	std::unique_ptr<Level> level;
 	
 	std::unique_ptr<WreckingBall> wreckingBall;
 	std::vector<std::unique_ptr<ChainLink>> projectiles;

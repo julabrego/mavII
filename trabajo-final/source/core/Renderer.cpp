@@ -63,6 +63,10 @@ void Renderer::DrawRectLines(int x, int y, int w, int h, Color color) {
 	DrawRectangleLines(x, y, w, h, color);
 }
 
+void Renderer::DrawLine(float x1, float y1, float x2, float y2, float thickness, Color color) {
+	DrawLineEx({ x1, y1 }, { x2, y2 }, thickness, color);
+}
+
 void Renderer::DrawText(const char* text, int x, int y, int fontSize, Color color) {
 	::DrawText(text, x, y, fontSize, color);
 }

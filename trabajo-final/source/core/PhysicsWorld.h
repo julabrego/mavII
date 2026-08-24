@@ -13,6 +13,7 @@ public:
 
 	void Update(float delta);
 	void DestroyBody(b2Body* body);
+	bool IsSettled() const;
 
 	b2World* GetWorld() { return world.get(); }
 

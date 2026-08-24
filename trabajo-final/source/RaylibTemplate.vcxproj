@@ -155,11 +155,13 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
   <ItemGroup>
     <ClCompile Include="core\ContactListener.cpp" />
     <ClCompile Include="core\PhysicsWorld.cpp" />
+    <ClCompile Include="domain\BuildingBlock.cpp" />
     <ClCompile Include="domain\ChainLink.cpp" />
     <ClCompile Include="domain\CircleEntity.cpp" />
     <ClCompile Include="domain\WreckingBall.cpp" />
     <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\GameUI.cpp" />
+    <ClCompile Include="game\Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="domain\RectangleEntity.cpp" />
@@ -170,8 +172,10 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="core\BodyData.h" />
     <ClInclude Include="core\ContactListener.h" />
     <ClInclude Include="core\Colors.h" />
+    <ClInclude Include="core\GameplayConstants.h" />
     <ClInclude Include="core\PhysicsConstants.h" />
     <ClInclude Include="core\PhysicsWorld.h" />
+    <ClInclude Include="domain\BuildingBlock.h" />
     <ClInclude Include="domain\ChainLink.h" />
     <ClInclude Include="domain\CircleEntity.h" />
     <ClInclude Include="domain\Entity.h" />
@@ -179,6 +183,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\GameUI.h" />
     <ClInclude Include="game\GameState.h" />
+    <ClInclude Include="game\Level.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />

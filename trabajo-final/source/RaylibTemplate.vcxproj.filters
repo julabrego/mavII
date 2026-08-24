@@ -80,6 +80,9 @@
     <ClInclude Include="core\Colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\GameplayConstants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="core\PhysicsConstants.h">
       <Filter>Header Files</Filter>
     </ClInclude>

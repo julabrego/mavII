@@ -6,6 +6,7 @@
 #include "../core/Renderer.h"
 #include "../domain/RectangleEntity.h"
 #include "../domain/Scenario.h"
+#include "Level.h"
 #include "../core/Colors.h"
 #include "../core/PhysicsConstants.h"
 #include "../core/ContactListener.h"
@@ -94,6 +95,7 @@ void Game::RestartGame()
 
 	scenario = std::make_unique<Scenario>(world, context, screenWidth, screenHeight);
 	player = std::make_unique<PlayerCannon>(world, context, 30.0f, 480.0f);
+	level = std::make_unique<Level>(*scenario);
 
 	wreckingBall.reset();
 }
@@ -107,7 +109,7 @@ void Game::Update(float deltaTime)
 {
 	auto& contactListener = physicsWorld->GetContactListener();
 
-	scenario->Update(deltaTime);
+	scenario->Update(deltaTime, level->GetBuildingHeightTarget());
 
 	if (player) {
 		player->Update(deltaTime);
@@ -117,7 +119,9 @@ void Game::Update(float deltaTime)
 		}
 
 		if (!player->GetPullRequested() && player->GetShootRequested()) {
-			SpawnProjectile();
+			if (wreckingBall || level->TryConsumeShot()) {
+				SpawnProjectile();
+			}
 		}
 	}
 
@@ -132,6 +136,15 @@ void Game::Update(float deltaTime)
 	// ---
 
 	CleanupProjectiles();
+
+	if (context.state == GameState::Playing) {
+		GameFinishState finishState = level->Evaluate(deltaTime, physicsWorld->IsSettled());
+		if (finishState != GameFinishState::None) {
+			context.finishState = finishState;
+			context.state = GameState::Finished;
+		}
+	}
+
 	HandlePlayerDeath();
 
 	contactListener.ClearFrameEvents();
@@ -321,7 +334,7 @@ void Game::Draw()
 {
 	renderer->Begin();
 
-	scenario->Render(*renderer);
+	scenario->Render(*renderer, level->GetBuildingHeightTarget());
 
 	// Wrecking ball + chain
 	if(wreckingBall) {
@@ -337,6 +350,10 @@ void Game::Draw()
 	}
 
 	if (context.debugMode) {
+		Rectangle window = scenario->GetCountingWindow();
+		renderer->DrawRectLines(static_cast<int>(window.x), static_cast<int>(window.y),
+			static_cast<int>(window.width), static_cast<int>(window.height), Fade(GREEN, 0.5f));
+
 		for (auto& joint : projectileJoints) {
 			DrawDebugJoint(*joint);
 		}
@@ -345,7 +362,10 @@ void Game::Draw()
 		}
 	}
 
-	ui.Draw(*renderer, context);
+	ui.Draw(*renderer, context,
+		level->GetShotsLeft(),
+		scenario->GetCurrentHeight(),
+		level->GetBuildingHeightTarget());
 
 	renderer->End();
 }

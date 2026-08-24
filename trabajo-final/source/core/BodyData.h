@@ -10,7 +10,8 @@ enum class BodyTag
 	Box,
 	FinishSensor,
 	WreckingBall,
-	ChainLink
+	ChainLink,
+	BuildingBlock
 };
 
 struct BodyData

@@ -2,18 +2,20 @@
 #include "../core/Renderer.h"
 #include <string>
 
-std::string mainMenuText = R"(--- SUPER MAYRO BOSS ---
+std::string mainMenuText = R"(--- DEMOLICION ---
 
 ENTER - Comenzar
 
 Instrucciones:
-FLECHAS - Moverse
-ESPACIO - Saltar
+ARRIBA - ABAJO: Moverse
+ESPACIO - Disparar 
+S - Retraer cadena
 
 D - Modo debug
 R - Reiniciar juego)";
 
-void GameUI::Draw(Renderer& renderer, const GameContext& context) {
+void GameUI::Draw(Renderer& renderer, const GameContext& context,
+	int shotsLeft, int currentHeight, int heightTarget) {
 	if (context.state == GameState::MainMenu) {
 		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		renderer.DrawCenteredText(
@@ -29,6 +31,12 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context) {
 			msg = "Perdiste\n\ENTER - volver a jugar";
 		}
 		renderer.DrawCenteredText(msg.c_str(), 40, GetScreenHeight() / 2 - 100, WHITE);
+	}
+	else if (context.state == GameState::Playing) {
+		std::string hud = "Altura: " + std::to_string(currentHeight)
+			+ "  Meta: " + std::to_string(heightTarget)
+			+ "  Disparos: " + std::to_string(shotsLeft);
+		renderer.DrawText(hud.c_str(), 10, 40, 24, WHITE);
 	}
 
 	if (context.debugMode) {

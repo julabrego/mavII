@@ -1,4 +1,6 @@
 #include "PhysicsWorld.h"
+#include "PhysicsConstants.h"
+#include <cmath>
 
 PhysicsWorld::PhysicsWorld(float gravityY)
 	: world(std::make_unique<b2World>(b2Vec2(0.0f, gravityY)))
@@ -25,4 +27,24 @@ void PhysicsWorld::Update(float delta)
 void PhysicsWorld::DestroyBody(b2Body* body)
 {
 	world->DestroyBody(body);
+}
+
+bool PhysicsWorld::IsSettled() const
+{
+	for (const b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
+		if (!body->IsAwake()) {
+			continue;
+		}
+
+		b2Vec2 velocity = body->GetLinearVelocity();
+		if (velocity.LengthSquared() > SETTLE_SPEED_THRESHOLD * SETTLE_SPEED_THRESHOLD) {
+			return false;
+		}
+
+		if (fabsf(body->GetAngularVelocity()) > SETTLE_ANGULAR_THRESHOLD) {
+			return false;
+		}
+	}
+
+	return true;
 }
