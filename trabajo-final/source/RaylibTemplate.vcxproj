@@ -161,7 +161,10 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="domain\WreckingBall.cpp" />
     <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\GameUI.cpp" />
+    <ClCompile Include="game\GameplayScene.cpp" />
     <ClCompile Include="game\Level.cpp" />
+    <ClCompile Include="game\LevelCatalog.cpp" />
+    <ClCompile Include="game\MainMenuScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="domain\RectangleEntity.cpp" />
@@ -182,8 +185,13 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="domain\WreckingBall.h" />
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\GameUI.h" />
+    <ClInclude Include="game\GameplayScene.h" />
     <ClInclude Include="game\GameState.h" />
     <ClInclude Include="game\Level.h" />
+    <ClInclude Include="game\LevelCatalog.h" />
+    <ClInclude Include="game\LevelConfig.h" />
+    <ClInclude Include="game\MainMenuScene.h" />
+    <ClInclude Include="game\Scene.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />
