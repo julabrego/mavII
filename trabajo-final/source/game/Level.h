@@ -2,13 +2,14 @@
 
 #include "GameState.h"
 #include "../core/GameplayConstants.h"
+#include "LevelConfig.h"
 
 class Scenario;
 
 class Level
 {
 public:
-	Level(Scenario& scenario);
+	Level(Scenario& scenario, const LevelConfig& config);
 
 	void Reset();
 	bool TryConsumeShot();
@@ -20,9 +21,10 @@ public:
 
 private:
 	Scenario& scenario;
+	LevelConfig config;
 
-	int buildingHeightTarget = BUILDING_HEIGHT_TARGET;
-	int shotsLeft = AVAILABLE_SHOTS;
+	int buildingHeightTarget = 1;
+	int shotsLeft = 3;
 
 	float calmTimer = 0.0f;
 	float sinceLastShotTimer = 0.0f;

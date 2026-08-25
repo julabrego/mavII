@@ -2,14 +2,15 @@
 #include "../domain/Scenario.h"
 #include "../core/GameplayConstants.h"
 
-Level::Level(Scenario& scenario)
-	: scenario(scenario)
+Level::Level(Scenario& scenario, const LevelConfig& config)
+	: scenario(scenario),
+	config(config)
 {
 }
 
 void Level::Reset()
 {
-	shotsLeft = AVAILABLE_SHOTS;
+	shotsLeft = config.availableShots;
 	calmTimer = 0.0f;
 	sinceLastShotTimer = 0.0f;
 }
