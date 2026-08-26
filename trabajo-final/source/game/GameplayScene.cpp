@@ -12,6 +12,7 @@
 #include "../core/PhysicsConstants.h"
 #include "../core/GameplayConstants.h"
 #include "../core/ContactListener.h"
+#include "LevelCatalog.h"
 #include <cmath>
 
 GameplayScene::GameplayScene(Game& game, int levelIndex)
@@ -32,9 +33,9 @@ void GameplayScene::LoadLevel(int index)
 
 	context = GameContext{};
 
-	LevelConfig config;
-		
-	scenario = std::make_unique<Scenario>(world, context, GetScreenWidth(), GetScreenHeight());
+	const LevelConfig config = LevelCatalog::Get(index);
+
+	scenario = std::make_unique<Scenario>(world, context, config);
 	player = std::make_unique<PlayerCannon>(world, context, float(config.cannonX), float(config.cannonY));
 	level = std::make_unique<Level>(*scenario, config);
 
@@ -159,7 +160,7 @@ void GameplayScene::Draw(Renderer& renderer)
 
 	HudInfo hud;
 	hud.levelNumber = levelIndex + 1;
-	hud.isLastLevel = true; // TODO: handle
+	hud.isLastLevel = (levelIndex + 1) == LevelCatalog::Count();
 	hud.shotsLeft = level->GetShotsLeft();
 	hud.currentHeight = scenario->GetCurrentHeight();
 	hud.heightTarget = level->GetBuildingHeightTarget();

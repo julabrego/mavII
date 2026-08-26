@@ -3,8 +3,10 @@
 #include "../core/GameplayConstants.h"
 
 Level::Level(Scenario& scenario, const LevelConfig& config)
-	: scenario(scenario),
-	config(config)
+	: scenario(scenario)
+	, config(config)
+	, buildingHeightTarget(config.heightTarget)
+	, shotsLeft(config.availableShots)
 {
 }
 

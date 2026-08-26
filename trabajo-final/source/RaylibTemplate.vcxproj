@@ -163,6 +163,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile Include="game\GameplayScene.cpp" />
     <ClCompile Include="game\GameUI.cpp" />
     <ClCompile Include="game\Level.cpp" />
+    <ClCompile Include="game\LevelCatalog.cpp" />
     <ClCompile Include="game\MainMenuScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
@@ -187,6 +188,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="game\GameUI.h" />
     <ClInclude Include="game\GameState.h" />
     <ClInclude Include="game\Level.h" />
+    <ClInclude Include="game\LevelCatalog.h" />
     <ClInclude Include="game\LevelConfig.h" />
     <ClInclude Include="game\MainMenuScene.h" />
     <ClInclude Include="game\Scene.h" />

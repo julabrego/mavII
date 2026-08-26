@@ -15,4 +15,8 @@ struct LevelConfig {
 	int availableShots = 3;
 	float cannonX = 30.0f;
 	float cannonY = 480.0f;
+
+	std::vector<std::string> pattern;
+	std::vector<ObstacleDef> obstacles;
 };
+

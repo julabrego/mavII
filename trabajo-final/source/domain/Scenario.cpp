@@ -12,9 +12,7 @@
 #include <cmath>
 #include <algorithm>
 
-Scenario::~Scenario() {
-	//UnloadTexture(finalFlagTexture);
-}
+Scenario::~Scenario() = default;
 
 void Scenario::RegisterBodyData(b2Body* body, BodyTag tag, void* entity) {
 	auto data = std::make_unique<BodyData>(tag, entity);
@@ -22,12 +20,24 @@ void Scenario::RegisterBodyData(b2Body* body, BodyTag tag, void* entity) {
 	bodyDataRegistry.push_back(std::move(data));
 }
 
-Scenario::Scenario(b2World& world, GameContext& gameContext, float screenWidth, float screenHeight) 
+Scenario::Scenario(b2World& world, GameContext& gameContext, const LevelConfig& levelConfig) 
 	: context(gameContext)
+	, config(levelConfig)
+	, blockSize(levelConfig.blockSize)
+	, groundTopY(levelConfig.groundTopY)
 {
-	CreateBoundaryWalls(world, screenWidth, screenHeight);
+	buildingRows = static_cast<int>(config.pattern.size());
+	for (const auto& row : config.pattern) {
+		buildingColumns = std::max(buildingColumns, static_cast<int>(row.size()));
+	}
+
+	float buildingWidth = buildingColumns * blockSize;
+	float centerX = config.buildingCenterX > 0.0f ? config.buildingCenterX : GetScreenWidth() / 2.0f;
+	xInitialBlock = centerX - buildingWidth / 2.0f;
+
+	CreateBoundaryWalls(world);
 	CreateBuildingBlocks(world);
-	CreateGroundsAndWalls(world);
+	CreateGround(world);
 }
 
 b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -49,14 +59,17 @@ b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, floa
 	return body;
 }
 
-void Scenario::CreateBoundaryWalls(b2World& world, float screenWidth, float screenHeight) {
+void Scenario::CreateBoundaryWalls(b2World& world) {
+	float screenWidth = static_cast<float>(GetScreenWidth());
+	float screenHeight = static_cast<float>(GetScreenHeight());
+
 	RegisterBodyData(CreateWall(world, 0.0f, -20.0f, screenWidth, 20.0f), BodyTag::Wall);
 	RegisterBodyData(CreateWall(world, screenWidth + 20.0f, 0.0f, 20.0f, screenHeight), BodyTag::Wall);
 	RegisterBodyData(CreateWall(world, -20.0f, 0.0f, 20.0f, screenHeight), BodyTag::Wall);
 }
 
-void Scenario::CreateGroundsAndWalls(b2World& world) {
-	ground = RectangleEntity::CreateStatic(world, 0.0f, groundTopY, GetScreenWidth(), 60.0f, 0.0f, COLOR_GROUND, 1.0f);
+void Scenario::CreateGround(b2World& world) {
+	ground = RectangleEntity::CreateStatic(world, 0.0f, groundTopY, static_cast<float>(GetScreenWidth()), 60.0f, 0.0f, COLOR_GROUND, 1.0f);
 
 	auto groundData = std::make_unique<BodyData>(BodyTag::Ground);
 	BodyData* groundDataPtr = groundData.get();
@@ -65,24 +78,23 @@ void Scenario::CreateGroundsAndWalls(b2World& world) {
 }
 
 void Scenario::CreateBuildingBlocks(b2World& world) {
-	buildingRows = 7;
-	buildingColumns = 2;
-	blockWidth = 45.0f;
-	blockHeight = 45.0f;
-	xInitialBlock = GetScreenWidth() / 2.0f - buildingColumns * blockWidth / 2;
-	yInitialBlock = groundTopY - blockHeight;
-
 	float density = 5.0f;
 	float friction = 0.5f;
 	float restitution = 0.3f;
 
-	for (int row = 0; row < buildingRows; ++row) {
-		for (int col = 0; col < buildingColumns; ++col) {
-			float x = xInitialBlock + col * blockWidth;
-			float y = yInitialBlock - row * blockHeight;
+	for (int patternRow = 0; patternRow < buildingRows; ++patternRow) {
+		const std::string& row = config.pattern[patternRow];
+		int rowFromBottom = buildingRows - 1 - patternRow;
 
-			auto block = BuildingBlock::Create(world, row, col, x, y, blockWidth, blockHeight,
-				COLOR_WALL, density, friction, restitution, 1.0f);
+		for (int col = 0; col < static_cast<int>(row.size()); ++col) {
+			if (row[col] != 'X') {
+				continue;
+			}
+
+			float x = xInitialBlock + col * blockSize;
+			float y = groundTopY - (rowFromBottom + 1) * blockSize;
+
+			auto block = BuildingBlock::Create(world, rowFromBottom, col, x, y, blockSize, blockSize, COLOR_WALL, density, friction, restitution, 1.0f);
 			RegisterBodyData(block->GetBody(), BodyTag::BuildingBlock, block.get());
 			buildingBlocks.push_back(std::move(block));
 		}
@@ -91,8 +103,8 @@ void Scenario::CreateBuildingBlocks(b2World& world) {
 
 int Scenario::ComputeBlockLevel(const BuildingBlock& block) const {
 	b2Body* body = block.GetBody();
-	float bottomY = body->GetPosition().y * PIXELS_PER_METER + blockHeight / 2.0f;
-	int level = static_cast<int>(std::lround((groundTopY - bottomY) / blockHeight));
+	float bottomY = body->GetPosition().y * PIXELS_PER_METER + blockSize / 2.0f;
+	int level = static_cast<int>(std::lround((groundTopY - bottomY) / blockSize));
 	return level < 0 ? 0 : level;
 }
 
@@ -133,9 +145,9 @@ bool Scenario::HaveAllFallenBlocksLanded() const {
 }
 
 Rectangle Scenario::GetCountingWindow() const {
-	float margin = blockWidth * BLOCK_FOOTPRINT_MARGIN_RATIO;
+	float margin = blockSize * BLOCK_FOOTPRINT_MARGIN_RATIO;
 	float left = xInitialBlock - margin;
-	float right = xInitialBlock + buildingColumns * blockWidth + margin;
+	float right = xInitialBlock + buildingColumns * blockSize+ margin;
 	return Rectangle{ left, 0.0f, right - left, groundTopY };
 }
 
@@ -168,7 +180,7 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 
 	if (buildingHeightTarget > 0 && context.state != GameState::MainMenu) {
 		Rectangle window = GetCountingWindow();
-		float goalY = groundTopY - buildingHeightTarget * blockHeight;
+		float goalY = groundTopY - buildingHeightTarget * blockSize;
 		DrawDashedHLine(renderer, goalY, window.x, window.x + window.width, COLOR_DANGER);
 		renderer.DrawText("GOAL",
 			static_cast<int>(window.x + window.width) + 8,
