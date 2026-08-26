@@ -8,6 +8,7 @@ namespace {
 		config.heightTarget = heightTarget;
 		config.availableShots = availableShots;
 		config.pattern = std::move(pattern);
+		config.obstacles = std::move(obstacles);
 		return config;
 	}
 }
@@ -26,6 +27,24 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"XX",
 			"XX",
 		}, {}),
+
+		// Level 2: pyramid
+		MakeLevel(2, 3, {
+			"...XX...",
+			"..XXXX..",
+			".XXXXXX.",
+			"XXXXXXXX",
+		}, {}),
+
+		// Level 3: two towers + obstacle
+		MakeLevel(1, 4, {
+			"XX....XX",
+			"XX....XX",
+			"XX....XX",
+			"XX....XX",
+		}, {
+			{ 410.0f, 315.0f, 180.0f, 20.0f },
+		}),
 	};
 
 	return levels;

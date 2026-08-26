@@ -30,7 +30,10 @@ private:
     b2Body* CreateWall(b2World& world, float x, float y, float halfW, float halfH);
     void CreateBoundaryWalls(b2World& world);
     void CreateGround(b2World& world);
+
 	void CreateBuildingBlocks(b2World& world);
+    void CreateObstacles(b2World& world);
+
     void DrawDashedHLine(Renderer& renderer, float y, float x1, float x2, Color color) const;
     int ComputeBlockLevel(const BuildingBlock& block) const;
     
@@ -50,6 +53,7 @@ private:
     std::unique_ptr<RectangleEntity> ground;
 
 	std::vector<std::unique_ptr<BuildingBlock>> buildingBlocks;
+    std::vector<std::unique_ptr<RectangleEntity>> obstacles;
 
     std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
 };

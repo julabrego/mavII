@@ -28,6 +28,6 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo&
 	}
 
 	if (context.debugMode) {
-		renderer.DrawText("DEBUG MODE (click para reubicar al personaje) - N: siguiente nivel", 10, 10, 20, RED);
+		renderer.DrawText("DEBUG MODE (click para reubicar al personaje) - N: siguiente nivel - B: anterior nivel", 10, 10, 20, RED);
 	}
 }

@@ -71,6 +71,15 @@ void GameplayScene::HandleInput()
 	else if (IsKeyPressed(KEY_R)) {
 		LoadLevel(levelIndex);
 	}
+	else if (context.debugMode) {
+		if (IsKeyPressed(KEY_N) && levelIndex + 1 < LevelCatalog::Count()) {
+			LoadLevel(levelIndex + 1);
+
+		}
+		else if (IsKeyPressed(KEY_B) && levelIndex > 0) {
+			LoadLevel(levelIndex - 1);
+		}
+	}
 
 	if (context.debugMode) {
 		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {

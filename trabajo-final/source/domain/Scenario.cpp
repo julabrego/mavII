@@ -38,6 +38,7 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, const LevelConfig& 
 	CreateBoundaryWalls(world);
 	CreateBuildingBlocks(world);
 	CreateGround(world);
+	CreateObstacles(world);
 }
 
 b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -98,6 +99,15 @@ void Scenario::CreateBuildingBlocks(b2World& world) {
 			RegisterBodyData(block->GetBody(), BodyTag::BuildingBlock, block.get());
 			buildingBlocks.push_back(std::move(block));
 		}
+	}
+}
+
+void Scenario::CreateObstacles(b2World& world) {
+	for (const auto& obstacleDef : config.obstacles) {
+		auto obstacle = RectangleEntity::CreateStatic(world, obstacleDef.x, obstacleDef.y,
+		obstacleDef.w, obstacleDef.h, 0.0f, COLOR_WALL, 0.5f, 1.0f);
+		RegisterBodyData(obstacle->GetBody(), BodyTag::Obstacle);
+		obstacles.push_back(std::move(obstacle));
 	}
 }
 
@@ -176,6 +186,10 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 
 	for (auto& block : buildingBlocks) {
 		block->Render(renderer);
+	}
+
+	for (auto& obstacle : obstacles) {
+		obstacle->Render(renderer);
 	}
 
 	if (buildingHeightTarget > 0 && context.state != GameState::MainMenu) {
