@@ -7,6 +7,7 @@
 #include "../core/Renderer.h"
 #include "../domain/RectangleEntity.h"
 #include "../domain/Scenario.h"
+#include "../domain/WreckingBall.h"
 #include "Level.h"
 #include "../core/Colors.h"
 #include "../core/PhysicsConstants.h"
@@ -32,6 +33,9 @@ void GameplayScene::LoadLevel(int index)
 	physicsWorld = std::make_unique<PhysicsWorld>(GRAVITY);
 	b2World& world = *physicsWorld->GetWorld();
 
+	chain.Reset();
+	chain.SetWorld(world);
+
 	context = GameContext{};
 
 	const LevelConfig config = LevelCatalog::Get(index);
@@ -39,11 +43,6 @@ void GameplayScene::LoadLevel(int index)
 	scenario = std::make_unique<Scenario>(world, context, config);
 	player = std::make_unique<PlayerCannon>(world, context, float(config.cannonX), float(config.cannonY));
 	level = std::make_unique<Level>(*scenario, config);
-
-	wreckingBall.reset();
-	projectiles.clear();
-	projectileJoints.clear();
-	cannonRope = nullptr;
 
 	context.state = GameState::Playing;
 }
@@ -85,7 +84,6 @@ void GameplayScene::HandleInput()
 	else if (context.debugMode) {
 		if (IsKeyPressed(KEY_N) && levelIndex + 1 < LevelCatalog::Count()) {
 			LoadLevel(levelIndex + 1);
-
 		}
 		else if (IsKeyPressed(KEY_B) && levelIndex > 0) {
 			LoadLevel(levelIndex - 1);
@@ -107,35 +105,39 @@ void GameplayScene::Update(float deltaTime)
 		physicsWorld->Update(deltaTime);
 	}
 
-	auto& contactListener = physicsWorld->GetContactListener();
-
 	scenario->Update(deltaTime, level->GetBuildingHeightTarget());
 
 	if (player) {
 		player->Update(deltaTime);
 
 		if (player->GetPullRequested()) {
-			PullProjectiles(deltaTime);
+			chain.Pull(deltaTime, player->GetBody());
 		}
 
 		if (!player->GetPullRequested() && player->GetShootRequested()) {
-			if (wreckingBall || level->TryConsumeShot()) {
-				SpawnProjectile();
+			if (chain.HasBall() || level->TryConsumeShot()) {
+				if (!chain.HasBall() || !chain.AtCapacity()) {
+					float angleRad = player->GetBody()->GetAngle();
+					float spawnX = player->GetBody()->GetPosition().x * PIXELS_PER_METER + cosf(angleRad) * LAUNCH_OFFSET;
+					float spawnY = player->GetBody()->GetPosition().y * PIXELS_PER_METER + sinf(angleRad) * LAUNCH_OFFSET;
+
+					b2Vec2 cannonPos = player->GetPosition();
+					b2Vec2 headPos = chain.HasBall() && chain.LinkCount() > 0
+						? chain.GetLastLinkBody()->GetPosition()
+						: (chain.HasBall() ? chain.GetBall()->GetBody()->GetPosition() : cannonPos);
+					float dist = b2Distance(cannonPos, headPos);
+
+					if (!chain.HasBall() || dist > CHAIN_LINK_SPACING * METERS_PER_PIXEL) {
+						chain.SpawnLink(player->GetBody(), angleRad, spawnX, spawnY);
+					}
+				}
 			}
 		}
 	}
 
-	// Wrecking ball + chain
-	if (wreckingBall) {
-		wreckingBall->Update(deltaTime);
-	}
+	chain.Update(deltaTime);
 
-	for (auto& projectile : projectiles) {
-		projectile->Update(deltaTime);
-	}
-	// ---
-
-	CleanupProjectiles();
+	chain.CleanupOffScreen(GetScreenWidth(), GetScreenHeight(), player ? player->GetBody() : nullptr);
 
 	if (context.state == GameState::Playing) {
 		GameFinishState finishState = level->Evaluate(deltaTime, physicsWorld->IsSettled());
@@ -146,20 +148,13 @@ void GameplayScene::Update(float deltaTime)
 	}
 
 	HandlePlayerDeath();
-
-	contactListener.ClearFrameEvents();
 }
 
 void GameplayScene::Draw(Renderer& renderer)
 {
 	scenario->Render(renderer, level->GetBuildingHeightTarget());
 
-	if (wreckingBall) {
-		wreckingBall->Render(renderer);
-	}
-	for (auto& projectile : projectiles) {
-		projectile->Render(renderer);
-	}
+	chain.Render(renderer);
 
 	if (player) {
 		player->Render(renderer);
@@ -170,12 +165,7 @@ void GameplayScene::Draw(Renderer& renderer)
 		renderer.DrawRectLines(static_cast<int>(window.x), static_cast<int>(window.y),
 			static_cast<int>(window.width), static_cast<int>(window.height), Fade(GREEN, 0.5f));
 
-		for (auto& joint : projectileJoints) {
-			DrawDebugJoint(*joint);
-		}
-		if (cannonRope) {
-			DrawDebugJoint(*cannonRope);
-		}
+		chain.RenderDebug(renderer);
 	}
 
 	HudInfo hud;
@@ -185,179 +175,6 @@ void GameplayScene::Draw(Renderer& renderer)
 	hud.currentHeight = scenario->GetCurrentHeight();
 	hud.heightTarget = level->GetBuildingHeightTarget();
 	ui.Draw(renderer, context, hud);
-}
-
-void GameplayScene::DrawDebugJoint(const b2DistanceJoint& joint)
-{
-	b2Vec2 anchorA = joint.GetAnchorA();
-	b2Vec2 anchorB = joint.GetAnchorB();
-	DrawCircle(static_cast<int>(anchorA.x * PIXELS_PER_METER), static_cast<int>(anchorA.y * PIXELS_PER_METER), 3.0f, RED);
-	DrawCircle(static_cast<int>(anchorB.x * PIXELS_PER_METER), static_cast<int>(anchorB.y * PIXELS_PER_METER), 3.0f, RED);
-}
-
-
-void GameplayScene::SpawnProjectile()
-{
-	if (!player) return;
-
-	float angleRad = player->GetBody()->GetAngle();
-	float spawnX = player->GetBody()->GetPosition().x * PIXELS_PER_METER + cosf(angleRad) * LAUNCH_OFFSET;
-	float spawnY = player->GetBody()->GetPosition().y * PIXELS_PER_METER + sinf(angleRad) * LAUNCH_OFFSET;
-
-	b2World& world = *physicsWorld->GetWorld();
-
-	if (!wreckingBall) {
-		auto ball = std::make_unique<WreckingBall>(world, spawnX, spawnY, PROJECTILE_RADIUS);
-		ball->Launch(angleRad, SHOOT_SPEED);
-		wreckingBall = std::move(ball);
-	}
-
-	b2Vec2 cannonPosition = player->GetPosition();
-	bool canSpawnProjectile = true;
-	b2Vec2 ballPosition = projectiles.size() == 0 ? wreckingBall->GetBody()->GetPosition() : projectiles.back()->GetBody()->GetPosition();
-	float distance = b2Distance(cannonPosition, ballPosition);
-
-	canSpawnProjectile = (distance > CHAIN_LINK_SPACING * METERS_PER_PIXEL);
-
-	if (canSpawnProjectile) {
-		if (projectiles.size() >= MAX_CHAIN_LINKS) {
-			return;
-		}
-
-		auto ball = std::make_unique<ChainLink>(world, spawnX, spawnY, angleRad);
-		ball->Launch(angleRad, SHOOT_SPEED);
-		projectiles.push_back(std::move(ball));
-
-		float linkGapInMeters = CHAIN_LINK_SPACING * METERS_PER_PIXEL;
-		b2DistanceJointDef distanceJointDef;
-
-		distanceJointDef.bodyA = projectiles.size() == 1 ? wreckingBall->GetBody() : projectiles[projectiles.size() - 2]->GetBody();
-		distanceJointDef.bodyB = projectiles.back()->GetBody();
-
-		float borderA = projectiles.size() == 1 ? 0.0f : -(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL;
-		float borderB = (LINK_WIDTH / 2.0f) * METERS_PER_PIXEL;
-
-		distanceJointDef.localAnchorA.Set(borderA, 0.0f);
-		distanceJointDef.localAnchorB.Set(borderB, 0.0f);
-		distanceJointDef.length = linkGapInMeters;
-		distanceJointDef.minLength = 0.0f;
-		distanceJointDef.maxLength = linkGapInMeters;
-		projectileJoints.push_back(static_cast<b2DistanceJoint*>(world.CreateJoint(&distanceJointDef)));
-
-		if (cannonRope) {
-			world.DestroyJoint(cannonRope);
-			cannonRope = nullptr;
-		}
-
-		b2DistanceJointDef tetherDef;
-		tetherDef.bodyA = player->GetBody();
-		tetherDef.bodyB = projectiles.back()->GetBody();
-		tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
-		tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
-		tetherDef.length = CHAIN_TETHER_MAX_LENGTH * METERS_PER_PIXEL;
-		tetherDef.minLength = 0.0f;
-		tetherDef.maxLength = CHAIN_TETHER_MAX_LENGTH * METERS_PER_PIXEL;
-		cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
-
-		if (projectiles.size() >= MAX_CHAIN_LINKS) {
-			EnableChainCollisions();
-		}
-	}
-
-}
-
-
-void GameplayScene::PullProjectiles(float deltaTime)
-{
-	if (!player || !wreckingBall) return;
-
-	if (!cannonRope) {
-		return;
-	}
-
-	float currentMaxPx = cannonRope->GetMaxLength() * PIXELS_PER_METER;
-	float newMaxPx = currentMaxPx - PULL_SPEED * deltaTime;
-
-	if (newMaxPx <= 0.0f) {
-		ConsumeLink();
-	}
-	else {
-		cannonRope->SetMaxLength(newMaxPx * METERS_PER_PIXEL);
-	}
-}
-
-void GameplayScene::ConsumeLink()
-{
-	if (!player || !wreckingBall) return;
-
-	b2World& world = *physicsWorld->GetWorld();
-
-	if (projectiles.empty()) {
-		physicsWorld->DestroyBody(wreckingBall->GetBody());
-		wreckingBall.reset();
-		return;
-	}
-
-	physicsWorld->DestroyBody(projectiles.back()->GetBody());
-	projectiles.pop_back();
-	if (!projectileJoints.empty()) {
-		projectileJoints.pop_back();
-	}
-	cannonRope = nullptr;
-
-	if (projectiles.empty()) {
-		physicsWorld->DestroyBody(wreckingBall->GetBody());
-		wreckingBall.reset();
-		return;
-	}
-
-	b2DistanceJointDef tetherDef;
-	tetherDef.bodyA = player->GetBody();
-	tetherDef.bodyB = projectiles.back()->GetBody();
-	tetherDef.localAnchorA.Set(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f);
-	tetherDef.localAnchorB.Set(-(LINK_WIDTH / 2.0f) * METERS_PER_PIXEL, 0.0f);
-
-	b2Vec2 anchorA = player->GetBody()->GetWorldPoint(tetherDef.localAnchorA);
-	b2Vec2 anchorB = projectiles.back()->GetBody()->GetWorldPoint(tetherDef.localAnchorB);
-	float actualLength = b2Distance(anchorA, anchorB);
-
-	tetherDef.length = actualLength;
-	tetherDef.minLength = 0.0f;
-	tetherDef.maxLength = actualLength;
-	cannonRope = static_cast<b2DistanceJoint*>(world.CreateJoint(&tetherDef));
-}
-
-void GameplayScene::EnableChainCollisions()
-{
-	b2Filter filter;
-	filter.groupIndex = 0;
-
-	if (wreckingBall) {
-		wreckingBall->GetBody()->GetFixtureList()->SetFilterData(filter);
-	}
-	for (auto& link : projectiles) {
-		link->GetBody()->GetFixtureList()->SetFilterData(filter);
-	}
-}
-
-void GameplayScene::CleanupProjectiles()
-{
-	float screenWidth = GetScreenWidth();
-	float screenHeight = GetScreenHeight();
-
-	for (auto it = projectiles.begin(); it != projectiles.end(); ) {
-		float x = (*it)->GetBody()->GetPosition().x * PIXELS_PER_METER;
-		float y = (*it)->GetBody()->GetPosition().y * PIXELS_PER_METER;
-		if (x < -100.0f || x > screenWidth + 100.0f || y < -100.0f || y > screenHeight + 100.0f) {
-			physicsWorld->DestroyBody((*it)->GetBody());
-			it = projectiles.erase(it);
-			projectileJoints.clear();
-			cannonRope = nullptr;
-		}
-		else {
-			++it;
-		}
-	}
 }
 
 void GameplayScene::HandlePlayerDeath()
@@ -374,7 +191,6 @@ void GameplayScene::HandlePlayerDeath()
 
 	if (player->GetState() == PlayerCannonState::Dead && context.state == GameState::Playing) {
 		physicsWorld->DestroyBody(player->GetBody());
-		cannonRope = nullptr;
 		player.reset();
 
 		context.state = GameState::Finished;

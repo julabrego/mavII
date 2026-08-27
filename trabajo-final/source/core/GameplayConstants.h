@@ -3,10 +3,10 @@
 constexpr float SHOOT_SPEED = 20.0f;
 constexpr float PROJECTILE_RADIUS = 20.0f;
 constexpr float LAUNCH_OFFSET = 45.0f;
-constexpr float PULL_SPEED = 60.0f;
+constexpr float PULL_SPEED = 80.0f;
 constexpr float CHAIN_LINK_SPACING = 5.0f;
 constexpr int MAX_CHAIN_LINKS = 30;
-constexpr float CHAIN_TETHER_MAX_LENGTH = 8.0f;
+constexpr float CHAIN_TETHER_MAX_LENGTH = 45.0f;
 
 constexpr float BLOCK_FALL_TOLERANCE_RATIO = 1.0f;
 constexpr float BLOCK_LAND_CONFIRM_TIME = 0.3f;
