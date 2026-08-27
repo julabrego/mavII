@@ -13,6 +13,7 @@
 #include "../core/GameplayConstants.h"
 #include "../core/ContactListener.h"
 #include "LevelCatalog.h"
+#include "MainMenuScene.h"
 #include <cmath>
 
 GameplayScene::GameplayScene(Game& game, int levelIndex)
@@ -49,9 +50,19 @@ void GameplayScene::LoadLevel(int index)
 
 void GameplayScene::HandleInput()
 {
-	if (context.state == GameState::MainMenu || context.state == GameState::Finished) {
+	if (context.state == GameState::Finished) {
 		if (IsKeyPressed(KEY_ENTER)) {
-			LoadLevel(levelIndex);
+			if (context.finishState == GameFinishState::Won) {
+				if (levelIndex + 1 < LevelCatalog::Count()) {
+					LoadLevel(levelIndex + 1);
+				}
+				else {
+					game.SwitchScene(std::make_unique<MainMenuScene>(game));
+				}
+			}
+			else {
+				LoadLevel(levelIndex);
+			}
 		}
 		return;
 	}
@@ -217,7 +228,7 @@ void GameplayScene::SpawnProjectile()
 		ball->Launch(angleRad, SHOOT_SPEED);
 		projectiles.push_back(std::move(ball));
 
-		float linkGapInMeters = MAX_CHAIN_LINKS * METERS_PER_PIXEL;
+		float linkGapInMeters = CHAIN_LINK_SPACING * METERS_PER_PIXEL;
 		b2DistanceJointDef distanceJointDef;
 
 		distanceJointDef.bodyA = projectiles.size() == 1 ? wreckingBall->GetBody() : projectiles[projectiles.size() - 2]->GetBody();
