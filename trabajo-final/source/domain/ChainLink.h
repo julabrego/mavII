@@ -6,9 +6,9 @@
 #include "../core/BodyData.h"
 #include "../game/GameState.h"
 
-const float LINK_DEFAULT_DENSITY = 2.0f;
+const float LINK_DEFAULT_DENSITY = 1.0f;
 const float LINK_DEFAULT_FRICTION = 1.0f;
-const float LINK_DEFAULT_RESTITUTION = 0.5f;
+const float LINK_DEFAULT_RESTITUTION = 0.0f;
 const float LINK_DEFAULT_LINEAR_DAMPING = 0.0f;
 const float LINK_DEFAULT_ANGULAR_DAMPING = 2.0f;
 const float LINK_WIDTH = 20.0f;

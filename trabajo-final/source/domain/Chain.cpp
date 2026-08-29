@@ -87,8 +87,9 @@ void Chain::Pull(float deltaTime, b2Body* playerBody)
 
 	if (dist > 0.001f) {
 		dir.Normalize();
-		float pullSpeed = fminf(PULL_SPEED * METERS_PER_PIXEL, dist / deltaTime);
-		target->SetLinearVelocity(b2Vec2(dir.x * pullSpeed, dir.y * pullSpeed));
+		float mass = target->GetMass();
+		float force = mass * PULL_SPEED * METERS_PER_PIXEL * PULL_FORCE_MULTIPLIER;
+		target->ApplyForceToCenter(b2Vec2(dir.x * force, dir.y * force), true);
 	}
 }
 
