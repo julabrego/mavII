@@ -72,17 +72,23 @@ void Chain::Pull(float deltaTime, b2Body* playerBody)
 {
 	if (!ball || !tether) return;
 
-	float maxPullPerFrame = CHAIN_LINK_SPACING * 0.5f;
-	float pullThisFrame = fminf(PULL_SPEED * deltaTime, maxPullPerFrame);
+	b2Body* target = links.empty() ? ball->GetBody() : links.back()->GetBody();
 
-	float currentMaxPx = tether->GetMaxLength() * PIXELS_PER_METER;
-	float newMaxPx = currentMaxPx - pullThisFrame;
+	b2Vec2 cannonAnchor = playerBody->GetWorldPoint(
+		b2Vec2(LAUNCH_OFFSET * METERS_PER_PIXEL, 0.0f));
+	b2Vec2 linkPos = target->GetPosition();
+	b2Vec2 dir = cannonAnchor - linkPos;
+	float dist = dir.Length();
 
-	if (newMaxPx <= 0.0f) {
+	if (dist < LINK_WIDTH * METERS_PER_PIXEL) {
 		ConsumeLink(playerBody);
+		return;
 	}
-	else {
-		tether->SetMaxLength(newMaxPx * METERS_PER_PIXEL);
+
+	if (dist > 0.001f) {
+		dir.Normalize();
+		float pullSpeed = fminf(PULL_SPEED * METERS_PER_PIXEL, dist / deltaTime);
+		target->SetLinearVelocity(b2Vec2(dir.x * pullSpeed, dir.y * pullSpeed));
 	}
 }
 
