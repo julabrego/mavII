@@ -3,7 +3,7 @@
 constexpr float SHOOT_SPEED = 20.0f;
 constexpr float PROJECTILE_RADIUS = 20.0f;
 constexpr float LAUNCH_OFFSET = 45.0f;
-constexpr float PULL_SPEED = 80.0f;
+constexpr float PULL_SPEED = 200.0f;
 constexpr float PULL_FORCE_MULTIPLIER = 1000.0f;
 constexpr float CHAIN_LINK_SPACING = 5.0f;
 constexpr int MAX_CHAIN_LINKS = 30;
