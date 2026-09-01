@@ -35,6 +35,8 @@ private:
 	void CreateBuildingBlocks(b2World& world);
     void CreateObstacles(b2World& world);
     void CreatePrismaticWalls(b2World& world);
+    void ScanPrismaticPattern(std::vector<std::vector<int>>& pipeByCol, std::vector<std::vector<int>>& pushByCol) const;
+    void SpawnPrismaticWall(b2World& world, int col, const std::vector<int>& pipeRows, const std::vector<int>& pushRows);
 
     void DrawDashedHLine(Renderer& renderer, float y, float x1, float x2, Color color) const;
     int ComputeBlockLevel(const BuildingBlock& block) const;

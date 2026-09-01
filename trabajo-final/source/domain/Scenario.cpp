@@ -112,89 +112,93 @@ void Scenario::CreateObstacles(b2World& world) {
 	}
 }
 
-void Scenario::CreatePrismaticWalls(b2World& world) {
-	struct CharSlot { int row; };
-	std::vector<std::vector<CharSlot>> pipeByCol(buildingColumns);
-	std::vector<std::vector<CharSlot>> pushByCol(buildingColumns);
-
+void Scenario::ScanPrismaticPattern(std::vector<std::vector<int>>& wallByCol, std::vector<std::vector<int>>& wallTargetByCol) const {
 	for (int patternRow = 0; patternRow < buildingRows; ++patternRow) {
 		const std::string& row = config.pattern[patternRow];
 		for (int col = 0; col < static_cast<int>(row.size()); ++col) {
 			if (row[col] == '|') {
-				pipeByCol[col].push_back({ patternRow });
+				wallByCol[col].push_back(patternRow);
 			}
 			else if (row[col] == 'P') {
-				pushByCol[col].push_back({ patternRow });
+				wallTargetByCol[col].push_back(patternRow);
 			}
 		}
 	}
+}
+
+void Scenario::SpawnPrismaticWall(b2World& world, int col, const std::vector<int>& wallRows, const std::vector<int>& wallTargetRows) {
+	int wallTopRow = wallRows.front();
+	int wallBottomRow = wallRows.back();
+	int wallCount = wallBottomRow - wallTopRow + 1;
+
+	int wallTargetTopRow = wallTargetRows.front();
+	int wallTargetBottomRow = wallTargetRows.back();
+	int wallTargetCount = wallTargetBottomRow - wallTargetTopRow + 1;
+
+	float wallWidth = blockSize;
+	float wallHeight = wallCount * blockSize;
+	float wallX = xInitialBlock + col * blockSize;
+
+	int topRowFromBottom = buildingRows - 1 - wallTopRow;
+	float wallStartY = groundTopY - (topRowFromBottom + 1) * blockSize + wallHeight / 2.0f;
+
+	int wallTargetTopRowFromBottom = buildingRows - 1 - wallTargetTopRow;
+	float wallTargetHeight = wallTargetCount * blockSize;
+	float wallTargetY = groundTopY - (wallTargetTopRowFromBottom + 1) * blockSize + wallTargetHeight / 2.0f;
+
+	float travelPx = wallTargetY - wallStartY;
+	float halfW = wallWidth / 2.0f;
+	float halfH = wallHeight / 2.0f;
+	float centerX = wallX + halfW;
+	float centerY = wallStartY;
+
+	b2BodyDef wallBodyDef;
+	wallBodyDef.type = b2_dynamicBody;
+	wallBodyDef.position.Set(centerX * METERS_PER_PIXEL, centerY * METERS_PER_PIXEL);
+	wallBodyDef.gravityScale = 0.0f;
+	b2Body* wallBody = world.CreateBody(&wallBodyDef);
+
+	b2PolygonShape wallShape;
+	wallShape.SetAsBox(halfW * METERS_PER_PIXEL, halfH * METERS_PER_PIXEL);
+
+	b2FixtureDef wallFix;
+	wallFix.shape = &wallShape;
+	wallFix.density = 1.0f;
+	wallFix.friction = 0.5f;
+	wallBody->CreateFixture(&wallFix);
+
+	b2BodyDef anchorDef;
+	anchorDef.type = b2_staticBody;
+	anchorDef.position = wallBody->GetPosition();
+	b2Body* anchorBody = world.CreateBody(&anchorDef);
+
+	b2PrismaticJointDef prismDef;
+	prismDef.Initialize(wallBody, anchorBody, wallBody->GetPosition(), b2Vec2(0.0f, 1.0f));
+	prismDef.enableLimit = true;
+	prismDef.lowerTranslation = 0.0f;
+	prismDef.upperTranslation = fabsf(travelPx) * METERS_PER_PIXEL;
+	prismDef.enableMotor = false;
+	prismDef.maxMotorForce = 1000.0f;
+	prismDef.motorSpeed = 0.0f;
+
+	b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(world.CreateJoint(&prismDef));
+
+	RegisterBodyData(wallBody, BodyTag::Obstacle);
+	prismaticBodies.push_back(wallBody);
+	prismaticWidths.push_back(wallWidth);
+	prismaticHeights.push_back(wallHeight);
+	prismaticJoints.push_back(joint);
+	prismaticTriggered.push_back(false);
+}
+
+void Scenario::CreatePrismaticWalls(b2World& world) {
+	std::vector<std::vector<int>> wallByCol(buildingColumns);
+	std::vector<std::vector<int>> wallTargetByCol(buildingColumns);
+	ScanPrismaticPattern(wallByCol, wallTargetByCol);
 
 	for (int col = 0; col < buildingColumns; ++col) {
-		if (pipeByCol[col].empty() || pushByCol[col].empty()) continue;
-
-		int pipeTopRow = pipeByCol[col].front().row;
-		int pipeBotRow = pipeByCol[col].back().row;
-		int pipeCount = pipeBotRow - pipeTopRow + 1;
-
-		int pushTopRow = pushByCol[col].front().row;
-		int pushBotRow = pushByCol[col].back().row;
-
-		float wallWidth = blockSize;
-		float wallHeight = pipeCount * blockSize;
-		float wallX = xInitialBlock + col * blockSize;
-
-		int topRowFromBottom = buildingRows - 1 - pipeTopRow;
-		float wallStartY = groundTopY - (topRowFromBottom + 1) * blockSize + wallHeight / 2.0f;
-
-		int pushTopRowFromBottom = buildingRows - 1 - pushTopRow;
-		int pushCount = pushBotRow - pushTopRow + 1;
-		float pushHeight = pushCount * blockSize;
-		float wallTargetY = groundTopY - (pushTopRowFromBottom + 1) * blockSize + pushHeight / 2.0f;
-
-		float travelPx = wallTargetY - wallStartY;
-
-		float halfW = wallWidth / 2.0f;
-		float halfH = wallHeight / 2.0f;
-		float centerX = wallX + halfW;
-		float centerY = wallStartY;
-
-		b2BodyDef wallBodyDef;
-		wallBodyDef.type = b2_dynamicBody;
-		wallBodyDef.position.Set(centerX * METERS_PER_PIXEL, centerY * METERS_PER_PIXEL);
-		wallBodyDef.gravityScale = 0.0f;
-		b2Body* wallBody = world.CreateBody(&wallBodyDef);
-
-		b2PolygonShape wallShape;
-		wallShape.SetAsBox(halfW * METERS_PER_PIXEL, halfH * METERS_PER_PIXEL);
-
-		b2FixtureDef wallFix;
-		wallFix.shape = &wallShape;
-		wallFix.density = 1.0f;
-		wallFix.friction = 0.5f;
-		wallBody->CreateFixture(&wallFix);
-
-		b2BodyDef anchorDef;
-		anchorDef.type = b2_staticBody;
-		anchorDef.position = wallBody->GetPosition();
-		b2Body* anchorBody = world.CreateBody(&anchorDef);
-
-		b2PrismaticJointDef prismDef;
-		prismDef.Initialize(wallBody, anchorBody, wallBody->GetPosition(), b2Vec2(0.0f, 1.0f));
-		prismDef.enableLimit = true;
-		prismDef.lowerTranslation = 0.0f;
-		prismDef.upperTranslation = fabsf(travelPx) * METERS_PER_PIXEL;
-		prismDef.enableMotor = false;
-		prismDef.maxMotorForce = 1000.0f;
-		prismDef.motorSpeed = 0.0f;
-
-		b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(world.CreateJoint(&prismDef));
-
-		RegisterBodyData(wallBody, BodyTag::Obstacle);
-		prismaticBodies.push_back(wallBody);
-		prismaticWidths.push_back(wallWidth);
-		prismaticHeights.push_back(wallHeight);
-		prismaticJoints.push_back(joint);
-		prismaticTriggered.push_back(false);
+		if (wallByCol[col].empty() || wallTargetByCol[col].empty()) continue;
+		SpawnPrismaticWall(world, col, wallByCol[col], wallTargetByCol[col]);
 	}
 }
 
