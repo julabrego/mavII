@@ -115,7 +115,11 @@ void GameplayScene::Update(float deltaTime)
 		}
 
 		if (!player->GetPullRequested() && player->GetShootRequested()) {
-			if (chain.HasBall() || level->TryConsumeShot()) {
+			bool shotConsumed = !chain.HasBall() && level->TryConsumeShot();
+			if (shotConsumed) {
+				scenario->TriggerPrismaticWalls();
+			}
+			if (chain.HasBall() || shotConsumed) {
 				if (!chain.HasBall() || !chain.AtCapacity()) {
 					float angleRad = player->GetBody()->GetAngle();
 					float spawnX = player->GetBody()->GetPosition().x * PIXELS_PER_METER + cosf(angleRad) * LAUNCH_OFFSET;

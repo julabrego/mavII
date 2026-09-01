@@ -25,6 +25,7 @@ public:
     bool HaveAllFallenBlocksLanded() const;
     Rectangle GetCountingWindow() const;
     const std::vector<std::unique_ptr<BuildingBlock>>& GetBuildingBlocks() const { return buildingBlocks; }
+    void TriggerPrismaticWalls();
 
 private:
     b2Body* CreateWall(b2World& world, float x, float y, float halfW, float halfH);
@@ -33,6 +34,7 @@ private:
 
 	void CreateBuildingBlocks(b2World& world);
     void CreateObstacles(b2World& world);
+    void CreatePrismaticWalls(b2World& world);
 
     void DrawDashedHLine(Renderer& renderer, float y, float x1, float x2, Color color) const;
     int ComputeBlockLevel(const BuildingBlock& block) const;
@@ -54,6 +56,11 @@ private:
 
 	std::vector<std::unique_ptr<BuildingBlock>> buildingBlocks;
     std::vector<std::unique_ptr<RectangleEntity>> obstacles;
+    std::vector<b2Body*> prismaticBodies;
+    std::vector<float> prismaticWidths;
+    std::vector<float> prismaticHeights;
+    std::vector<b2PrismaticJoint*> prismaticJoints;
+    std::vector<bool> prismaticTriggered;
 
     std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
 };
