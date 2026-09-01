@@ -63,6 +63,7 @@ private:
     std::vector<float> prismaticHeights;
     std::vector<b2PrismaticJoint*> prismaticJoints;
     std::vector<bool> prismaticTriggered;
+    std::vector<float> prismaticDirections;
 
     std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
 };

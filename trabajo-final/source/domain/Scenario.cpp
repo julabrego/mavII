@@ -175,8 +175,9 @@ void Scenario::SpawnPrismaticWall(b2World& world, int col, const std::vector<int
 	b2PrismaticJointDef prismDef;
 	prismDef.Initialize(wallBody, anchorBody, wallBody->GetPosition(), b2Vec2(0.0f, 1.0f));
 	prismDef.enableLimit = true;
-	prismDef.lowerTranslation = 0.0f;
-	prismDef.upperTranslation = fabsf(travelPx) * METERS_PER_PIXEL;
+	float absTravel = fabsf(travelPx) * METERS_PER_PIXEL;
+	prismDef.lowerTranslation = (travelPx > 0.0f) ? -absTravel : 0.0f;
+	prismDef.upperTranslation = (travelPx > 0.0f) ? 0.0f : absTravel;
 	prismDef.enableMotor = false;
 	prismDef.maxMotorForce = 1000.0f;
 	prismDef.motorSpeed = 0.0f;
@@ -189,6 +190,7 @@ void Scenario::SpawnPrismaticWall(b2World& world, int col, const std::vector<int
 	prismaticHeights.push_back(wallHeight);
 	prismaticJoints.push_back(joint);
 	prismaticTriggered.push_back(false);
+	prismaticDirections.push_back(travelPx > 0.0f ? 1.0f : -1.0f);
 }
 
 void Scenario::CreatePrismaticWalls(b2World& world) {
@@ -206,7 +208,7 @@ void Scenario::TriggerPrismaticWalls() {
 	for (size_t i = 0; i < prismaticJoints.size(); ++i) {
 		if (!prismaticTriggered[i]) {
 			prismaticJoints[i]->EnableMotor(true);
-			prismaticJoints[i]->SetMotorSpeed(15.0f);
+			prismaticJoints[i]->SetMotorSpeed(-prismaticDirections[i] * 15.0f);
 			prismaticJoints[i]->SetMaxMotorForce(1000.0f);
 			prismaticTriggered[i] = true;
 		}

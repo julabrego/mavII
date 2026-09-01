@@ -16,12 +16,6 @@ namespace {
 const std::vector<LevelConfig>& LevelCatalog::All()
 {
 	static const std::vector<LevelConfig> levels = {
-		// Level 0: debug
-		MakeLevel(0, 3, {
-			"XXXXXXX"}, {
-				{ 410.0f, 315.0f, 180.0f, 20.0f },
-			}),
-
 		// Level 1: single tower
 		MakeLevel(1, 3, {
 			"XX",
@@ -54,11 +48,22 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 		// Level 4: single towers protected by vertical prismatic wall
 		MakeLevel(1, 4, {
 			"P..XX",
+			"...XX",
+			"...XX",
+			"|..XX",
+			"|..XX",
+			"|..XX",
+		}, {
+		}),
+
+		// Level 5: single towers protected by vertical prismatic wall
+		MakeLevel(1, 4, {
+			"|..XX",
+			"|..XX",
+			"|..XX",
+			"...XX",
+			"...XX",
 			"P..XX",
-			"P..XX",
-			"|..XX",
-			"|..XX",
-			"|..XX",
 		}, {
 		}),
 	};
