@@ -31,11 +31,6 @@ void BuildingBlock::Update(float deltaTime)
 	shape->Update(deltaTime);
 
 	if (!demolished) {
-		Vector2 center = shape->GetCenter();
-		if (fabsf(center.x - homeCenter.x) > fallTolerance
-			|| fabsf(center.y - homeCenter.y) > fallTolerance) {
-			demolished = true;
-		}
 		return;
 	}
 
@@ -82,4 +77,12 @@ b2Body* BuildingBlock::GetBody() const
 bool BuildingBlock::IsStanding() const
 {
 	return !demolished;
+}
+
+void BuildingBlock::MarkDemolished()
+{
+	if (!demolished) {
+		demolished = true;
+		landedTimer = 0.0f;
+	}
 }

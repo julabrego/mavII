@@ -103,6 +103,12 @@ void GameplayScene::Update(float deltaTime)
 {
 	if (context.state == GameState::Playing) {
 		physicsWorld->Update(deltaTime);
+
+		ContactListener& listener = physicsWorld->GetContactListener();
+		for (b2Body* blockBody : listener.fallSensorEvents) {
+			scenario->OnBlockEnteredFallZone(blockBody);
+		}
+		listener.ClearFrameEvents();
 	}
 
 	scenario->Update(deltaTime, level->GetBuildingHeightTarget());
@@ -168,6 +174,12 @@ void GameplayScene::Draw(Renderer& renderer)
 		Rectangle window = scenario->GetCountingWindow();
 		renderer.DrawRectLines(static_cast<int>(window.x), static_cast<int>(window.y),
 			static_cast<int>(window.width), static_cast<int>(window.height), Fade(GREEN, 0.5f));
+
+		Rectangle sensor = scenario->GetFallSensorRect();
+		renderer.DrawRect(static_cast<int>(sensor.x), static_cast<int>(sensor.y),
+			static_cast<int>(sensor.width), static_cast<int>(sensor.height), Fade(RED, 0.2f));
+		renderer.DrawRectLines(static_cast<int>(sensor.x), static_cast<int>(sensor.y),
+			static_cast<int>(sensor.width), static_cast<int>(sensor.height), Fade(RED, 0.6f));
 
 		chain.RenderDebug(renderer);
 	}

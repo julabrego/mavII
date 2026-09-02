@@ -26,6 +26,8 @@ public:
     Rectangle GetCountingWindow() const;
     const std::vector<std::unique_ptr<BuildingBlock>>& GetBuildingBlocks() const { return buildingBlocks; }
     void TriggerPrismaticWalls();
+    void OnBlockEnteredFallZone(b2Body* blockBody);
+    Rectangle GetFallSensorRect() const { return fallSensorRect; }
 
 private:
     b2Body* CreateWall(b2World& world, float x, float y, float halfW, float halfH);
@@ -35,6 +37,7 @@ private:
 	void CreateBuildingBlocks(b2World& world);
     void CreateObstacles(b2World& world);
     void CreatePrismaticWalls(b2World& world);
+    void CreateFallSensor(b2World& world, int heightTarget);
     void ScanPrismaticPattern(std::vector<std::vector<int>>& pipeByCol, std::vector<std::vector<int>>& pushByCol) const;
     void SpawnPrismaticWall(b2World& world, int col, const std::vector<int>& pipeRows, const std::vector<int>& pushRows);
 
@@ -66,4 +69,7 @@ private:
     std::vector<float> prismaticDirections;
 
     std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
+
+    b2Body* fallSensorBody = nullptr;
+    Rectangle fallSensorRect = { 0, 0, 0, 0 };
 };

@@ -40,6 +40,7 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, const LevelConfig& 
 	CreateGround(world);
 	CreateObstacles(world);
 	CreatePrismaticWalls(world);
+	CreateFallSensor(world, config.heightTarget);
 }
 
 b2Body* Scenario::CreateWall(b2World& world, float x, float y, float halfW, float halfH)
@@ -201,6 +202,41 @@ void Scenario::CreatePrismaticWalls(b2World& world) {
 	for (int col = 0; col < buildingColumns; ++col) {
 		if (wallByCol[col].empty() || wallTargetByCol[col].empty()) continue;
 		SpawnPrismaticWall(world, col, wallByCol[col], wallTargetByCol[col]);
+	}
+}
+
+void Scenario::CreateFallSensor(b2World& world, int heightTarget) {
+	float left = 0.0f;
+	float width = static_cast<float>(GetScreenWidth());
+	float goalY = groundTopY - heightTarget * blockSize;
+	float height = groundTopY - goalY;
+	float centerY = goalY + height / 2.0f;
+	float centerX = left + width / 2.0f;
+
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_staticBody;
+	bodyDef.position.Set(centerX * METERS_PER_PIXEL, centerY * METERS_PER_PIXEL);
+	fallSensorBody = world.CreateBody(&bodyDef);
+
+	b2PolygonShape shape;
+	shape.SetAsBox((width / 2.0f) * METERS_PER_PIXEL, (height / 2.0f) * METERS_PER_PIXEL);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &shape;
+	fixtureDef.isSensor = true;
+	fallSensorBody->CreateFixture(&fixtureDef);
+
+	RegisterBodyData(fallSensorBody, BodyTag::FallSensor);
+
+	fallSensorRect = { left, centerY - height / 2.0f, width, height };
+}
+
+void Scenario::OnBlockEnteredFallZone(b2Body* blockBody) {
+	for (auto& block : buildingBlocks) {
+		if (block->GetBody() == blockBody) {
+			block->MarkDemolished();
+			break;
+		}
 	}
 }
 

@@ -24,6 +24,7 @@ public:
 	bool IsStanding() const;
 	bool IsLanded() const { return landed; }
 	void SetShadowed(bool value) { shadowed = value; }
+	void MarkDemolished();
 
 private:
 	BuildingBlock(std::unique_ptr<RectangleEntity> shape, int row, int column,
