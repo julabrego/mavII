@@ -108,6 +108,15 @@ void GameplayScene::Update(float deltaTime)
 		for (b2Body* blockBody : listener.fallSensorEvents) {
 			scenario->OnBlockEnteredFallZone(blockBody);
 		}
+
+		for (b2Vec2& collisionPoint : listener.wreckingBallCollisionPoints) {
+			float speed = chain.GetBall()->GetBody()->GetLinearVelocity().Length();
+			if (speed > MIN_EMIT_SPEED) {
+				Vector2 pos = { collisionPoint.x * PIXELS_PER_METER, collisionPoint.y * PIXELS_PER_METER };
+				particles.Emit(pos, SPARK, 8);
+			}
+		}
+
 		listener.ClearFrameEvents();
 	}
 
@@ -157,6 +166,8 @@ void GameplayScene::Update(float deltaTime)
 		}
 	}
 
+	particles.Update(deltaTime, GetScreenWidth(), GetScreenHeight());
+
 	HandlePlayerDeath();
 }
 
@@ -183,6 +194,8 @@ void GameplayScene::Draw(Renderer& renderer)
 
 		chain.RenderDebug(renderer);
 	}
+
+	particles.Draw();
 
 	HudInfo hud;
 	hud.levelNumber = levelIndex + 1;

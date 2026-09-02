@@ -7,6 +7,7 @@ void ContactListener::ClearFrameEvents()
 	groundContactCount += groundContactDelta;
 	groundContactDelta = 0;
 	fallSensorEvents.clear();
+	wreckingBallCollisionPoints.clear();
 }
 
 ContactInfo ContactListener::ExtractContactInfo(b2Contact* contact)
@@ -28,11 +29,24 @@ void ContactListener::BeginContact(b2Contact* contact)
 	ContactInfo info = ExtractContactInfo(contact);
 	if (!info.dataA || !info.dataB) return;
 
+	// Fall Sensor
 	if (info.dataA->tag == BodyTag::FallSensor && info.dataB->tag == BodyTag::BuildingBlock) {
 		fallSensorEvents.push_back(info.bodyB);
 	}
 	else if (info.dataB->tag == BodyTag::FallSensor && info.dataA->tag == BodyTag::BuildingBlock) {
 		fallSensorEvents.push_back(info.bodyA);
+	}
+
+	// Ball + BuildingBlock
+	if (info.dataA->tag == BodyTag::WreckingBall && info.dataB->tag == BodyTag::BuildingBlock) {
+		b2WorldManifold worldManifold;
+		contact->GetWorldManifold(&worldManifold);
+		wreckingBallCollisionPoints.push_back(worldManifold.points[0]);
+	}
+	else if (info.dataB->tag == BodyTag::WreckingBall && info.dataA->tag == BodyTag::BuildingBlock) {
+		b2WorldManifold worldManifold;
+		contact->GetWorldManifold(&worldManifold);
+		wreckingBallCollisionPoints.push_back(worldManifold.points[0]);
 	}
 }
 

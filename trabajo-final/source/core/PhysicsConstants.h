@@ -12,3 +12,4 @@ constexpr float GRAVITY = 9.8f;
 
 constexpr float SETTLE_SPEED_THRESHOLD = 0.15f;
 constexpr float SETTLE_ANGULAR_THRESHOLD = 0.15f;
+constexpr float MIN_EMIT_SPEED = 0.5f;

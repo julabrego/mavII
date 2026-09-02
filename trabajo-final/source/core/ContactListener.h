@@ -28,6 +28,7 @@ public:
 	bool isRotablePlatformTriggered = false;
 
 	std::vector<b2Body*> fallSensorEvents;
+	std::vector<b2Vec2> wreckingBallCollisionPoints;
 
 private:
 	ContactInfo ExtractContactInfo(b2Contact* contact);

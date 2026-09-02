@@ -4,6 +4,7 @@
 #include "GameState.h"
 #include "../domain/PlayerCannon.h"
 #include "../domain/Chain.h"
+#include "../domain/ParticleSystem.h"
 #include <memory>
 #include "GameUI.h"
 
@@ -36,6 +37,8 @@ private:
 	std::unique_ptr<PlayerCannon> player;
 	std::unique_ptr<Level> level;
 	Chain chain;
+
+	ParticleSystem particles;
 
 	GameUI ui;
 };
