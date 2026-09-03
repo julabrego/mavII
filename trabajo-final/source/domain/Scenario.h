@@ -63,12 +63,19 @@ private:
 
 	std::vector<std::unique_ptr<BuildingBlock>> buildingBlocks;
     std::vector<std::unique_ptr<RectangleEntity>> obstacles;
-    std::vector<b2Body*> prismaticBodies;
-    std::vector<float> prismaticWidths;
-    std::vector<float> prismaticHeights;
-    std::vector<b2PrismaticJoint*> prismaticJoints;
-    std::vector<bool> prismaticTriggered;
-    std::vector<float> prismaticDirections;
+
+    struct PrismaticWallInfo {
+        b2Body* body = nullptr;
+        float width = 0.0f;
+        float height = 0.0f;
+        b2PrismaticJoint* joint = nullptr;
+        bool triggered = false;
+        float direction = 0.0f;
+        int textureColumn = 0;
+        int textureRowTop = 0;
+        int textureRowBottom = 0;
+    };
+    std::vector<PrismaticWallInfo> prismaticWalls;
 
     std::vector<std::unique_ptr<BodyData>> bodyDataRegistry;
 

@@ -37,7 +37,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"..XXXX..",
 			".XXXXXX.",
 			"XXXXXXXX",
-		}, {}),
+		}, {}, "../assets/level2.png", 8, 4),
 
 		// Level 3: two towers + obstacle
 		MakeLevel(1, 4, {
@@ -47,7 +47,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"XX....XX",
 		}, {
 			{ 410.0f, 315.0f, 180.0f, 20.0f },
-		}),
+		}, "../assets/level3.png", 8, 4),
 
 		// Level 4: single towers protected by vertical prismatic wall
 		MakeLevel(1, 4, {
@@ -58,7 +58,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"|..XX",
 			"|..XX",
 		}, {
-		}),
+		}, "../assets/level4.png", 5, 6),
 
 		// Level 5: single towers protected by vertical prismatic wall
 		MakeLevel(1, 4, {
@@ -69,7 +69,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"...XX",
 			"P..XX",
 		}, {
-		}),
+		}, "../assets/level5.png", 5, 6),
 	};
 
 	return levels;

@@ -200,12 +200,18 @@ void Scenario::SpawnPrismaticWall(b2World& world, int col, const std::vector<int
 	b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(world.CreateJoint(&prismDef));
 
 	RegisterBodyData(wallBody, BodyTag::Obstacle);
-	prismaticBodies.push_back(wallBody);
-	prismaticWidths.push_back(wallWidth);
-	prismaticHeights.push_back(wallHeight);
-	prismaticJoints.push_back(joint);
-	prismaticTriggered.push_back(false);
-	prismaticDirections.push_back(travelPx > 0.0f ? 1.0f : -1.0f);
+
+	PrismaticWallInfo info;
+	info.body = wallBody;
+	info.width = wallWidth;
+	info.height = wallHeight;
+	info.joint = joint;
+	info.triggered = false;
+	info.direction = travelPx > 0.0f ? 1.0f : -1.0f;
+	info.textureColumn = col;
+	info.textureRowTop = wallTopRow;
+	info.textureRowBottom = wallBottomRow;
+	prismaticWalls.push_back(info);
 }
 
 void Scenario::CreatePrismaticWalls(b2World& world) {
@@ -255,16 +261,16 @@ void Scenario::OnBlockEnteredFallZone(b2Body* blockBody) {
 }
 
 void Scenario::TriggerPrismaticWalls() {
-	for (size_t i = 0; i < prismaticJoints.size(); ++i) {
-		if (!prismaticTriggered[i]) {
-			prismaticJoints[i]->EnableMotor(true);
-			prismaticJoints[i]->SetMotorSpeed(-prismaticDirections[i] * 15.0f);
-			prismaticJoints[i]->SetMaxMotorForce(1000.0f);
-			prismaticTriggered[i] = true;
+	for (auto& wall : prismaticWalls) {
+		if (!wall.triggered) {
+			wall.joint->EnableMotor(true);
+			wall.joint->SetMotorSpeed(-wall.direction * 15.0f);
+			wall.joint->SetMaxMotorForce(1000.0f);
+			wall.triggered = true;
 		}
 		else {
-			float currentSpeed = prismaticJoints[i]->GetMotorSpeed();
-			prismaticJoints[i]->SetMotorSpeed(-currentSpeed);
+			float currentSpeed = wall.joint->GetMotorSpeed();
+			wall.joint->SetMotorSpeed(-currentSpeed);
 		}
 	}
 }
@@ -350,14 +356,25 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 		obstacle->Render(renderer);
 	}
 
-	for (size_t i = 0; i < prismaticBodies.size(); ++i) {
-		b2Vec2 pos = prismaticBodies[i]->GetPosition();
-		float x = pos.x * PIXELS_PER_METER - prismaticWidths[i] / 2.0f;
-		float y = pos.y * PIXELS_PER_METER - prismaticHeights[i] / 2.0f;
-		renderer.DrawRect(static_cast<int>(x), static_cast<int>(y),
-			static_cast<int>(prismaticWidths[i]), static_cast<int>(prismaticHeights[i]), COLOR_WALL);
+	for (auto& wall : prismaticWalls) {
+		b2Vec2 pos = wall.body->GetPosition();
+		float x = pos.x * PIXELS_PER_METER - wall.width / 2.0f;
+		float y = pos.y * PIXELS_PER_METER - wall.height / 2.0f;
+
+		if (blockTexture.id > 0 && config.textureCols > 0 && config.textureRows > 0) {
+			float tileW = blockTexture.width / static_cast<float>(config.textureCols);
+			float tileH = blockTexture.height / static_cast<float>(config.textureRows);
+			Rectangle src = { wall.textureColumn * tileW, wall.textureRowTop * tileH,
+				tileW, (wall.textureRowBottom - wall.textureRowTop + 1) * tileH };
+			Rectangle dst = { x, y, wall.width, wall.height };
+			DrawTexturePro(blockTexture, src, dst, { 0, 0 }, 0.0f, WHITE);
+		}
+		else {
+			renderer.DrawRect(static_cast<int>(x), static_cast<int>(y),
+				static_cast<int>(wall.width), static_cast<int>(wall.height), COLOR_WALL);
+		}
 		renderer.DrawRectLines(static_cast<int>(x), static_cast<int>(y),
-			static_cast<int>(prismaticWidths[i]), static_cast<int>(prismaticHeights[i]), BLACK);
+			static_cast<int>(wall.width), static_cast<int>(wall.height), BLACK);
 	}
 
 	if (buildingHeightTarget > 0 && context.state != GameState::MainMenu) {
