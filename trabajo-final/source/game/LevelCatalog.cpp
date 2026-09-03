@@ -2,13 +2,17 @@
 
 namespace {
 	LevelConfig MakeLevel(int heightTarget, int availableShots,
-		std::vector<std::string> pattern, std::vector<LevelConfig::ObstacleDef> obstacles)
+		std::vector<std::string> pattern, std::vector<LevelConfig::ObstacleDef> obstacles,
+		const std::string& texturePath = "", int textureCols = 0, int textureRows = 0)
 	{
 		LevelConfig config;
 		config.heightTarget = heightTarget;
 		config.availableShots = availableShots;
 		config.pattern = std::move(pattern);
 		config.obstacles = std::move(obstacles);
+		config.texturePath = texturePath;
+		config.textureCols = textureCols;
+		config.textureRows = textureRows;
 		return config;
 	}
 }
@@ -25,7 +29,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"XX",
 			"XX",
 			"XX",
-		}, {}),
+		}, {}, "../assets/level1.png", 2, 7),
 
 		// Level 2: pyramid
 		MakeLevel(2, 3, {

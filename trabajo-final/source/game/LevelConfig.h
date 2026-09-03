@@ -16,6 +16,10 @@ struct LevelConfig {
 	float cannonX = 30.0f;
 	float cannonY = 480.0f;
 
+	std::string texturePath;
+	int textureCols = 0;
+	int textureRows = 0;
+
 	std::vector<std::string> pattern;
 	std::vector<ObstacleDef> obstacles;
 };

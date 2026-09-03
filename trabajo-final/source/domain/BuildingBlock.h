@@ -26,6 +26,8 @@ public:
 	void SetShadowed(bool value) { shadowed = value; }
 	void MarkDemolished();
 
+	void SetTexture(Texture2D* tex, int cols, int rows, int tileCol, int tileRow);
+
 private:
 	BuildingBlock(std::unique_ptr<RectangleEntity> shape, int row, int column,
 		Vector2 homeCenter, float fallTolerance, Color baseColor);
@@ -40,4 +42,10 @@ private:
 	bool landed = false;
 	bool shadowed = false;
 	float landedTimer = 0.0f;
+
+	Texture2D* texture = nullptr;
+	int textureColumns = 0;
+	int textureRows = 0;
+	int tileColumn = 0;
+	int tileRow = 0;
 };

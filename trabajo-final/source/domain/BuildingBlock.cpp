@@ -65,8 +65,19 @@ static Color DarkenColor(Color color)
 
 void BuildingBlock::Render(Renderer& renderer)
 {
-	shape->color = shadowed ? DarkenColor(baseColor) : baseColor;
-	shape->Render(renderer);
+	if (texture && texture->id > 0) {
+		float tileWidth = texture->width / static_cast<float>(textureColumns);
+		float tileHeight = texture->height / static_cast<float>(textureRows);
+		Rectangle src = { tileColumn * tileWidth, tileRow * tileHeight, tileWidth, tileHeight };
+		Rectangle dst = { shape->position.x + shape->width / 2.0f, shape->position.y + shape->height / 2.0f, shape->width, shape->height };
+		Vector2 origin = { shape->width / 2.0f, shape->height / 2.0f };
+		float angle = shape->GetBody()->GetAngle() * RAD2DEG;
+		DrawTexturePro(*texture, src, dst, origin, angle, WHITE);
+	}
+	else {
+		shape->color = shadowed ? DarkenColor(baseColor) : baseColor;
+		shape->Render(renderer);
+	}
 }
 
 b2Body* BuildingBlock::GetBody() const
@@ -85,4 +96,13 @@ void BuildingBlock::MarkDemolished()
 		demolished = true;
 		landedTimer = 0.0f;
 	}
+}
+
+void BuildingBlock::SetTexture(Texture2D* tex, int cols, int rows, int tCol, int tRow)
+{
+	texture = tex;
+	textureColumns = cols;
+	textureRows = rows;
+	tileColumn = tCol;
+	tileRow = tRow;
 }

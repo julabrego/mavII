@@ -12,7 +12,11 @@
 #include <cmath>
 #include <algorithm>
 
-Scenario::~Scenario() = default;
+Scenario::~Scenario() {
+	if (blockTexture.id > 0) {
+		UnloadTexture(blockTexture);
+	}
+}
 
 void Scenario::RegisterBodyData(b2Body* body, BodyTag tag, void* entity) {
 	auto data = std::make_unique<BodyData>(tag, entity);
@@ -36,6 +40,11 @@ Scenario::Scenario(b2World& world, GameContext& gameContext, const LevelConfig& 
 	xInitialBlock = centerX - buildingWidth / 2.0f;
 
 	CreateBoundaryWalls(world);
+
+	if (!config.texturePath.empty()) {
+		blockTexture = LoadTexture(config.texturePath.c_str());
+	}
+
 	CreateBuildingBlocks(world);
 	CreateGround(world);
 	CreateObstacles(world);
@@ -98,6 +107,11 @@ void Scenario::CreateBuildingBlocks(b2World& world) {
 			float y = groundTopY - (rowFromBottom + 1) * blockSize;
 
 			auto block = BuildingBlock::Create(world, rowFromBottom, col, x, y, blockSize, blockSize, COLOR_WALL, density, friction, restitution, 1.0f);
+
+			if (blockTexture.id > 0 && config.textureCols > 0 && config.textureRows > 0) {
+				block->SetTexture(&blockTexture, config.textureCols, config.textureRows, col, patternRow);
+			}
+
 			RegisterBodyData(block->GetBody(), BodyTag::BuildingBlock, block.get());
 			buildingBlocks.push_back(std::move(block));
 		}

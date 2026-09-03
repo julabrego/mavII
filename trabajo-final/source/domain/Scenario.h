@@ -59,6 +59,8 @@ private:
 
     std::unique_ptr<RectangleEntity> ground;
 
+    Texture2D blockTexture = { 0 };
+
 	std::vector<std::unique_ptr<BuildingBlock>> buildingBlocks;
     std::vector<std::unique_ptr<RectangleEntity>> obstacles;
     std::vector<b2Body*> prismaticBodies;
