@@ -6,8 +6,8 @@
 #include "../core/Renderer.h"
 #include <cmath>
 
-Chain::Chain(b2World& world)
-	: world(&world)
+Chain::Chain(GameContext& context)
+	: context(context)
 {
 }
 
@@ -26,12 +26,12 @@ void Chain::SpawnLink(b2Body* playerBody, float angleRad, float spawnX, float sp
 	if (!world) return;
 
 	if (!ball) {
-		auto b = std::make_unique<WreckingBall>(*world, spawnX, spawnY, PROJECTILE_RADIUS);
+		auto b = std::make_unique<WreckingBall>(*world, context, spawnX, spawnY, PROJECTILE_RADIUS);
 		b->Launch(angleRad, SHOOT_SPEED);
 		ball = std::move(b);
 	}
 
-	auto link = std::make_unique<ChainLink>(*world, spawnX, spawnY, angleRad);
+	auto link = std::make_unique<ChainLink>(*world, context, spawnX, spawnY, angleRad);
 	link->Launch(angleRad, SHOOT_SPEED);
 	links.push_back(std::move(link));
 

@@ -17,7 +17,7 @@ class WreckingBall :
     public Entity
 {
 public:
-    WreckingBall(b2World& world, float startX, float startY, float radius = WRECKING_BALL_DEFAULT_RADIUS, float density = WRECKING_BALL_DEFAULT_DENSITY, float friction = WRECKING_BALL_DEFAULT_FRICTION, float restitution = WRECKING_BALL_DEFAULT_RESTITUTION, float linearDamping = WRECKING_BALL_DEFAULT_LINEAR_DAMPING, float angularDamping = WRECKING_BALL_DEFAULT_ANGULAR_DAMPING);
+    WreckingBall(b2World& world, GameContext& context, float startX, float startY, float radius = WRECKING_BALL_DEFAULT_RADIUS, float density = WRECKING_BALL_DEFAULT_DENSITY, float friction = WRECKING_BALL_DEFAULT_FRICTION, float restitution = WRECKING_BALL_DEFAULT_RESTITUTION, float linearDamping = WRECKING_BALL_DEFAULT_LINEAR_DAMPING, float angularDamping = WRECKING_BALL_DEFAULT_ANGULAR_DAMPING);
     ~WreckingBall();
     void Update(float deltaTime) override;
     void Render(Renderer& renderer) override;
@@ -34,6 +34,8 @@ private:
     float restitution = WRECKING_BALL_DEFAULT_RESTITUTION;
 	float linearDamping = WRECKING_BALL_DEFAULT_LINEAR_DAMPING;
 	float angularDamping = WRECKING_BALL_DEFAULT_ANGULAR_DAMPING;
+
+	GameContext& context;
 
 	Texture2D texture = LoadTexture("assets/wreckingball.png");
 };

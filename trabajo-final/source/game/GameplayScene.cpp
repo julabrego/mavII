@@ -18,8 +18,7 @@
 #include <cmath>
 
 GameplayScene::GameplayScene(Game& game, int levelIndex)
-	: game(game)
-	, context(game.GetContext())
+	: game(game), context(game.GetContext()), chain(context)
 {
 	LoadLevel(levelIndex);
 }
@@ -184,7 +183,7 @@ void GameplayScene::Draw(Renderer& renderer)
 	if (context.debugMode) {
 		Rectangle window = scenario->GetCountingWindow();
 		renderer.DrawRectLines(static_cast<int>(window.x), static_cast<int>(window.y),
-			static_cast<int>(window.width), static_cast<int>(window.height), Fade(GREEN, 0.5f));
+			static_cast<int>(window.width), static_cast<int>(window.height), Fade(GREEN, 1.0f));
 
 		Rectangle sensor = scenario->GetFallSensorRect();
 		renderer.DrawRect(static_cast<int>(sensor.x), static_cast<int>(sensor.y),

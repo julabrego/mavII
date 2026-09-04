@@ -69,8 +69,10 @@ void BuildingBlock::Render(Renderer& renderer)
 		float tileWidth = texture->width / static_cast<float>(textureColumns);
 		float tileHeight = texture->height / static_cast<float>(textureRows);
 		Rectangle src = { tileColumn * tileWidth, tileRow * tileHeight, tileWidth, tileHeight };
-		Rectangle dst = { shape->position.x + shape->width / 2.0f, shape->position.y + shape->height / 2.0f, shape->width, shape->height };
-		Vector2 origin = { shape->width / 2.0f, shape->height / 2.0f };
+		float paddedW = shape->width + BLOCK_RENDER_PADDING * 2.0f;
+		float paddedH = shape->height + BLOCK_RENDER_PADDING * 2.0f;
+		Rectangle dst = { shape->position.x + shape->width / 2.0f, shape->position.y + shape->height / 2.0f, paddedW, paddedH };
+		Vector2 origin = { paddedW / 2.0f, paddedH / 2.0f };
 		float angle = shape->GetBody()->GetAngle() * RAD2DEG;
 		DrawTexturePro(*texture, src, dst, origin, angle, WHITE);
 	}

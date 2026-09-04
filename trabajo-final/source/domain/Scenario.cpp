@@ -377,23 +377,25 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 
 	for (auto& wall : prismaticWalls) {
 		b2Vec2 pos = wall.body->GetPosition();
-		float x = pos.x * PIXELS_PER_METER - wall.width / 2.0f;
-		float y = pos.y * PIXELS_PER_METER - wall.height / 2.0f;
+		float x = pos.x * PIXELS_PER_METER - wall.width / 2.0f - BLOCK_RENDER_PADDING;
+		float y = pos.y * PIXELS_PER_METER - wall.height / 2.0f - BLOCK_RENDER_PADDING;
+		float paddedW = wall.width + BLOCK_RENDER_PADDING * 2.0f;
+		float paddedH = wall.height + BLOCK_RENDER_PADDING * 2.0f;
 
 		if (blockTexture.id > 0 && config.textureCols > 0 && config.textureRows > 0) {
 			float tileW = blockTexture.width / static_cast<float>(config.textureCols);
 			float tileH = blockTexture.height / static_cast<float>(config.textureRows);
 			Rectangle src = { wall.textureColumn * tileW, wall.textureRowTop * tileH,
 				tileW, (wall.textureRowBottom - wall.textureRowTop + 1) * tileH };
-			Rectangle dst = { x, y, wall.width, wall.height };
+			Rectangle dst = { x, y, paddedW, paddedH };
 			DrawTexturePro(blockTexture, src, dst, { 0, 0 }, 0.0f, WHITE);
 		}
 		else {
 			renderer.DrawRect(static_cast<int>(x), static_cast<int>(y),
-				static_cast<int>(wall.width), static_cast<int>(wall.height), COLOR_WALL);
+				static_cast<int>(paddedW), static_cast<int>(paddedH), COLOR_WALL);
 		}
 		renderer.DrawRectLines(static_cast<int>(x), static_cast<int>(y),
-			static_cast<int>(wall.width), static_cast<int>(wall.height), BLACK);
+			static_cast<int>(paddedW), static_cast<int>(paddedH), BLACK);
 	}
 
 	if (buildingHeightTarget > 0 && context.state != GameState::MainMenu) {

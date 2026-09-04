@@ -2,8 +2,8 @@
 #include "../core/PhysicsConstants.h"
 #include <cmath>
 
-WreckingBall::WreckingBall(b2World& world, float startX, float startY, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
-	: radius(radius), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
+WreckingBall::WreckingBall(b2World& world, GameContext& context, float startX, float startY, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
+	: context(context), radius(radius), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
 {
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, radius, Fade(YELLOW, 0.5f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
@@ -37,8 +37,8 @@ void WreckingBall::Render(Renderer& renderer)
 		renderer.DrawSprite(texture, { 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
 			{ hitbox->position.x - radius, hitbox->position.y - radius, radius * 2, radius * 2 }, 0.0f);
 	}
-	else {
+	
+	if (context.debugMode) {
 		hitbox->Render(renderer);
 	}
-		hitbox->Render(renderer);
 }

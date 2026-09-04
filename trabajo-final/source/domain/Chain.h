@@ -9,8 +9,7 @@
 
 class Chain {
 public:
-	Chain() = default;
-	Chain(b2World& world);
+	Chain(GameContext& context);
 	~Chain();
 
 	void SetWorld(b2World& world) { this->world = &world; }
@@ -39,8 +38,10 @@ private:
 	void ReconnectTether(b2Body* playerBody);
 
 	b2World* world = nullptr;
+	GameContext& context;
 	std::unique_ptr<WreckingBall> ball;
 	std::vector<std::unique_ptr<ChainLink>> links;
 	std::vector<b2DistanceJoint*> joints;
 	b2DistanceJoint* tether = nullptr;
+
 };

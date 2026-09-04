@@ -2,8 +2,8 @@
 #include "../core/PhysicsConstants.h"
 #include <cmath>
 
-ChainLink::ChainLink(b2World& world, float startX, float startY, float angle, float density, float friction, float restitution, float linearDamping, float angularDamping)
-	: density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
+ChainLink::ChainLink(b2World& world, GameContext& context, float startX, float startY, float angle, float density, float friction, float restitution, float linearDamping, float angularDamping)
+	: context(context), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
 {
 	hitbox = RectangleEntity::CreateDynamic(world, startX - LINK_WIDTH / 2.0f, startY - LINK_HEIGHT / 2.0f, LINK_WIDTH, LINK_HEIGHT, angle * RAD2DEG, Fade(BLACK, 0.2f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
@@ -38,6 +38,10 @@ void ChainLink::Render(Renderer& renderer)
 			{ hitbox->position.x, hitbox->position.y, LINK_WIDTH, LINK_HEIGHT }, hitbox->angle);
 	}
 	else {
+		hitbox->Render(renderer);
+	}
+
+	if (context.debugMode) {
 		hitbox->Render(renderer);
 	}
 }
