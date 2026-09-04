@@ -34,5 +34,7 @@ private:
     float restitution = WRECKING_BALL_DEFAULT_RESTITUTION;
 	float linearDamping = WRECKING_BALL_DEFAULT_LINEAR_DAMPING;
 	float angularDamping = WRECKING_BALL_DEFAULT_ANGULAR_DAMPING;
+
+	Texture2D texture = LoadTexture("assets/wreckingball.png");
 };
 

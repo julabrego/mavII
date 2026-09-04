@@ -33,5 +33,12 @@ void WreckingBall::Update(float deltaTime)
 
 void WreckingBall::Render(Renderer& renderer)
 {
-	hitbox->Render(renderer);
+	if (texture.id > 0) {
+		renderer.DrawSprite(texture, { 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
+			{ hitbox->position.x - radius, hitbox->position.y - radius, radius * 2, radius * 2 }, 0.0f);
+	}
+	else {
+		hitbox->Render(renderer);
+	}
+		hitbox->Render(renderer);
 }

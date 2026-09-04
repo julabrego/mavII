@@ -33,5 +33,11 @@ void ChainLink::Update(float deltaTime)
 
 void ChainLink::Render(Renderer& renderer)
 {
-	hitbox->Render(renderer);
+	if (texture.id > 0) {
+		renderer.DrawSprite(texture, { 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
+			{ hitbox->position.x, hitbox->position.y, LINK_WIDTH, LINK_HEIGHT }, hitbox->angle);
+	}
+	else {
+		hitbox->Render(renderer);
+	}
 }

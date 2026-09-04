@@ -15,6 +15,7 @@
 Scenario::~Scenario() {
 	if (blockTexture.id > 0) {
 		UnloadTexture(blockTexture);
+		UnloadTexture(groundTexture);
 	}
 }
 
@@ -83,6 +84,10 @@ void Scenario::CreateBoundaryWalls(b2World& world) {
 void Scenario::CreateGround(b2World& world) {
 	ground = RectangleEntity::CreateStatic(world, 0.0f, groundTopY, static_cast<float>(GetScreenWidth()), 60.0f, 0.0f, COLOR_GROUND, 1.0f);
 
+	if(groundTexture.id > 0) {
+		SetTextureFilter(groundTexture, TEXTURE_FILTER_POINT);
+	}
+	
 	auto groundData = std::make_unique<BodyData>(BodyTag::Ground);
 	BodyData* groundDataPtr = groundData.get();
 	bodyDataRegistry.push_back(std::move(groundData));
@@ -346,7 +351,21 @@ void Scenario::Update(float deltaTime, int buildingHeightTarget)
 
 void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 {
-	ground->Render(renderer);
+	backgroundTexture.id > 0 ? DrawTexture(backgroundTexture, 0, 100, WHITE) : ClearBackground(COLOR_SKY);
+
+	if(groundTexture.id > 0) {
+		float tileWidth = static_cast<float>(groundTexture.width);
+		float tileHeight = static_cast<float>(groundTexture.height);
+		float groundWidth = static_cast<float>(GetScreenWidth());
+		for (float x = 0.0f; x < groundWidth; x += tileWidth) {
+			Rectangle src = { 0, 0, tileWidth, tileHeight };
+			Rectangle dst = { x, groundTopY, tileWidth, 60.0f };
+			DrawTexturePro(groundTexture, src, dst, { 0, 0 }, 0.0f, WHITE);
+		}
+	}
+	else {
+		ground->Render(renderer);
+	}
 
 	for (auto& block : buildingBlocks) {
 		block->Render(renderer);

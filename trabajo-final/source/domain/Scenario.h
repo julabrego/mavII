@@ -60,6 +60,8 @@ private:
     std::unique_ptr<RectangleEntity> ground;
 
     Texture2D blockTexture = { 0 };
+	Texture2D groundTexture = LoadTexture("assets/grass01.png");
+	Texture2D backgroundTexture = LoadTexture("assets/background.png");
 
 	std::vector<std::unique_ptr<BuildingBlock>> buildingBlocks;
     std::vector<std::unique_ptr<RectangleEntity>> obstacles;

@@ -34,5 +34,7 @@ private:
 	float restitution = LINK_DEFAULT_RESTITUTION;
 	float linearDamping = LINK_DEFAULT_LINEAR_DAMPING;
 	float angularDamping = LINK_DEFAULT_ANGULAR_DAMPING;
+
+	Texture2D texture = LoadTexture("assets/chainlink.png");
 };
 
