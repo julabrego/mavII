@@ -84,7 +84,7 @@ private:
 	float moveDamping = 0.85f;
 	float maxMoveSpeed = 4.0f;
 
-	Texture2D cannonBaseTexture = LoadTexture("../assets/cannonBase.png");
-	Texture2D cannonTopTexture = LoadTexture("../assets/cannonTop.png");
+	Texture2D cannonBaseTexture = LoadTexture("assets/cannonBase.png");
+	Texture2D cannonTopTexture = LoadTexture("assets/cannonTop.png");
 	BodyData bodyData;
 };

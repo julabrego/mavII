@@ -13,8 +13,8 @@ struct LevelConfig {
 	float buildingCenterX = 0.0f;
 	int heightTarget = 1;
 	int availableShots = 3;
-	float cannonX = 30.0f;
-	float cannonY = 480.0f;
+	float cannonX = 35.0f;
+	float cannonY = 271.0f;
 
 	std::string texturePath;
 	int textureCols = 0;
