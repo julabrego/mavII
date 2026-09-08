@@ -16,13 +16,9 @@ enum class PlayerCannonAction {
 };
 
 enum class PlayerCannonState {
-	Idle,
-	Rotating,
-	Moving,
+	Aiming,
 	Shooting,
-	Pushing,
-	Pulling,
-	Dead
+	Pulling
 };
 
 class PlayerCannon : public Entity
@@ -38,6 +34,8 @@ public:
 	void TeleportTo(float x, float y);
 	
 	void Die();
+	bool IsDead() const { return isDead; }
+	void SetCannonState(PlayerCannonState newState);
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
@@ -56,7 +54,7 @@ private:
 	static constexpr float MAX_ROTATION_ANGLE = 70.0f * DEG2RAD;
 	static constexpr float MIN_ROTATION_ANGLE = -70.0f * DEG2RAD;
 
-	PlayerCannonState state = PlayerCannonState::Idle;
+	PlayerCannonState state = PlayerCannonState::Aiming;
 
 	struct ActionState {
 		bool rotateLeft = false;
@@ -84,7 +82,12 @@ private:
 	float moveDamping = 0.85f;
 	float maxMoveSpeed = 4.0f;
 
-	Texture2D cannonBaseTexture = LoadTexture("assets/cannonBase.png");
-	Texture2D cannonTopTexture = LoadTexture("assets/cannonTop.png");
+	Texture2D cannonBaseTexture = LoadTexture("assets/arm.png");
+	Texture2D aimTexture = LoadTexture("assets/closedHand.png");
+	Texture2D shootTexture = LoadTexture("assets/shootingHand.png");
+	Texture2D pullTexture = LoadTexture("assets/pullingHand.png");
+	Texture2D ballTexture = LoadTexture("assets/wreckingball.png");
+	bool showBall = true;
+	bool isDead = false;
 	BodyData bodyData;
 };

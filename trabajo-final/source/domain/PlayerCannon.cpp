@@ -1,5 +1,6 @@
 #include "PlayerCannon.h"
 #include "../core/PhysicsConstants.h"
+#include "../core/GameplayConstants.h"
 #include "../core/BodyData.h"
 #include <algorithm>
 #include <cmath>
@@ -35,14 +36,21 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 
 PlayerCannon::~PlayerCannon() {
 	UnloadTexture(cannonBaseTexture);
-	UnloadTexture(cannonTopTexture);
+	UnloadTexture(aimTexture);
+	UnloadTexture(shootTexture);
+	UnloadTexture(pullTexture);
+	UnloadTexture(ballTexture);
 }
 
 void PlayerCannon::Die() {
-	if (state != PlayerCannonState::Dead) {
-		printf("Player has died.\n");
-		state = PlayerCannonState::Dead;
-	}
+	isDead = true;
+	state = PlayerCannonState::Aiming;
+	showBall = true;
+}
+
+void PlayerCannon::SetCannonState(PlayerCannonState newState) {
+	state = newState;
+	showBall = (state == PlayerCannonState::Aiming);
 }
 
 void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
@@ -87,15 +95,12 @@ void PlayerCannon::Update(float deltaTime) {
 	shootRequested = actionState.shoot;
 	pullRequested = actionState.pull;
 
-	if (actionState.pull) state = PlayerCannonState::Pulling;
-	else if (state != PlayerCannonState::Dead) state = PlayerCannonState::Idle;
+	if (pullRequested) state = PlayerCannonState::Pulling;
+	else if (shootRequested) state = PlayerCannonState::Shooting;
+	else state = PlayerCannonState::Aiming;
 
 	HandleMovement(deltaTime);
 	HandleRotation(deltaTime);
-
-	if (state != PlayerCannonState::Pulling && state != PlayerCannonState::Dead) {
-		// TODO: Implement movement logic based on actionState.moveDown and actionState.moveUp
-	}
 
 	hitbox->Update(deltaTime);
 }
@@ -106,16 +111,25 @@ void PlayerCannon::Render(Renderer& renderer) {
 	b2Vec2 basePos = baseBody->GetPosition();
 	float baseX = basePos.x * PIXELS_PER_METER;
 	float baseY = basePos.y * PIXELS_PER_METER;
-	Rectangle dstBase = { baseX - cannonBaseTexture.width / 2.0f, baseY - cannonBaseTexture.height / 2.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
-	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+	Rectangle dstBase = { baseX - cannonBaseTexture.width , baseY - cannonBaseTexture.height + 4.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
 
-	Rectangle srcTop = { 0.0f, 0.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
-	Rectangle dstTop = { hitbox->position.x - 10.0f, hitbox->position.y - cannonTopTexture.height / 2.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
-	Vector2 topOrigin = { 10.0f, cannonTopTexture.height / 2.0f };
-	renderer.DrawSprite(cannonTopTexture, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
+	Texture2D currentHand = aimTexture;
+	if (state == PlayerCannonState::Shooting) currentHand = shootTexture;
+	else if (state == PlayerCannonState::Pulling) currentHand = pullTexture;
+	/*Texture2D* currentHand = &aimTexture;
+	if (state == PlayerCannonState::Shooting) currentHand = &shootTexture;
+	else if (state == PlayerCannonState::Pulling) currentHand = &pullTexture;*/
+
+	Rectangle srcTop = { 0.0f, 0.0f, (float)currentHand.width, (float)currentHand.height };
+	Vector2 topOrigin = { 5.0f, currentHand.height / 2.0f - 5.0f };
+	Rectangle dstTop = { hitbox->position.x - topOrigin.x, hitbox->position.y - currentHand.height / 2.0f, (float)currentHand.width, (float)currentHand.height };
+	
+	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+	renderer.DrawSprite(currentHand, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
 
 	if (context.debugMode) {
 		hitbox->Render(renderer);
+		DrawCircleV(hitbox->position, 4.0f, RED);
 	}
 }
 

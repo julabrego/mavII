@@ -217,7 +217,7 @@ void GameplayScene::HandlePlayerDeath()
 		player->Die();
 	}
 
-	if (player->GetState() == PlayerCannonState::Dead && context.state == GameState::Playing) {
+	if (player->IsDead() && context.state == GameState::Playing) {
 		physicsWorld->DestroyBody(player->GetBody());
 		player.reset();
 
