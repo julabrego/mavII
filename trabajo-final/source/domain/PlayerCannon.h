@@ -83,7 +83,7 @@ private:
 	float moveDamping = 0.85f;
 	float maxMoveSpeed = 4.0f;
 
-	Texture2D cannonBaseTexture = LoadTexture("assets/arm.png");
+	Texture2D armBaseTexture = LoadTexture("assets/arm.png");
 	Texture2D aimTexture = LoadTexture("assets/closedHandWithBall.png");
 	Texture2D closedHandTexture = LoadTexture("assets/closedHand.png");
 	Texture2D shootTexture = LoadTexture("assets/shootingHand.png");

@@ -35,8 +35,9 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 }
 
 PlayerCannon::~PlayerCannon() {
-	UnloadTexture(cannonBaseTexture);
+	UnloadTexture(armBaseTexture);
 	UnloadTexture(aimTexture);
+	UnloadTexture(closedHandTexture);
 	UnloadTexture(shootTexture);
 	UnloadTexture(pullTexture);
 	UnloadTexture(ballTexture);
@@ -107,11 +108,11 @@ void PlayerCannon::Update(float deltaTime) {
 
 void PlayerCannon::Render(Renderer& renderer) {
 
-	Rectangle srcBase = { 0.0f, 0.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
+	Rectangle srcBase = { 0.0f, 0.0f, (float)armBaseTexture.width, (float)armBaseTexture.height };
 	b2Vec2 basePos = baseBody->GetPosition();
 	float baseX = basePos.x * PIXELS_PER_METER;
 	float baseY = basePos.y * PIXELS_PER_METER;
-	Rectangle dstBase = { baseX - cannonBaseTexture.width , baseY - cannonBaseTexture.height + 4.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
+	Rectangle dstBase = { baseX - armBaseTexture.width , baseY - armBaseTexture.height + 4.0f, (float)armBaseTexture.width, (float)armBaseTexture.height };
 
 	Texture2D currentHand = aimTexture;
 	if (state == PlayerCannonState::Aiming && showBall) currentHand = aimTexture;
@@ -122,8 +123,8 @@ void PlayerCannon::Render(Renderer& renderer) {
 	Rectangle srcTop = { 0.0f, 0.0f, (float)currentHand.width, (float)currentHand.height };
 	Vector2 topOrigin = { 5.0f, currentHand.height / 2.0f - 5.0f };
 	Rectangle dstTop = { hitbox->position.x - topOrigin.x, hitbox->position.y - currentHand.height / 2.0f, (float)currentHand.width, (float)currentHand.height };
-	
-	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+
+	renderer.DrawSprite(armBaseTexture, srcBase, dstBase, 0.0f, WHITE);
 	renderer.DrawSprite(currentHand, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
 	
 	if (context.debugMode) {
