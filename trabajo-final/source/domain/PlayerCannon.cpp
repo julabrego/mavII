@@ -114,11 +114,10 @@ void PlayerCannon::Render(Renderer& renderer) {
 	Rectangle dstBase = { baseX - cannonBaseTexture.width , baseY - cannonBaseTexture.height + 4.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
 
 	Texture2D currentHand = aimTexture;
-	if (state == PlayerCannonState::Shooting) currentHand = shootTexture;
-	else if (state == PlayerCannonState::Pulling) currentHand = pullTexture;
-	/*Texture2D* currentHand = &aimTexture;
-	if (state == PlayerCannonState::Shooting) currentHand = &shootTexture;
-	else if (state == PlayerCannonState::Pulling) currentHand = &pullTexture;*/
+	if (state == PlayerCannonState::Aiming && showBall) currentHand = aimTexture;
+	else if (state == PlayerCannonState::Aiming && !showBall) currentHand = closedHandTexture;
+	else if (state == PlayerCannonState::Shooting) currentHand = shootTexture;
+	else if (state == PlayerCannonState::Pulling && !showBall) currentHand = pullTexture;
 
 	Rectangle srcTop = { 0.0f, 0.0f, (float)currentHand.width, (float)currentHand.height };
 	Vector2 topOrigin = { 5.0f, currentHand.height / 2.0f - 5.0f };
@@ -126,7 +125,7 @@ void PlayerCannon::Render(Renderer& renderer) {
 	
 	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
 	renderer.DrawSprite(currentHand, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
-
+	
 	if (context.debugMode) {
 		hitbox->Render(renderer);
 		DrawCircleV(hitbox->position, 4.0f, RED);
@@ -161,11 +160,12 @@ void PlayerCannon::HandleMovement(float deltaTime) {
 }
 
 void PlayerCannon::HandleRotation(float deltaTime) {
+	float adjustedRotationSpeed = showBall ? rotationSpeed * 0.5f : rotationSpeed;
 	if (actionState.rotateLeft) {
-		turretJoint->SetMotorSpeed(-rotationSpeed);
+		turretJoint->SetMotorSpeed(-adjustedRotationSpeed);
 	}
 	else if (actionState.rotateRight) {
-		turretJoint->SetMotorSpeed(rotationSpeed);
+		turretJoint->SetMotorSpeed(adjustedRotationSpeed);
 	}
 	else {
 		turretJoint->SetMotorSpeed(0.0f);

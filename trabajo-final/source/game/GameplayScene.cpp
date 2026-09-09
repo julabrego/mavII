@@ -123,6 +123,7 @@ void GameplayScene::Update(float deltaTime)
 
 	if (player) {
 		player->Update(deltaTime);
+		player->SetShowBall(!chain.HasBall());
 
 		if (player->GetPullRequested()) {
 			chain.Pull(deltaTime, player->GetBody());
@@ -174,11 +175,11 @@ void GameplayScene::Draw(Renderer& renderer)
 {
 	scenario->Render(renderer, level->GetBuildingHeightTarget());
 
-	chain.Render(renderer);
-
 	if (player) {
 		player->Render(renderer);
 	}
+
+	chain.Render(renderer);
 
 	if (context.debugMode) {
 		Rectangle window = scenario->GetCountingWindow();

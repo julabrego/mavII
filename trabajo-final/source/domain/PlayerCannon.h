@@ -36,6 +36,7 @@ public:
 	void Die();
 	bool IsDead() const { return isDead; }
 	void SetCannonState(PlayerCannonState newState);
+	void SetShowBall(bool show) { showBall = show; }
 
 	void Update(float deltaTime) override;
 	void Render(Renderer& renderer) override;
@@ -83,7 +84,8 @@ private:
 	float maxMoveSpeed = 4.0f;
 
 	Texture2D cannonBaseTexture = LoadTexture("assets/arm.png");
-	Texture2D aimTexture = LoadTexture("assets/closedHand.png");
+	Texture2D aimTexture = LoadTexture("assets/closedHandWithBall.png");
+	Texture2D closedHandTexture = LoadTexture("assets/closedHand.png");
 	Texture2D shootTexture = LoadTexture("assets/shootingHand.png");
 	Texture2D pullTexture = LoadTexture("assets/pullingHand.png");
 	Texture2D ballTexture = LoadTexture("assets/wreckingball.png");
