@@ -7,6 +7,7 @@
 
 - Se cambia sprite del cañón por la mano de un gigante
 - Se ajusta la rotación cuando de la mano cuando está apuntando
+- Se mejora la UI del menú princial usando Raygui
 
 ## v0.0.2 — Refinamiento Visual
 

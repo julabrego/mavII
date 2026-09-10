@@ -1,5 +1,4 @@
 #include "GameplayScene.h"
-
 #include "Game.h"
 #include "../core/PhysicsWorld.h"
 #include "box2d.h"
