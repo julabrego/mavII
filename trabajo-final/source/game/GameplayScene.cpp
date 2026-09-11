@@ -52,7 +52,7 @@ void GameplayScene::HandleInput()
 
 			if (context.finishState == GameFinishState::Won) {
 				if (levelIndex + 1 >= LevelCatalog::Count()) {
-					game.SwitchScene(std::make_unique<MainMenuScene>(game));
+					RestartGame();
 					return;
 				}
 				GoToNextLevel();
@@ -120,6 +120,15 @@ void GameplayScene::GoToPreviousLevel()
 		currentRetries = 0;
 		LoadLevel(levelIndex - 1);
 	}
+}
+
+void GameplayScene::RestartGame()
+{
+	totalRetries = 0;
+	totalShotsFired = 0;
+	currentRetries = 0;
+	shotsFired = 0;
+	game.SwitchScene(std::make_unique<MainMenuScene>(game));
 }
 
 void GameplayScene::Update(float deltaTime)

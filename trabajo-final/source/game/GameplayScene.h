@@ -29,6 +29,7 @@ private:
 	void RetryLevel();
 	void GoToNextLevel();
 	void GoToPreviousLevel();
+	void RestartGame();
 
 	void HandleLevelEnd(float deltaTime);
 
