@@ -28,6 +28,8 @@ public:
     void TriggerPrismaticWalls();
     void OnBlockEnteredFallZone(b2Body* blockBody);
     Rectangle GetFallSensorRect() const { return fallSensorRect; }
+    float GetGroundTopY() const { return groundTopY; }
+    float GetBlockSize() const { return blockSize; }
 
 private:
     b2Body* CreateWall(b2World& world, float x, float y, float halfW, float halfH);
@@ -41,7 +43,6 @@ private:
     void ScanPrismaticPattern(std::vector<std::vector<int>>& pipeByCol, std::vector<std::vector<int>>& pushByCol) const;
     void SpawnPrismaticWall(b2World& world, int col, const std::vector<int>& pipeRows, const std::vector<int>& pushRows);
 
-    void DrawDashedHLine(Renderer& renderer, float y, float x1, float x2, Color color) const;
     int ComputeBlockLevel(const BuildingBlock& block) const;
     
     void RegisterBodyData(b2Body* body, BodyTag tag, void* entity = nullptr);

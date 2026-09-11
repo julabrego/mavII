@@ -16,6 +16,9 @@ struct HudInfo {
 	int heightTarget = 0;
 	int retries = 0;
 	int totalRetries = 0;
+	float goalY = 0.0f;
+	float countingWindowX = 0.0f;
+	float countingWindowWidth = 0.0f;
 };
 
 class GameUI {

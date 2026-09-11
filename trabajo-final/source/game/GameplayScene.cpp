@@ -243,6 +243,10 @@ void GameplayScene::Draw(Renderer& renderer)
 	hud.heightTarget = level->GetBuildingHeightTarget();
 	hud.retries = currentRetries;
 	hud.totalRetries = totalRetries;
+	hud.goalY = scenario->GetGroundTopY() - level->GetBuildingHeightTarget() * scenario->GetBlockSize();
+	Rectangle countingWindow = scenario->GetCountingWindow();
+	hud.countingWindowX = countingWindow.x;
+	hud.countingWindowWidth = countingWindow.width;
 	ui.Draw(renderer, context, hud);
 }
 

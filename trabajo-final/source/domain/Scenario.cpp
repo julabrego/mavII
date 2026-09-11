@@ -397,23 +397,4 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 		renderer.DrawRectLines(static_cast<int>(x), static_cast<int>(y),
 			static_cast<int>(paddedW), static_cast<int>(paddedH), BLACK);
 	}
-
-	if (buildingHeightTarget > 0 && context.state != GameState::MainMenu) {
-		Rectangle window = GetCountingWindow();
-		float goalY = groundTopY - buildingHeightTarget * blockSize;
-		DrawDashedHLine(renderer, goalY, window.x, window.x + window.width, COLOR_DANGER);
-		renderer.DrawText("OBJETIVO",
-			static_cast<int>(window.x + window.width) + 8,
-			static_cast<int>(goalY - 12), 20, COLOR_DANGER);
-	}
-}
-
-void Scenario::DrawDashedHLine(Renderer& renderer, float y, float x1, float x2, Color color) const {
-	const float dashLength = 10.0f;
-	const float gapLength = 6.0f;
-
-	for (float x = x1; x < x2; x += dashLength + gapLength) {
-		float dashEnd = std::min(x + dashLength, x2);
-		renderer.DrawLine(x, y, dashEnd, y, 3.0f, color);
-	}
 }

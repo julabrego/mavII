@@ -1,8 +1,24 @@
 #include "GameUI.h"
 #include "../core/Renderer.h"
+#include "../core/Colors.h"
 #include <string>
+#include <algorithm>
 
 void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo& hud) {
+	if (hud.heightTarget > 0 && context.state != GameState::MainMenu) {
+		const float dashLength = 10.0f;
+		const float gapLength = 6.0f;
+		float x1 = hud.countingWindowX;
+		float x2 = x1 + hud.countingWindowWidth;
+		for (float x = x1; x < x2; x += dashLength + gapLength) {
+			float dashEnd = std::min(x + dashLength, x2);
+			renderer.DrawLine(x, hud.goalY, dashEnd, hud.goalY, 3.0f, COLOR_DANGER);
+		}
+		renderer.DrawText("OBJETIVO",
+			static_cast<int>(x2) + 8,
+			static_cast<int>(hud.goalY - 12), 20, COLOR_DANGER);
+	}
+
 	if (context.state == GameState::Finished) {
 		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		std::string msg = "";
