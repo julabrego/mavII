@@ -8,16 +8,16 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-static const char* TITLE_TEXT = R"(Godzilla pego labu)";
+static const char* TITLE_TEXT = R"(Godzilla pega labu)";
 
 static const char* HELP_TEXT = R"(INSTRUCCIONES:
 
 ARRIBA - ABAJO: Moverse
-ESPACIO - Disparar
+IZQUIERDA - DERECHA: Apuntar
+ESPACIO - Disparar y extender cadena
 S - Retraer cadena
 
-R - Reintentar nivel
-D - Modo debug)";
+R - Reintentar nivel)";
 
 static const char* CREDITS_TEXT = R"(CREDITOS:
 
@@ -92,7 +92,7 @@ void MainMenuScene::Draw(Renderer& renderer)
 
 	if (currentOption == MainMenuOptions::Main) {
 		isPlayButtonPressed = GuiButton({ halfScreenWidth - halfButtonWidth, firstButtonY, buttonWidth, buttonHeight }, "Jugar");
-		isHelpButtonPressed = GuiButton({ halfScreenWidth - halfButtonWidth, firstButtonY + buttonsSpacing, buttonWidth, buttonHeight }, "Ayuda");
+		isHelpButtonPressed = GuiButton({ halfScreenWidth - halfButtonWidth, firstButtonY + buttonsSpacing, buttonWidth, buttonHeight }, "Instrucciones");
 		isCreditsButtonPressed = GuiButton({ halfScreenWidth - halfButtonWidth, firstButtonY + 2 * buttonsSpacing, buttonWidth, buttonHeight }, "Creditos");
 	}
 	else if (currentOption == MainMenuOptions::Help) {

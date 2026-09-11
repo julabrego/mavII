@@ -17,3 +17,5 @@ constexpr float SETTLE_TIME = 2.0f;
 constexpr float SETTLE_HARD_TIMEOUT = 6.0f;
 
 constexpr float BLOCK_RUBBLE_DARKNESS = 0.45f;
+
+constexpr int DEBUG_MODE_TRIGGER_THRESHOLD = 5;

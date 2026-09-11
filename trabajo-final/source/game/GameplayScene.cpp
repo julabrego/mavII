@@ -74,7 +74,10 @@ void GameplayScene::HandleInput()
 	}
 
 	if (IsKeyPressed(KEY_D)) {
-		context.debugMode = !context.debugMode;
+		debugModeTriggerCount++;
+		if (debugModeTriggerCount >= DEBUG_MODE_TRIGGER_THRESHOLD) {
+			context.debugMode = !context.debugMode;
+		}
 	}
 	else if (IsKeyPressed(KEY_R)) {
 		RetryLevel();

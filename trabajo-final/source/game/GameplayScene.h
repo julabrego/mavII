@@ -41,6 +41,8 @@ private:
 	int currentRetries = 0;
 	int totalRetries = 0;
 
+	int debugModeTriggerCount = 0;
+
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Scenario> scenario;
 	std::unique_ptr<PlayerCannon> player;
