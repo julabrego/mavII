@@ -14,6 +14,7 @@ public:
 
 	void SetWorld(b2World& world) { this->world = &world; }
 
+	void SpawnBall(float angleRad, float spawnX, float spawnY);
 	void SpawnLink(b2Body* playerBody, float angleRad, float spawnX, float spawnY);
 	void Pull(float deltaTime, b2Body* playerBody);
 	void CleanupOffScreen(float screenWidth, float screenHeight, b2Body* playerBody);

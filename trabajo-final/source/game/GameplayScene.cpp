@@ -181,7 +181,12 @@ void GameplayScene::Update(float deltaTime)
 					float dist = b2Distance(cannonPos, headPos);
 
 					if (!chain.HasBall() || dist > CHAIN_LINK_SPACING * METERS_PER_PIXEL) {
-						chain.SpawnLink(player->GetBody(), angleRad, spawnX, spawnY);
+						if (level->GetShotsLeft() > 0) {
+							chain.SpawnLink(player->GetBody(), angleRad, spawnX, spawnY);
+						}
+						else {
+							chain.SpawnBall(angleRad, spawnX, spawnY);
+						}
 					}
 				}
 			}

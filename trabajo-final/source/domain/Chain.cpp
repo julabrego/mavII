@@ -21,6 +21,15 @@ void Chain::Reset()
 	tether = nullptr;
 }
 
+void Chain::SpawnBall(float angleRad, float spawnX, float spawnY)
+{
+	if (!world || ball) return;
+
+	auto b = std::make_unique<WreckingBall>(*world, context, spawnX, spawnY, PROJECTILE_RADIUS);
+	b->Launch(angleRad, SHOOT_SPEED);
+	ball = std::move(b);
+}
+
 void Chain::SpawnLink(b2Body* playerBody, float angleRad, float spawnX, float spawnY)
 {
 	if (!world) return;
