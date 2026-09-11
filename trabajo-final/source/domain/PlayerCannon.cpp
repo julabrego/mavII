@@ -1,45 +1,58 @@
 #include "PlayerCannon.h"
 #include "../core/PhysicsConstants.h"
+#include "../core/GameplayConstants.h"
 #include "../core/BodyData.h"
 #include <algorithm>
+#include <cmath>
 
 PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float startX, float startY) : context(gameContext) {
-	//hitbox = RectangleEntity::CreateDynamic(world, startX, startY, PLAYER_WIDTH, PLAYER_HEIGHT, 0.0f, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
+	b2Vec2 pivot{ startX * METERS_PER_PIXEL, startY * METERS_PER_PIXEL };
+
+	b2BodyDef baseDef;
+	baseDef.type = b2_kinematicBody;
+	baseDef.position = pivot;
+	baseBody = world.CreateBody(&baseDef);
+
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, PLAYER_RADIUS, Fade(YELLOW, 0.5f), 1.0f, 0.3f, 0.0f);
 
 	bodyData = { BodyTag::Player, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 	hitbox->GetBody()->SetGravityScale(0.0f);
-	hitbox->GetBody()->SetLinearDamping(linearDamping);
 
-	b2PolygonShape sensorShape;
-	sensorShape.SetAsBox((PLAYER_WIDTH / 2.0f) * METERS_PER_PIXEL, (SENSOR_HEIGHT / 2.0f) * METERS_PER_PIXEL,
-		b2Vec2(0.0f, (PLAYER_HEIGHT / 2.0f) * METERS_PER_PIXEL), 0.0f);
+	b2Filter filter;
+	filter.groupIndex = PLAYER_GROUP_INDEX;
+	filter.maskBits = 0;
+	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
 
-	b2FixtureDef sensorFixtureDef;
-	sensorFixtureDef.shape = &sensorShape;
-	sensorFixtureDef.isSensor = true;
-
-	hitbox->GetBody()->CreateFixture(&sensorFixtureDef);
+	b2RevoluteJointDef turrentJointDef;
+	turrentJointDef.Initialize(baseBody, hitbox->GetBody(), pivot);
+	turrentJointDef.enableMotor = true;
+	turrentJointDef.motorSpeed = 0.0f;
+	turrentJointDef.maxMotorTorque = turretMotorTorque;
+	turrentJointDef.enableLimit = true;
+	turrentJointDef.lowerAngle = MIN_ROTATION_ANGLE;
+	turrentJointDef.upperAngle = MAX_ROTATION_ANGLE;
+	turretJoint = static_cast<b2RevoluteJoint*>(world.CreateJoint(&turrentJointDef));
 }
 
 PlayerCannon::~PlayerCannon() {
-	UnloadTexture(cannonBaseTexture);
+	UnloadTexture(armBaseTexture);
+	UnloadTexture(aimTexture);
+	UnloadTexture(closedHandTexture);
+	UnloadTexture(shootTexture);
+	UnloadTexture(pullTexture);
+	UnloadTexture(ballTexture);
 }
 
 void PlayerCannon::Die() {
-	if (state != PlayerCannonState::Dead) {
-		printf("Player has died.\n");
-		state = PlayerCannonState::Dead;
-	}
+	isDead = true;
+	state = PlayerCannonState::Aiming;
+	showBall = true;
 }
 
-bool PlayerCannon::ConsumeShoot() {
-	if (shootRequested) {
-		shootRequested = false;
-		return true;
-	}
-	return false;
+void PlayerCannon::SetCannonState(PlayerCannonState newState) {
+	state = newState;
+	showBall = (state == PlayerCannonState::Aiming);
 }
 
 void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
@@ -59,9 +72,6 @@ void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 	case PlayerCannonAction::Shoot:
 		actionState.shoot = active;
 		break;
-	case PlayerCannonAction::Push:
-		actionState.push = active;
-		break;
 	case PlayerCannonAction::Pull:
 		actionState.pull = active;
 		break;
@@ -71,67 +81,95 @@ void PlayerCannon::SetAction(PlayerCannonAction action, bool active) {
 }
 
 void PlayerCannon::TeleportTo(float x, float y) {
-	hitbox->GetBody()->SetTransform(b2Vec2(x, y), 0.0f);
+	baseBody->SetTransform(b2Vec2(x, y), baseBody->GetAngle());
+	hitbox->GetBody()->SetTransform(b2Vec2(x, y), hitbox->GetBody()->GetAngle());
 	hitbox->GetBody()->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+	hitbox->GetBody()->SetAngularVelocity(0.0f);
 }
 
 void PlayerCannon::Update(float deltaTime) {
 	if (context.state != GameState::Playing) {
 		b2Body* body = hitbox->GetBody();
 		body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-		body->SetGravityScale(0.0f);
 		return;
 	}
 
-	if (actionState.rotateLeft) {
-		hitbox->GetBody()->SetAngularVelocity(-rotationSpeed);
-	}
-	else if (actionState.rotateRight) {
-		hitbox->GetBody()->SetAngularVelocity(rotationSpeed);
-	}
-	else {
-		hitbox->GetBody()->SetAngularVelocity(0.0f);
-	}
+	shootRequested = actionState.shoot;
+	pullRequested = actionState.pull;
 
-	if (actionState.moveUp) {
-		hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, -moveSpeed), true);
-	}
-	else if (actionState.moveDown) {
-		hitbox->GetBody()->ApplyForceToCenter(b2Vec2(0.0f, moveSpeed), true);
-	}
+	if (pullRequested) state = PlayerCannonState::Pulling;
+	else if (shootRequested) state = PlayerCannonState::Shooting;
+	else state = PlayerCannonState::Aiming;
 
-	if (actionState.shoot) {
-		shootRequested = true;
-		actionState.shoot = false;
-	}
-
-	if (state != PlayerCannonState::Pulling && state != PlayerCannonState::Dead) {
-		// TODO: Implement movement logic based on actionState.moveDown and actionState.moveUp
-	}
+	HandleMovement(deltaTime);
+	HandleRotation(deltaTime);
 
 	hitbox->Update(deltaTime);
 }
 
 void PlayerCannon::Render(Renderer& renderer) {
 
-	Rectangle srcBase = { 0.0f, 0.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
-	Rectangle dstBase = { hitbox->position.x - cannonBaseTexture.width / 2.0f, hitbox->position.y - cannonBaseTexture.height / 2.0f, (float)cannonBaseTexture.width, (float)cannonBaseTexture.height };
-	renderer.DrawSprite(cannonBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+	Rectangle srcBase = { 0.0f, 0.0f, (float)armBaseTexture.width, (float)armBaseTexture.height };
+	b2Vec2 basePos = baseBody->GetPosition();
+	float baseX = basePos.x * PIXELS_PER_METER;
+	float baseY = basePos.y * PIXELS_PER_METER;
+	Rectangle dstBase = { baseX - armBaseTexture.width , baseY - armBaseTexture.height + 4.0f, (float)armBaseTexture.width, (float)armBaseTexture.height };
 
-	Rectangle srcTop = { 0.0f, 0.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
-	Rectangle dstTop = { hitbox->position.x - 10.0f, hitbox->position.y - cannonTopTexture.height / 2.0f, (float)cannonTopTexture.width, (float)cannonTopTexture.height };
-	Vector2 topOrigin = { 10.0f, cannonTopTexture.height / 2.0f };
-	renderer.DrawSprite(cannonTopTexture, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
+	Texture2D currentHand = aimTexture;
+	if (state == PlayerCannonState::Aiming && showBall) currentHand = aimTexture;
+	else if (state == PlayerCannonState::Aiming && !showBall) currentHand = closedHandTexture;
+	else if (state == PlayerCannonState::Shooting) currentHand = shootTexture;
+	else if (state == PlayerCannonState::Pulling && !showBall) currentHand = pullTexture;
 
+	Rectangle srcTop = { 0.0f, 0.0f, (float)currentHand.width, (float)currentHand.height };
+	Vector2 topOrigin = { 5.0f, currentHand.height / 2.0f - 5.0f };
+	Rectangle dstTop = { hitbox->position.x - topOrigin.x, hitbox->position.y - currentHand.height / 2.0f, (float)currentHand.width, (float)currentHand.height };
+
+	renderer.DrawSprite(armBaseTexture, srcBase, dstBase, 0.0f, WHITE);
+	renderer.DrawSprite(currentHand, srcTop, dstTop, topOrigin, hitbox->angle, WHITE);
+	
 	if (context.debugMode) {
 		hitbox->Render(renderer);
-		DrawDebugSensors(renderer);
+		DrawCircleV(hitbox->position, 4.0f, RED);
 	}
 }
 
-void PlayerCannon::DrawDebugSensors(Renderer& renderer) {
-	b2Vec2 pos = hitbox->GetBody()->GetPosition();
-	float x = pos.x * PIXELS_PER_METER - PLAYER_WIDTH / 2.0f;
-	float y = pos.y * PIXELS_PER_METER + PLAYER_HEIGHT / 2.0f - SENSOR_HEIGHT / 2.0f;
-	renderer.DrawRect(x, y, PLAYER_WIDTH, SENSOR_HEIGHT, Fade(RED, 0.5f));
+void PlayerCannon::HandleMovement(float deltaTime) {
+	if (actionState.moveUp) {
+		velocityY -= moveAcceleration * deltaTime;
+	}
+	else if (actionState.moveDown) {
+		velocityY += moveAcceleration * deltaTime;
+	}
+	else {
+		velocityY *= moveDamping;
+		if (fabsf(velocityY) < 0.1f) velocityY = 0.0f;
+	}
+
+	if (velocityY > maxMoveSpeed) velocityY = maxMoveSpeed;
+	if (velocityY < -maxMoveSpeed) velocityY = -maxMoveSpeed;
+
+	b2Vec2 pos = baseBody->GetPosition();
+	pos.y += velocityY * deltaTime;
+
+	float minY = TOP_OFFSET * METERS_PER_PIXEL;
+	float maxY = (GetScreenHeight() - BOTTOM_OFFSET) * METERS_PER_PIXEL;
+	
+	if (pos.y < minY) { pos.y = minY; velocityY = 0.0f; }
+	if (pos.y > maxY) { pos.y = maxY; velocityY = 0.0f; }
+	
+	baseBody->SetLinearVelocity(b2Vec2(0.0f, velocityY));
+}
+
+void PlayerCannon::HandleRotation(float deltaTime) {
+	float adjustedRotationSpeed = showBall ? rotationSpeed * 0.5f : rotationSpeed;
+	if (actionState.rotateLeft) {
+		turretJoint->SetMotorSpeed(-adjustedRotationSpeed);
+	}
+	else if (actionState.rotateRight) {
+		turretJoint->SetMotorSpeed(adjustedRotationSpeed);
+	}
+	else {
+		turretJoint->SetMotorSpeed(0.0f);
+	}
 }

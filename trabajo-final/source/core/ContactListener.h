@@ -1,5 +1,6 @@
 #pragma once
 #include <box2d.h>
+#include <vector>
 #include "BodyData.h"
 
 struct ContactInfo {
@@ -26,8 +27,9 @@ public:
 	
 	bool isRotablePlatformTriggered = false;
 
+	std::vector<b2Body*> fallSensorEvents;
+	std::vector<b2Vec2> wreckingBallCollisionPoints;
+
 private:
 	ContactInfo ExtractContactInfo(b2Contact* contact);
-
-	void HandlePlayerGroundContact(b2Contact* contact, const ContactInfo& info, int sign);
 };

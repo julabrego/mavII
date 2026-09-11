@@ -25,6 +25,7 @@ public:
 	void DrawSprite(Texture2D texture, Rectangle src, Rectangle dst, Vector2 origin, float rotation = 0.0f, Color tint = WHITE);
 	void DrawRect(int x, int y, int w, int h, Color color);
 	void DrawRectLines(int x, int y, int w, int h, Color color);
+	void DrawLine(float x1, float y1, float x2, float y2, float thickness, Color color);
 	void DrawText(const char* text, int x, int y, int fontSize, Color color);
 	void DrawCenteredText(const char* text, int fontSize, int posY, Color color);
 

@@ -1,37 +1,57 @@
 #include "GameUI.h"
 #include "../core/Renderer.h"
+#include "../core/Colors.h"
 #include <string>
+#include <algorithm>
 
-std::string mainMenuText = R"(--- SUPER MAYRO BOSS ---
-
-ENTER - Comenzar
-
-Instrucciones:
-FLECHAS - Moverse
-ESPACIO - Saltar
-
-D - Modo debug
-R - Reiniciar juego)";
-
-void GameUI::Draw(Renderer& renderer, const GameContext& context) {
-	if (context.state == GameState::MainMenu) {
-		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
-		renderer.DrawCenteredText(
-			mainMenuText.c_str(), 30, GetScreenHeight() / 2 - 150, WHITE);
+void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo& hud) {
+	if (hud.heightTarget > 0 && context.state != GameState::MainMenu) {
+		const float dashLength = 10.0f;
+		const float gapLength = 6.0f;
+		float x1 = hud.countingWindowX;
+		float x2 = x1 + hud.countingWindowWidth;
+		for (float x = x1; x < x2; x += dashLength + gapLength) {
+			float dashEnd = std::min(x + dashLength, x2);
+			renderer.DrawLine(x, hud.goalY, dashEnd, hud.goalY, 3.0f, COLOR_DANGER);
+		}
+		renderer.DrawText("OBJETIVO",
+			static_cast<int>(x2) + 8,
+			static_cast<int>(hud.goalY - 12), 20, COLOR_DANGER);
 	}
-	else if (context.state == GameState::Finished) {
+
+	if (context.state == GameState::Finished) {
 		renderer.DrawRect(GetScreenWidth() / 2 - 400, GetScreenHeight() / 2 - 225, 800, 450, Fade(BLACK, 0.8f));
 		std::string msg = "";
 		if (context.finishState == GameFinishState::Won) {
-			msg = "Ganaste!\n\ENTER - volver a jugar";
+			if (hud.isLastLevel) {
+				msg = std::string("GANASTE!\n\n")
+					+ "Disparos totales: " + std::to_string(hud.totalShotsFired) + "\n"
+					+ "Reintentos totales: " + std::to_string(hud.totalRetries) + "\n\n"
+					+ "ENTER - volver al menu";
+			}
+			else {
+				msg = "Nivel " + std::to_string(hud.levelNumber) + " superado!\n\n"
+					
+					+ "Disparos: " + std::to_string(hud.shotsFired) + "\n"
+					+ "Reintentos: " + std::to_string(hud.retries) + "\n\n"
+					+ "ENTER - siguiente nivel";
+			}
 		}
 		else if (context.finishState == GameFinishState::Lost) {
-			msg = "Perdiste\n\ENTER - volver a jugar";
+			msg = "Perdiste\nENTER - reintentar el nivel";
 		}
 		renderer.DrawCenteredText(msg.c_str(), 40, GetScreenHeight() / 2 - 100, WHITE);
 	}
+	else if (context.state == GameState::Playing) {
+		std::string hudText = "Nivel " + std::to_string(hud.levelNumber) + "/" + std::to_string(hud.totalLevels)
+			+ "  |  Altura: " + std::to_string(hud.currentHeight)
+			+ "  |  Objetivo: " + std::to_string(hud.heightTarget) + " piso" + (hud.heightTarget > 1 ? "s" : "")
+			+ "  |  Disparos: " + std::to_string(hud.shotsLeft)
+			+ "  |  Reintentos: " + std::to_string(hud.retries);
+		renderer.DrawText(hudText.c_str(), 10, GetScreenHeight() - 30, 26, WHITE);
+	}
 
 	if (context.debugMode) {
-		renderer.DrawText("DEBUG MODE (click para reubicar al personaje)", 10, 10, 20, RED);
+		renderer.DrawText("DEBUG MODE (click para reubicar al personaje) - N: siguiente nivel - B: anterior nivel", 10, 10, 20, RED);
 	}
 }

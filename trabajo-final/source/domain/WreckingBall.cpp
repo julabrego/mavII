@@ -2,12 +2,17 @@
 #include "../core/PhysicsConstants.h"
 #include <cmath>
 
-WreckingBall::WreckingBall(b2World& world, float startX, float startY, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
-	: radius(radius), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
+WreckingBall::WreckingBall(b2World& world, GameContext& context, float startX, float startY, float radius, float density, float friction, float restitution, float linearDamping, float angularDamping)
+	: context(context), radius(radius), density(density), friction(friction), restitution(restitution), linearDamping(linearDamping), angularDamping(angularDamping)
 {
 	hitbox = CircleEntity::CreateDynamic(world, startX, startY, radius, Fade(YELLOW, 0.5f), density, friction, restitution);
 	hitbox->GetBody()->SetLinearDamping(linearDamping);
 	hitbox->GetBody()->SetAngularDamping(angularDamping);
+
+	b2Filter filter;
+	filter.groupIndex = PLAYER_GROUP_INDEX;
+	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
+
 	bodyData = { BodyTag::WreckingBall, this };
 	hitbox->GetBody()->GetUserData().pointer = reinterpret_cast<uintptr_t>(&bodyData);
 }
@@ -18,8 +23,7 @@ WreckingBall::~WreckingBall()
 
 void WreckingBall::Launch(float angleRad, float speed)
 {
-	b2Vec2 velocity(speed * cosf(angleRad), speed * sinf(angleRad));
-	hitbox->GetBody()->ApplyLinearImpulseToCenter(velocity, true);
+	hitbox->GetBody()->SetLinearVelocity(b2Vec2(speed * cosf(angleRad), speed * sinf(angleRad)));
 }
 
 void WreckingBall::Update(float deltaTime)
@@ -29,5 +33,12 @@ void WreckingBall::Update(float deltaTime)
 
 void WreckingBall::Render(Renderer& renderer)
 {
-	hitbox->Render(renderer);
+	if (texture.id > 0) {
+		renderer.DrawSprite(texture, { 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
+			{ hitbox->position.x - radius, hitbox->position.y - radius, radius * 2, radius * 2 }, 0.0f);
+	}
+	
+	if (context.debugMode) {
+		hitbox->Render(renderer);
+	}
 }

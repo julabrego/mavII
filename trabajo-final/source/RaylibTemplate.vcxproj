@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -115,7 +118,7 @@ xcopy "$(SolutionDir)..\lib\vld\32-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../include/box2d;../include/raylib;../include/vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -138,7 +141,7 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>../include/box2d;../include/raylib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -148,17 +151,29 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../lib/box2d/Debug;../lib/raylib/64-bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../lib/box2d/Release;../lib/raylib/64-bit;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>raylib.lib;winmm.lib;box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)assets\*.png" "$(OutDir)assets\" /y /d /i</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\ContactListener.cpp" />
     <ClCompile Include="core\PhysicsWorld.cpp" />
+    <ClCompile Include="domain\BuildingBlock.cpp" />
+    <ClCompile Include="domain\ChainLink.cpp" />
+    <ClCompile Include="domain\Chain.cpp" />
     <ClCompile Include="domain\CircleEntity.cpp" />
+    <ClCompile Include="domain\Particle.cpp" />
+    <ClCompile Include="domain\ParticleSystem.cpp" />
     <ClCompile Include="domain\WreckingBall.cpp" />
     <ClCompile Include="game\Game.cpp" />
+    <ClCompile Include="game\GameplayScene.cpp" />
     <ClCompile Include="game\GameUI.cpp" />
+    <ClCompile Include="game\Level.cpp" />
+    <ClCompile Include="game\LevelCatalog.cpp" />
+    <ClCompile Include="game\MainMenuScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="core\Renderer.cpp" />
     <ClCompile Include="domain\RectangleEntity.cpp" />
@@ -169,14 +184,26 @@ xcopy "$(SolutionDir)..\lib\vld\64-bit\Microsoft.DTfW.DHL.manifest" "$(OutDir)" 
     <ClInclude Include="core\BodyData.h" />
     <ClInclude Include="core\ContactListener.h" />
     <ClInclude Include="core\Colors.h" />
+    <ClInclude Include="core\GameplayConstants.h" />
     <ClInclude Include="core\PhysicsConstants.h" />
     <ClInclude Include="core\PhysicsWorld.h" />
+    <ClInclude Include="domain\BuildingBlock.h" />
+    <ClInclude Include="domain\ChainLink.h" />
+    <ClInclude Include="domain\Chain.h" />
     <ClInclude Include="domain\CircleEntity.h" />
     <ClInclude Include="domain\Entity.h" />
+    <ClInclude Include="domain\Particle.h" />
+    <ClInclude Include="domain\ParticleSystem.h" />
     <ClInclude Include="domain\WreckingBall.h" />
     <ClInclude Include="game\Game.h" />
+    <ClInclude Include="game\GameplayScene.h" />
     <ClInclude Include="game\GameUI.h" />
     <ClInclude Include="game\GameState.h" />
+    <ClInclude Include="game\Level.h" />
+    <ClInclude Include="game\LevelCatalog.h" />
+    <ClInclude Include="game\LevelConfig.h" />
+    <ClInclude Include="game\MainMenuScene.h" />
+    <ClInclude Include="game\Scene.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="core\Renderer.h" />
     <ClInclude Include="domain\RectangleEntity.h" />
