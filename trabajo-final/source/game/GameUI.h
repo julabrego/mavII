@@ -7,6 +7,7 @@ class Renderer;
 
 struct HudInfo {
 	int levelNumber = 1;
+	int totalLevels = 1;
 	bool isLastLevel = false;
 	int shotsLeft = 0;
 	int shotsFired = 0;

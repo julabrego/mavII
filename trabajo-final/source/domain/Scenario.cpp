@@ -402,7 +402,7 @@ void Scenario::Render(Renderer& renderer, int buildingHeightTarget)
 		Rectangle window = GetCountingWindow();
 		float goalY = groundTopY - buildingHeightTarget * blockSize;
 		DrawDashedHLine(renderer, goalY, window.x, window.x + window.width, COLOR_DANGER);
-		renderer.DrawText("GOAL",
+		renderer.DrawText("OBJETIVO",
 			static_cast<int>(window.x + window.width) + 8,
 			static_cast<int>(goalY - 12), 20, COLOR_DANGER);
 	}

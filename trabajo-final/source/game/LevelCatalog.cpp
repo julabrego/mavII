@@ -21,7 +21,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 {
 	static const std::vector<LevelConfig> levels = {
 		// Level 1: single tower
-		MakeLevel(1, 3, {
+		MakeLevel(2, 4, {
 			"XX",
 			"XX",
 			"XX",
@@ -31,7 +31,18 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"XX",
 		}, {}, "assets/level1.png", 2, 7),
 
-		// Level 2: pyramid
+		// Level 2: wider tower
+		MakeLevel(2, 4, {
+			"XXX",
+			"XXX",
+			"XXX",
+			"XXX",
+			"XXX",
+			"XXX",
+			"XXX",
+		}, {}, "assets/level2b.png", 3, 7),
+
+		// Level 3: pyramid
 		MakeLevel(2, 3, {
 			"...XX...",
 			"..XXXX..",
@@ -39,7 +50,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			"XXXXXXXX",
 		}, {}, "assets/level2.png", 8, 4),
 
-		// Level 3: two towers + obstacle
+		// Level 4: two towers + obstacle
 		MakeLevel(1, 4, {
 			"XX....XX",
 			"XX....XX",
@@ -49,7 +60,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 			{ 410.0f, 315.0f, 180.0f, 20.0f },
 		}, "assets/level3.png", 8, 4),
 
-		// Level 4: single towers protected by vertical prismatic wall
+		// Level 5: single towers protected by vertical prismatic wall
 		MakeLevel(1, 4, {
 			"P..XX",
 			"...XX",
@@ -60,7 +71,7 @@ const std::vector<LevelConfig>& LevelCatalog::All()
 		}, {
 		}, "assets/level4.png", 5, 6),
 
-		// Level 5: single towers protected by vertical prismatic wall
+		// Level 6: single towers protected by vertical prismatic wall
 		MakeLevel(1, 4, {
 			"|..XX",
 			"|..XX",

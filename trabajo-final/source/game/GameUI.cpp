@@ -27,9 +27,9 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo&
 		renderer.DrawCenteredText(msg.c_str(), 40, GetScreenHeight() / 2 - 100, WHITE);
 	}
 	else if (context.state == GameState::Playing) {
-		std::string hudText = "Nivel " + std::to_string(hud.levelNumber)
+		std::string hudText = "Nivel " + std::to_string(hud.levelNumber) + "/" + std::to_string(hud.totalLevels)
 			+ "  |  Altura: " + std::to_string(hud.currentHeight)
-			+ "  |  Meta: " + std::to_string(hud.heightTarget)
+			+ "  |  Objetivo: " + std::to_string(hud.heightTarget) + " piso" + (hud.heightTarget > 1 ? "s" : "")
 			+ "  |  Disparos: " + std::to_string(hud.shotsLeft)
 			+ "  |  Reintentos: " + std::to_string(hud.retries);
 		renderer.DrawText(hudText.c_str(), 10, GetScreenHeight() - 30, 26, WHITE);

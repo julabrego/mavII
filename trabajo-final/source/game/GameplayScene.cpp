@@ -231,6 +231,7 @@ void GameplayScene::Draw(Renderer& renderer)
 
 	HudInfo hud;
 	hud.levelNumber = levelIndex + 1;
+	hud.totalLevels = LevelCatalog::Count();
 	hud.isLastLevel = (levelIndex + 1) == LevelCatalog::Count();
 	hud.shotsLeft = level->GetShotsLeft();
 	hud.shotsFired = shotsFired;
