@@ -21,6 +21,7 @@ PlayerCannon::PlayerCannon(b2World& world, GameContext& gameContext, float start
 
 	b2Filter filter;
 	filter.groupIndex = PLAYER_GROUP_INDEX;
+	filter.maskBits = 0;
 	hitbox->GetBody()->GetFixtureList()->SetFilterData(filter);
 
 	b2RevoluteJointDef turrentJointDef;
