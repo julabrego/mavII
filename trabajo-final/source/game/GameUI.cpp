@@ -8,10 +8,17 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo&
 		std::string msg = "";
 		if (context.finishState == GameFinishState::Won) {
 			if (hud.isLastLevel) {
-				msg = "Juego completado!\nENTER - volver al menu";
+				msg = std::string("GANASTE!\n\n")
+					+ "Disparos totales: " + std::to_string(hud.totalShotsFired) + "\n"
+					+ "Reintentos totales: " + std::to_string(hud.totalRetries) + "\n\n"
+					+ "ENTER - volver al menu";
 			}
 			else {
-				msg = "Nivel " + std::to_string(hud.levelNumber) + " superado!\nENTER - siguiente nivel";
+				msg = "Nivel " + std::to_string(hud.levelNumber) + " superado!\n\n"
+					
+					+ "Disparos: " + std::to_string(hud.shotsFired) + "\n"
+					+ "Reintentos: " + std::to_string(hud.retries) + "\n\n"
+					+ "ENTER - siguiente nivel";
 			}
 		}
 		else if (context.finishState == GameFinishState::Lost) {
@@ -21,10 +28,11 @@ void GameUI::Draw(Renderer& renderer, const GameContext& context, const HudInfo&
 	}
 	else if (context.state == GameState::Playing) {
 		std::string hudText = "Nivel " + std::to_string(hud.levelNumber)
-			+ "  Altura: " + std::to_string(hud.currentHeight)
-			+ "  Meta: " + std::to_string(hud.heightTarget)
-			+ "  Disparos: " + std::to_string(hud.shotsLeft);
-		renderer.DrawText(hudText.c_str(), 10, 40, 24, WHITE);
+			+ "  |  Altura: " + std::to_string(hud.currentHeight)
+			+ "  |  Meta: " + std::to_string(hud.heightTarget)
+			+ "  |  Disparos: " + std::to_string(hud.shotsLeft)
+			+ "  |  Reintentos: " + std::to_string(hud.retries);
+		renderer.DrawText(hudText.c_str(), 10, GetScreenHeight() - 30, 26, WHITE);
 	}
 
 	if (context.debugMode) {

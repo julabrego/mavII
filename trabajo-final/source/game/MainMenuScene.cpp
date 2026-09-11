@@ -8,7 +8,7 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-static const char* TITLE_TEXT = R"(DEBALLITION)";
+static const char* TITLE_TEXT = R"(Godzilla pego labu)";
 
 static const char* HELP_TEXT = R"(INSTRUCCIONES:
 
@@ -16,8 +16,8 @@ ARRIBA - ABAJO: Moverse
 ESPACIO - Disparar
 S - Retraer cadena
 
-D - Modo debug
-R - Reiniciar nivel)";
+R - Reintentar nivel
+D - Modo debug)";
 
 static const char* CREDITS_TEXT = R"(CREDITOS:
 

@@ -26,11 +26,19 @@ public:
 
 private:
 	void LoadLevel(int levelIndex);
-	void HandlePlayerDeath();
+	void RetryLevel();
+	void GoToNextLevel();
+	void GoToPreviousLevel();
+
+	void HandleLevelEnd(float deltaTime);
 
 	Game& game;
 	GameContext& context;
 	int levelIndex = 0;
+	int shotsFired = 0;
+	int totalShotsFired = 0;
+	int currentRetries = 0;
+	int totalRetries = 0;
 
 	std::unique_ptr<PhysicsWorld> physicsWorld;
 	std::unique_ptr<Scenario> scenario;

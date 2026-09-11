@@ -49,16 +49,16 @@ void GameplayScene::HandleInput()
 {
 	if (context.state == GameState::Finished) {
 		if (IsKeyPressed(KEY_ENTER)) {
+
 			if (context.finishState == GameFinishState::Won) {
-				if (levelIndex + 1 < LevelCatalog::Count()) {
-					LoadLevel(levelIndex + 1);
-				}
-				else {
+				if (levelIndex + 1 >= LevelCatalog::Count()) {
 					game.SwitchScene(std::make_unique<MainMenuScene>(game));
+					return;
 				}
+				GoToNextLevel();
 			}
 			else {
-				LoadLevel(levelIndex);
+				RetryLevel();
 			}
 		}
 		return;
@@ -77,14 +77,14 @@ void GameplayScene::HandleInput()
 		context.debugMode = !context.debugMode;
 	}
 	else if (IsKeyPressed(KEY_R)) {
-		LoadLevel(levelIndex);
+		RetryLevel();
 	}
 	else if (context.debugMode) {
 		if (IsKeyPressed(KEY_N) && levelIndex + 1 < LevelCatalog::Count()) {
-			LoadLevel(levelIndex + 1);
+			GoToNextLevel();
 		}
 		else if (IsKeyPressed(KEY_B) && levelIndex > 0) {
-			LoadLevel(levelIndex - 1);
+			GoToPreviousLevel();
 		}
 	}
 
@@ -94,6 +94,31 @@ void GameplayScene::HandleInput()
 			float mouseY = GetMouseY() * METERS_PER_PIXEL;
 			player->TeleportTo(mouseX, mouseY);
 		}
+	}
+}
+
+void GameplayScene::RetryLevel()
+{
+	totalRetries++;
+	currentRetries++;
+	shotsFired = 0;
+	LoadLevel(levelIndex);
+}
+
+void GameplayScene::GoToNextLevel()
+{
+	if (levelIndex + 1 < LevelCatalog::Count()) {
+		shotsFired = 0;
+		currentRetries = 0;
+		LoadLevel(levelIndex + 1);
+	}
+}
+
+void GameplayScene::GoToPreviousLevel()
+{
+	if (levelIndex > 0) {
+		currentRetries = 0;
+		LoadLevel(levelIndex - 1);
 	}
 }
 
@@ -132,6 +157,7 @@ void GameplayScene::Update(float deltaTime)
 			bool shotConsumed = !chain.HasBall() && level->TryConsumeShot();
 			if (shotConsumed) {
 				scenario->TriggerPrismaticWalls();
+				shotsFired++;
 			}
 			if (chain.HasBall() || shotConsumed) {
 				if (!chain.HasBall() || !chain.AtCapacity()) {
@@ -157,17 +183,10 @@ void GameplayScene::Update(float deltaTime)
 
 	chain.CleanupOffScreen(GetScreenWidth(), GetScreenHeight(), player ? player->GetBody() : nullptr);
 
-	if (context.state == GameState::Playing) {
-		GameFinishState finishState = level->Evaluate(deltaTime, physicsWorld->IsSettled());
-		if (finishState != GameFinishState::None) {
-			context.finishState = finishState;
-			context.state = GameState::Finished;
-		}
-	}
-
 	particles.Update(deltaTime, GetScreenWidth(), GetScreenHeight());
 
-	HandlePlayerDeath();
+	HandleLevelEnd(deltaTime);
+
 }
 
 void GameplayScene::Draw(Renderer& renderer)
@@ -200,28 +219,26 @@ void GameplayScene::Draw(Renderer& renderer)
 	hud.levelNumber = levelIndex + 1;
 	hud.isLastLevel = (levelIndex + 1) == LevelCatalog::Count();
 	hud.shotsLeft = level->GetShotsLeft();
+	hud.shotsFired = shotsFired;
+	hud.totalShotsFired = totalShotsFired;
 	hud.currentHeight = scenario->GetCurrentHeight();
 	hud.heightTarget = level->GetBuildingHeightTarget();
+	hud.retries = currentRetries;
+	hud.totalRetries = totalRetries;
 	ui.Draw(renderer, context, hud);
 }
 
-void GameplayScene::HandlePlayerDeath()
+void GameplayScene::HandleLevelEnd(float deltaTime)
 {
-	if (!player) return;
+	if (context.state == GameState::Finished) return;
 
-	float screenHeight = GetScreenHeight();
-
-	float playerY = player->GetBody()->GetPosition().y * PIXELS_PER_METER;
-	float playerHalfHeight = 30.0f;
-	if (playerY > screenHeight + playerHalfHeight && context.state == GameState::Playing) {
-		player->Die();
-	}
-
-	if (player->IsDead() && context.state == GameState::Playing) {
-		physicsWorld->DestroyBody(player->GetBody());
-		player.reset();
-
+	GameFinishState finishState = level->Evaluate(deltaTime, physicsWorld->IsSettled());
+	if (finishState != GameFinishState::None) {
+		context.finishState = finishState;
 		context.state = GameState::Finished;
-		context.finishState = GameFinishState::Lost;
+
+		if (finishState == GameFinishState::Won) {
+			totalShotsFired += shotsFired;
+		}
 	}
 }
