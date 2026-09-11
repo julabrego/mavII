@@ -1,6 +1,6 @@
 # Notas de Versión
 
-## v0.0.3 (not released)
+## v0.0.3
 
 **Fecha:** 2026-09-11
 **Tag:** `v0.0.3`
